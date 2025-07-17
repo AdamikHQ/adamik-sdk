@@ -24,52 +24,54 @@ npm run build
 ## Usage
 
 ```typescript
-import AdamikSDK from 'adamik-sdk-poc';
+import AdamikSDK from "adamik-sdk";
 
 const sdk = new AdamikSDK();
 
 // Define your transaction intent
 const intent = {
-  mode: 'transfer',
-  senderAddress: '0x1234567890123456789012345678901234567890',
-  recipientAddress: '0x0987654321098765432109876543210987654321',
-  amount: '1000000000000000000', // 1 ETH in wei
+  mode: "transfer",
+  senderAddress: "0x1234567890123456789012345678901234567890",
+  recipientAddress: "0x0987654321098765432109876543210987654321",
+  amount: "1000000000000000000", // 1 ETH in wei
 };
 
 // Get response from Adamik API (example)
 const apiResponse = {
-  chainId: 'ethereum',
+  chainId: "ethereum",
   transaction: {
     data: {
-      mode: 'transfer',
-      senderAddress: '0x1234567890123456789012345678901234567890',
-      recipientAddress: '0x0987654321098765432109876543210987654321',
-      amount: '1000000000000000000',
-      fees: '21000000000000',
-      gas: '21000',
-      nonce: '5'
+      mode: "transfer",
+      senderAddress: "0x1234567890123456789012345678901234567890",
+      recipientAddress: "0x0987654321098765432109876543210987654321",
+      amount: "1000000000000000000",
+      fees: "21000000000000",
+      gas: "21000",
+      nonce: "5",
     },
-    encoded: [{
-      hash: {
-        format: 'keccak256',
-        value: '0xabcdef...'
+    encoded: [
+      {
+        hash: {
+          format: "keccak256",
+          value: "0xabcdef...",
+        },
+        raw: {
+          format: "RLP",
+          value: "0xf869...",
+        },
       },
-      raw: {
-        format: 'RLP',
-        value: '0xf869...'
-      }
-    }]
-  }
+    ],
+  },
 };
 
 // Verify the response
 const result = await sdk.verify(apiResponse, intent);
 
 if (result.isValid) {
-  console.log('✅ Transaction verified successfully');
-  console.log('Decoded data:', result.decodedData);
+  console.log("✅ Transaction verified successfully");
+  console.log("Decoded data:", result.decodedData);
 } else {
-  console.error('❌ Verification failed:', result.errors);
+  console.error("❌ Verification failed:", result.errors);
 }
 ```
 
@@ -127,11 +129,11 @@ npm run dev
 1. Create a new decoder class extending `BaseDecoder`:
 
 ```typescript
-import { BaseDecoder } from './base';
+import { BaseDecoder } from "./base";
 
 export class MyChainDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
-    super(chainId, 'MY_FORMAT');
+    super(chainId, "MY_FORMAT");
   }
 
   async decode(rawData: string): Promise<unknown> {
@@ -147,14 +149,14 @@ export class MyChainDecoder extends BaseDecoder {
 2. Register the decoder in `DecoderRegistry`:
 
 ```typescript
-this.registerDecoder(new MyChainDecoder('mychain'));
+this.registerDecoder(new MyChainDecoder("mychain"));
 ```
 
 ## Future Enhancements
 
 For enhanced production capabilities, consider:
 
-1. **Real Decoding Libraries**: 
+1. **Real Decoding Libraries**:
    - Use ethers.js or web3.js for EVM transaction decoding
    - Use bitcoinjs-lib for Bitcoin transaction parsing
 
@@ -180,10 +182,12 @@ For enhanced production capabilities, consider:
 Verifies that an Adamik API response matches the original transaction intent.
 
 **Parameters:**
+
 - `apiResponse`: The response from Adamik API encode endpoint
 - `originalIntent`: The original transaction intent
 
 **Returns:**
+
 - `VerificationResult` object containing:
   - `isValid`: Boolean indicating if verification passed
   - `errors`: Array of error messages (if any)
