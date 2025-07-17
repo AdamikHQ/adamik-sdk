@@ -253,6 +253,10 @@ npm test -- --testNamePattern="AdamikAPIClient"    # API client tests
 - Code duplication (extract to shared methods)
 - Inconsistent error message formats
 
+## Git Configuration
+- Do not include Claude co-author line in commits
+- Use standard commit format without attribution
+
 ---
 
 ## Last Updated
