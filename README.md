@@ -134,8 +134,8 @@ if (result.isValid) {
 - **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
 - **Real API Integration**: `AdamikAPIClient` for calling actual Adamik API
 - **TypeScript Support**: Full type definitions and IDE support
-- **Configuration-Driven Testing**: JSON-based test scenarios and attack patterns
-- **Comprehensive Testing**: 40+ tests with streamlined organization and reduced redundancy
+- **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
+- **Comprehensive Testing**: 45+ tests with streamlined organization and reduced complexity
 
 ### 🚧 In Development
 
@@ -291,7 +291,7 @@ npm test
 
 # Run specific test suites
 npm test -- --testNamePattern="SDK Validation"
-npm test -- --testNamePattern="Configuration-Driven"
+npm test -- --testNamePattern="Test Scenarios"
 npm test -- --testNamePattern="Decoders"
 
 # Run with real API integration
@@ -307,15 +307,14 @@ The SDK includes a streamlined test suite with:
 
 ```bash
 # Core test files
-tests/sdk-validation.test.ts      # Complete validation tests
-tests/decoders.test.ts           # Decoder and registry tests
-tests/api-client.test.ts         # API client tests
-tests/integration.test.ts        # End-to-end tests
-tests/config-driven.test.ts      # Configuration-driven tests
+tests/sdk-validation.test.ts     # Complete validation tests (10 tests)
+tests/scenarios.test.ts          # Simple scenario-based tests (8 tests)
+tests/decoders.test.ts          # Decoder and registry tests (10 tests)
+tests/api-client.test.ts        # API client tests (15 tests)
+tests/integration.test.ts       # End-to-end tests (2 tests)
 
-# Configuration and fixtures
-tests/test-config.json           # Single test configuration
-tests/fixtures/real-transactions.json  # Centralized transaction data
+# Fixtures
+tests/fixtures/real-transactions.json  # Real transaction data
 ```
 
 See `tests/README.md` for detailed test documentation.

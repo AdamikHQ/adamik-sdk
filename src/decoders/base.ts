@@ -29,10 +29,4 @@ export abstract class BaseDecoder {
     return Buffer.from(cleanHex, "hex");
   }
 
-  /**
-   * Helper method to convert buffer to hex string
-   */
-  protected bufferToHex(buffer: Buffer): string {
-    return "0x" + buffer.toString("hex");
-  }
 }

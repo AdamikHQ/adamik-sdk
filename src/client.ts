@@ -47,6 +47,8 @@ export interface AdamikAPIError {
  * Implements the real API calls based on adamik-link and adamik-api implementations
  */
 export class AdamikAPIClient {
+  private static readonly DEFAULT_TIMEOUT_MS = 30000;
+  
   private baseUrl: string;
   private apiKey: string;
   private timeout: number;
@@ -54,7 +56,7 @@ export class AdamikAPIClient {
   constructor(config: AdamikAPIConfig) {
     this.baseUrl = config.baseUrl.replace(/\/$/, ""); // Remove trailing slash
     this.apiKey = config.apiKey;
-    this.timeout = config.timeout || 30000; // 30 second default timeout
+    this.timeout = config.timeout || AdamikAPIClient.DEFAULT_TIMEOUT_MS;
   }
 
   /**

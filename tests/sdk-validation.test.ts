@@ -264,7 +264,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("🚨 CRITICAL: Decoded transaction recipient mismatch"))).toBe(true);
+      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
     });
 
     it("should detect encoded amount tampering", async () => {
@@ -306,7 +306,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("🚨 CRITICAL: Decoded transaction amount mismatch"))).toBe(true);
+      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
     });
 
     it("should detect malicious API providing correct data but wrong encoded transaction", async () => {
@@ -351,8 +351,8 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.isValid).toBe(false);
       expect(result.errors).toEqual(
         expect.arrayContaining([
-          expect.stringContaining("🚨 CRITICAL: Decoded transaction recipient mismatch"),
-          expect.stringContaining("🚨 CRITICAL: Decoded transaction amount mismatch"),
+          expect.stringContaining("Critical: Decoded transaction recipient mismatch"),
+          expect.stringContaining("Critical: Decoded transaction amount mismatch"),
         ])
       );
     });

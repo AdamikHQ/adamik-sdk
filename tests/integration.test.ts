@@ -141,7 +141,7 @@ describe("Integration Tests", () => {
       expect(verificationResult.errors).toBeDefined();
       expect(
         verificationResult.errors?.some((err) =>
-          err.includes("🚨 CRITICAL: Decoded transaction recipient mismatch")
+          err.includes("Critical: Decoded transaction recipient mismatch")
         )
       ).toBe(true);
     });

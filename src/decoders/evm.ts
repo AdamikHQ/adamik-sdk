@@ -1,6 +1,6 @@
-import { isAddress, isHex, parseTransaction } from "viem";
-import { ChainId, TransactionMode } from "../types";
 import { BaseDecoder } from "./base";
+import { ChainId, TransactionMode } from "../types";
+import { isAddress, isHex, parseTransaction } from "viem";
 
 // Matches adamik-api CommonTransactionData structure
 interface DecodedEVMTransaction {

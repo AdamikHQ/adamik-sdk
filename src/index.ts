@@ -36,17 +36,7 @@ export class AdamikSDK {
       }
 
       // Step 3: Verify core transaction fields
-      const verifyField = (field: keyof TransactionIntent, label: string) => {
-        if (originalIntent[field] !== undefined && data[field] !== originalIntent[field]) {
-          errors.push(`${label} mismatch: expected ${originalIntent[field]}, got ${data[field]}`);
-        }
-      };
-
-      verifyField("senderAddress", "Sender address");
-      verifyField("recipientAddress", "Recipient address");
-      verifyField("validatorAddress", "Validator address");
-      verifyField("targetValidatorAddress", "Target validator address");
-      verifyField("tokenId", "Token ID");
+      this.verifyTransactionFields(originalIntent, data, errors);
 
       // Step 4: Verify amounts (if not using max amount)
       if (!originalIntent.useMaxAmount && originalIntent.amount !== undefined) {
@@ -112,6 +102,46 @@ export class AdamikSDK {
 
     const decoded = decodedTransaction as Record<string, unknown>;
 
+    // Verify core decoded transaction fields
+    this.verifyDecodedFields(decoded, originalIntent, errors);
+    
+    // Cross-verify decoded transaction against API response data
+    this.verifyCrossConsistency(decoded, apiData, errors);
+
+    return errors;
+  }
+
+  /**
+   * Verifies core transaction fields between intent and API data
+   */
+  private verifyTransactionFields(
+    originalIntent: TransactionIntent,
+    data: TransactionData,
+    errors: string[]
+  ): void {
+    const fieldMappings: Array<{ field: keyof TransactionIntent; label: string }> = [
+      { field: "senderAddress", label: "Sender address" },
+      { field: "recipientAddress", label: "Recipient address" },
+      { field: "validatorAddress", label: "Validator address" },
+      { field: "targetValidatorAddress", label: "Target validator address" },
+      { field: "tokenId", label: "Token ID" }
+    ];
+
+    fieldMappings.forEach(({ field, label }) => {
+      if (originalIntent[field] !== undefined && data[field] !== originalIntent[field]) {
+        errors.push(`${label} mismatch: expected ${originalIntent[field]}, got ${data[field]}`);
+      }
+    });
+  }
+
+  /**
+   * Verifies core decoded transaction fields against original intent
+   */
+  private verifyDecodedFields(
+    decoded: Record<string, unknown>,
+    originalIntent: TransactionIntent,
+    errors: string[]
+  ): void {
     // Verify transaction mode
     if (decoded.mode !== originalIntent.mode) {
       errors.push(`Decoded transaction mode mismatch: expected ${originalIntent.mode}, got ${decoded.mode}`);
@@ -120,7 +150,7 @@ export class AdamikSDK {
     // Verify recipient address
     if (decoded.recipientAddress !== originalIntent.recipientAddress) {
       errors.push(
-        `🚨 CRITICAL: Decoded transaction recipient mismatch: expected ${originalIntent.recipientAddress}, got ${decoded.recipientAddress}`
+        `Critical: Decoded transaction recipient mismatch: expected ${originalIntent.recipientAddress}, got ${decoded.recipientAddress}`
       );
     }
 
@@ -136,7 +166,7 @@ export class AdamikSDK {
 
       if (decodedAmount !== expectedAmount) {
         errors.push(
-          `🚨 CRITICAL: Decoded transaction amount mismatch: expected ${expectedAmount.toString()}, got ${decodedAmount.toString()}`
+          `Critical: Decoded transaction amount mismatch: expected ${expectedAmount.toString()}, got ${decodedAmount.toString()}`
         );
       }
     }
@@ -144,24 +174,30 @@ export class AdamikSDK {
     // Verify token ID for token transfers
     if (originalIntent.tokenId && decoded.tokenId !== originalIntent.tokenId) {
       errors.push(
-        `🚨 CRITICAL: Decoded transaction token mismatch: expected ${originalIntent.tokenId}, got ${decoded.tokenId}`
+        `Critical: Decoded transaction token mismatch: expected ${originalIntent.tokenId}, got ${decoded.tokenId}`
       );
     }
+  }
 
-    // Cross-verify: Decoded transaction should also match API response data
+  /**
+   * Verifies consistency between decoded transaction and API response data
+   */
+  private verifyCrossConsistency(
+    decoded: Record<string, unknown>,
+    apiData: TransactionData,
+    errors: string[]
+  ): void {
     if (decoded.recipientAddress !== apiData.recipientAddress) {
       errors.push(
-        `⚠️ Inconsistency: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`
+        `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`
       );
     }
 
     if (decoded.mode !== apiData.mode) {
       errors.push(
-        `⚠️ Inconsistency: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`
+        `Warning: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`
       );
     }
-
-    return errors;
   }
 
   /**
