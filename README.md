@@ -6,7 +6,7 @@
 
 A TypeScript/Node.js SDK for verifying Adamik API responses. This open-source SDK allows developers to verify that transaction data returned by the Adamik API matches the original transaction intent.
 
-**⚠️ Note**: This SDK currently provides **Layer 1 verification** (readable data fields) with **placeholder decoders** for Layer 2 (encoded transaction verification). See [Security & Current Limitations](#️-security--current-limitations) below.
+**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
 
 ## Core Principle: Two-Variable Verification
 
@@ -47,16 +47,16 @@ The SDK compares these critical fields between your intent and the API response:
 
 ## ⚠️ Security & Current Limitations
 
-### Two-Layer Security Model
+### Two-Step Security Model
 
-Complete transaction verification requires **two layers of checking**:
+Complete transaction verification requires **two steps of checking**:
 
 ```typescript
-// 🔍 LAYER 1: Data Field Verification (✅ Currently Implemented)
+// 🔍 STEP 1: Intent Validation (✅ Fully Implemented)
 // Check: transaction.data vs your original intent
 const dataMatches = sdk.verify(apiResponse, originalIntent);
 
-// 🔍 LAYER 2: Encoded Transaction Verification (❌ Currently Limited)
+// 🔍 STEP 2: Encoded Transaction Validation (✅ Implemented for EVM)
 // Check: Decode transaction.encoded and verify it matches your intent
 const decoded = decoder.decode(apiResponse.transaction.encoded[0].raw.value);
 const encodedMatches = decoded.amount === originalIntent.amount;
@@ -64,30 +64,35 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 
 ### ⚠️ Current Implementation Status
 
-**Layer 1** ✅ **Fully Implemented**:
+**Step 1: Intent Validation** ✅ **Fully Implemented**:
 
 - Verifies `transaction.data` fields match your intent
 - Catches API tampering with readable fields
 
-**Layer 2** ❌ **Currently Using Placeholder Decoders**:
+**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM, Limited for Others**:
 
-- The decoders return mock data, not real decoded transactions
-- **This means the encoded transaction is NOT actually verified**
-- A malicious API could return correct `transaction.data` but incorrect `transaction.encoded`
+- ✅ **EVM**: Real RLP decoding using `viem` library
+- ❌ **Bitcoin/Other chains**: Using placeholder decoders with mock data
+- **For EVM transactions**: Both steps provide real security protection
+- **For other chains**: Only Step 1 provides protection
 
 ### 🚨 Security Implications
 
-**What you're protected from**:
+**For EVM Chains** (Full Protection):
+
+- ✅ API changing recipient address in `transaction.data` (Intent validation)
+- ✅ API modifying amount in `transaction.data` (Intent validation)
+- ✅ API switching transaction mode in `transaction.data` (Intent validation)
+- ✅ Malicious API providing correct `transaction.data` but wrong `transaction.encoded` (Encoded validation)
+- ✅ Detection of encoded transaction tampering via RLP decoding (Encoded validation)
+
+**For Other Chains** (Intent Validation Only):
 
 - ✅ API changing recipient address in `transaction.data`
 - ✅ API modifying amount in `transaction.data`
 - ✅ API switching transaction mode in `transaction.data`
-
-**What you're NOT currently protected from**:
-
 - ❌ Malicious API providing correct `transaction.data` but wrong `transaction.encoded`
 - ❌ Bugs causing mismatch between readable data and encoded transaction
-- ❌ Hash verification of the encoded transaction
 
 ### 💡 Production Recommendations
 
@@ -117,7 +122,7 @@ if (result.isValid) {
   }
 
   // Now safe to sign
-  console.log("✅ Both layers verified - safe to sign");
+  console.log("✅ Both steps verified - safe to sign");
 }
 ```
 
@@ -125,15 +130,16 @@ if (result.isValid) {
 
 ### ✅ Currently Implemented
 
-- **Layer 1 Verification**: Compare readable `transaction.data` fields against your intent
+- **Intent Validation**: Compare readable `transaction.data` fields against your intent
 - **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
 - **Real API Integration**: `AdamikAPIClient` for calling actual Adamik API
 - **TypeScript Support**: Full type definitions and IDE support
-- **Comprehensive Testing**: 30+ tests covering core functionality
+- **Configuration-Driven Testing**: JSON-based test scenarios and attack patterns
+- **Comprehensive Testing**: 40+ tests with streamlined organization and reduced redundancy
 
 ### 🚧 In Development
 
-- **Layer 2 Verification**: Real decoding of `transaction.encoded` (currently placeholder)
+- **Encoded Transaction Validation**: Real decoding of `transaction.encoded` (placeholder for non-EVM)
 - **Production Decoders**: Integration with `ethers.js`, `bitcoinjs-lib`, etc.
 - **Hash Validation**: Cryptographic verification of encoded transactions
 
@@ -280,14 +286,39 @@ if (result.isValid) {
 ### Run Tests
 
 ```bash
+# Run all tests
 npm test
-```
 
-### Run Tests in Watch Mode
+# Run specific test suites
+npm test -- --testNamePattern="SDK Validation"
+npm test -- --testNamePattern="Configuration-Driven"
+npm test -- --testNamePattern="Decoders"
 
-```bash
+# Run with real API integration
+USE_REAL_API=true npm test
+
+# Run in watch mode
 npm run test:watch
 ```
+
+### Test Organization
+
+The SDK includes a streamlined test suite with:
+
+```bash
+# Core test files
+tests/sdk-validation.test.ts      # Complete validation tests
+tests/decoders.test.ts           # Decoder and registry tests
+tests/api-client.test.ts         # API client tests
+tests/integration.test.ts        # End-to-end tests
+tests/config-driven.test.ts      # Configuration-driven tests
+
+# Configuration and fixtures
+tests/test-config.json           # Single test configuration
+tests/fixtures/real-transactions.json  # Centralized transaction data
+```
+
+See `tests/README.md` for detailed test documentation.
 
 ### Build
 
@@ -341,7 +372,7 @@ this.registerDecoder(new MyChainDecoder("mychain"));
    - PSBT parsing for Bitcoin using `bitcoinjs-lib`
    - Support for additional chain formats
 
-2. **Enhanced Layer 2 Verification**:
+2. **Enhanced Encoded Transaction Validation**:
    - Cryptographic hash validation
    - Signature verification capabilities
    - Transaction replay protection

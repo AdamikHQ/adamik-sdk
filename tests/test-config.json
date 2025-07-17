@@ -1,0 +1,159 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "name": "Adamik SDK Test Configuration",
+    "description": "Complete test scenarios and attack patterns for the Adamik SDK",
+    "author": "Adamik SDK Team",
+    "created": "2024-01-15T00:00:00Z"
+  },
+  "scenarios": [
+    {
+      "id": "eth-valid-transfer",
+      "name": "Valid ETH Transfer",
+      "description": "Standard Ethereum transfer that should pass all validation",
+      "chainId": "ethereum",
+      "intent": {
+        "mode": "transfer",
+        "senderAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000000000000000"
+      },
+      "expectedResult": {
+        "isValid": true,
+        "shouldHaveErrors": false
+      },
+      "tags": ["ethereum", "transfer", "valid"]
+    },
+    {
+      "id": "token-transfer-placeholder",
+      "name": "Token Transfer (Placeholder Decoder)",
+      "description": "ERC-20 token transfer - demonstrates placeholder decoder behavior",
+      "chainId": "ethereum",
+      "intent": {
+        "mode": "transferToken",
+        "tokenId": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "senderAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000"
+      },
+      "expectedResult": {
+        "isValid": false,
+        "shouldHaveErrors": true,
+        "expectedErrors": ["Failed to decode transaction"]
+      },
+      "tags": ["ethereum", "token", "placeholder"]
+    },
+    {
+      "id": "bitcoin-transfer",
+      "name": "Bitcoin Transfer",
+      "description": "Basic Bitcoin transfer (placeholder implementation)",
+      "chainId": "bitcoin",
+      "intent": {
+        "mode": "transfer",
+        "senderAddress": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "recipientAddress": "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA",
+        "amount": "10000000"
+      },
+      "expectedResult": {
+        "isValid": true,
+        "shouldHaveErrors": false
+      },
+      "tags": ["bitcoin", "transfer", "placeholder"]
+    },
+    {
+      "id": "mode-mismatch",
+      "name": "Transaction Mode Mismatch",
+      "description": "API returns different transaction mode than requested",
+      "chainId": "ethereum",
+      "intent": {
+        "mode": "transfer",
+        "senderAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000000000000000"
+      },
+      "apiResponse": {
+        "transaction": {
+          "data": {
+            "mode": "stake"
+          }
+        }
+      },
+      "expectedResult": {
+        "isValid": false,
+        "shouldHaveErrors": true,
+        "expectedErrors": ["Transaction mode mismatch"]
+      },
+      "tags": ["ethereum", "validation", "mode-mismatch"]
+    },
+    {
+      "id": "attack-pattern-base",
+      "name": "Base Scenario for Attack Patterns",
+      "description": "Base scenario to be modified by attack patterns",
+      "chainId": "ethereum",
+      "intent": {
+        "mode": "transfer",
+        "senderAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000000000000000"
+      },
+      "expectedResult": {
+        "isValid": true,
+        "shouldHaveErrors": false
+      },
+      "tags": ["base", "attack-pattern"]
+    }
+  ],
+  "patterns": {
+    "encoded-recipient-mismatch": {
+      "id": "encoded-recipient-mismatch",
+      "name": "Encoded Recipient Mismatch",
+      "description": "API provides correct data but encoded transaction sends to different recipient",
+      "modifications": {
+        "encodedRecipient": "0x1111111111111111111111111111111111111111"
+      },
+      "expectedErrors": ["🚨 CRITICAL: Decoded transaction recipient mismatch"],
+      "severity": "CRITICAL",
+      "categories": ["recipient-tampering", "malicious-api"]
+    },
+    "encoded-amount-mismatch": {
+      "id": "encoded-amount-mismatch",
+      "name": "Encoded Amount Mismatch",
+      "description": "API provides correct data but encoded transaction sends different amount",
+      "modifications": {
+        "encodedAmount": "2000000000000000000"
+      },
+      "expectedErrors": ["🚨 CRITICAL: Decoded transaction amount mismatch"],
+      "severity": "CRITICAL",
+      "categories": ["amount-tampering", "malicious-api"]
+    },
+    "api-data-recipient-mismatch": {
+      "id": "api-data-recipient-mismatch",
+      "name": "API Data Recipient Mismatch",
+      "description": "API returns different recipient in readable data",
+      "modifications": {
+        "apiDataRecipient": "0x2222222222222222222222222222222222222222"
+      },
+      "expectedErrors": ["Recipient address mismatch"],
+      "severity": "HIGH",
+      "categories": ["recipient-tampering", "api-manipulation"]
+    }
+  },
+  "realTransactions": {
+    "ethereum-transfer": {
+      "chainId": "ethereum",
+      "type": "transfer",
+      "encoded": "0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83",
+      "format": "RLP",
+      "decoded": {
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000000000000000",
+        "mode": "transfer"
+      },
+      "description": "Real Ethereum transfer of 1 ETH"
+    }
+  },
+  "config": {
+    "defaultTimeout": 30000,
+    "parallel": false
+  }
+}

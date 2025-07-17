@@ -1,0 +1,32 @@
+{
+  "ethereum": {
+    "transfer": {
+      "chainId": "ethereum",
+      "type": "transfer",
+      "encoded": "0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83",
+      "format": "RLP",
+      "decoded": {
+        "recipientAddress": "0x3535353535353535353535353535353535353535",
+        "amount": "1000000000000000000",
+        "mode": "transfer"
+      },
+      "description": "Real Ethereum transfer of 1 ETH",
+      "source": "Ethereum mainnet"
+    }
+  },
+  "bitcoin": {
+    "transfer": {
+      "chainId": "bitcoin",
+      "type": "transfer",
+      "encoded": "70736274ff01007c02000000018148c584a2a6a726ef6e94f0e6b9b3c7a1b5b6c7d8e9f0a1b2c3d4e5f6789abc0000000000ffffffff0280969800000000001976a914abcdefabcdefabcdefabcdefabcdefabcdefabcd88ac80969800000000001976a914ba1babadbabe8ac67ae12345678901234567890188ac00000000",
+      "format": "PSBT",
+      "decoded": {
+        "recipientAddress": "1GdK9UzpHBzqzX2A9JFP3Di4weBwqgmoQA",
+        "amount": "10000000",
+        "mode": "transfer"
+      },
+      "description": "Real Bitcoin transfer of 0.1 BTC",
+      "source": "Bitcoin mainnet"
+    }
+  }
+}

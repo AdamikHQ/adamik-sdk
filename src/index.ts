@@ -1,5 +1,5 @@
-import { AdamikEncodeResponse, TransactionIntent, VerificationResult, TransactionData } from "./types";
 import { DecoderRegistry } from "./decoders/registry";
+import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult } from "./types";
 
 export class AdamikSDK {
   private decoderRegistry: DecoderRegistry;
@@ -55,14 +55,17 @@ export class AdamikSDK {
         }
       }
 
-      // Step 5: Decode and verify encoded transaction (placeholder for now)
+      // Step 5: Decode and verify encoded transaction (encoded validation)
       let decodedRaw: unknown;
       if (encoded && encoded.length > 0) {
         try {
           const decoder = this.decoderRegistry.getDecoder(chainId, encoded[0].raw.format);
           if (decoder) {
             decodedRaw = await decoder.decode(encoded[0].raw.value);
-            // Additional verification logic would go here
+
+            // Encoded validation: Compare decoded transaction with original intent
+            const decodedVerificationErrors = this.verifyDecodedTransaction(decodedRaw, originalIntent, data);
+            errors.push(...decodedVerificationErrors);
           } else {
             errors.push(`No decoder available for ${chainId} with format ${encoded[0].raw.format}`);
           }
@@ -88,6 +91,80 @@ export class AdamikSDK {
   }
 
   /**
+   * Verifies that the decoded transaction matches the original intent (encoded validation)
+   * @param decodedTransaction The decoded transaction from the encoded data
+   * @param originalIntent The original transaction intent
+   * @param apiData The transaction data from API response
+   * @returns Array of error messages (empty if verification passes)
+   */
+  private verifyDecodedTransaction(
+    decodedTransaction: unknown,
+    originalIntent: TransactionIntent,
+    apiData: TransactionData
+  ): string[] {
+    const errors: string[] = [];
+
+    // Type guard for decoded transaction structure
+    if (!decodedTransaction || typeof decodedTransaction !== "object") {
+      errors.push("Decoded transaction has invalid structure");
+      return errors;
+    }
+
+    const decoded = decodedTransaction as Record<string, unknown>;
+
+    // Verify transaction mode
+    if (decoded.mode !== originalIntent.mode) {
+      errors.push(`Decoded transaction mode mismatch: expected ${originalIntent.mode}, got ${decoded.mode}`);
+    }
+
+    // Verify recipient address
+    if (decoded.recipientAddress !== originalIntent.recipientAddress) {
+      errors.push(
+        `🚨 CRITICAL: Decoded transaction recipient mismatch: expected ${originalIntent.recipientAddress}, got ${decoded.recipientAddress}`
+      );
+    }
+
+    // Verify amount (handle bigint vs string conversion)
+    if (originalIntent.amount && !originalIntent.useMaxAmount) {
+      const expectedAmount = BigInt(originalIntent.amount);
+      const decodedAmount =
+        typeof decoded.amount === "bigint"
+          ? decoded.amount
+          : typeof decoded.amount === "string"
+            ? BigInt(decoded.amount)
+            : 0n;
+
+      if (decodedAmount !== expectedAmount) {
+        errors.push(
+          `🚨 CRITICAL: Decoded transaction amount mismatch: expected ${expectedAmount.toString()}, got ${decodedAmount.toString()}`
+        );
+      }
+    }
+
+    // Verify token ID for token transfers
+    if (originalIntent.tokenId && decoded.tokenId !== originalIntent.tokenId) {
+      errors.push(
+        `🚨 CRITICAL: Decoded transaction token mismatch: expected ${originalIntent.tokenId}, got ${decoded.tokenId}`
+      );
+    }
+
+    // Cross-verify: Decoded transaction should also match API response data
+    if (decoded.recipientAddress !== apiData.recipientAddress) {
+      errors.push(
+        `⚠️ Inconsistency: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`
+      );
+    }
+
+    if (decoded.mode !== apiData.mode) {
+      errors.push(
+        `⚠️ Inconsistency: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`
+      );
+    }
+
+    return errors;
+  }
+
+  /**
    * Compares two transaction data objects for equality
    * @param data1 First transaction data
    * @param data2 Second transaction data
@@ -109,9 +186,9 @@ export class AdamikSDK {
 }
 
 // Export main functions and types
-export * from "./types";
-export { DecoderRegistry } from "./decoders/registry";
 export { AdamikAPIClient } from "./client";
+export { DecoderRegistry } from "./decoders/registry";
+export * from "./types";
 
 // Default export for convenience
 export default AdamikSDK;
