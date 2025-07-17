@@ -1,0 +1,44 @@
+{
+  "name": "adamik-sdk",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "dev": "ts-node src/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [
+    "adamik",
+    "blockchain",
+    "sdk",
+    "typescript",
+    "cryptocurrency",
+    "transaction",
+    "verification",
+    "multi-chain"
+  ],
+  "author": "Adamik SAS",
+  "license": "MIT",
+  "description": "TypeScript SDK for verifying Adamik API responses",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabricedautriat/adamik-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fabricedautriat/adamik-sdk/issues"
+  },
+  "homepage": "https://github.com/fabricedautriat/adamik-sdk#readme",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.14",
+    "jest": "^30.0.4",
+    "prettier": "^3.6.2",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
