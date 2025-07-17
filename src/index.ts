@@ -1,10 +1,5 @@
-import { 
-  AdamikEncodeResponse, 
-  TransactionIntent, 
-  VerificationResult,
-  TransactionData 
-} from './types';
-import { DecoderRegistry } from './decoders/registry';
+import { AdamikEncodeResponse, TransactionIntent, VerificationResult, TransactionData } from "./types";
+import { DecoderRegistry } from "./decoders/registry";
 
 export class AdamikSDK {
   private decoderRegistry: DecoderRegistry;
@@ -20,7 +15,7 @@ export class AdamikSDK {
    * @returns Verification result with validation status and any errors
    */
   async verify(
-    apiResponse: AdamikEncodeResponse, 
+    apiResponse: AdamikEncodeResponse,
     originalIntent: TransactionIntent
   ): Promise<VerificationResult> {
     const errors: string[] = [];
@@ -28,7 +23,7 @@ export class AdamikSDK {
     try {
       // Step 1: Validate API response structure
       if (!apiResponse.chainId || !apiResponse.transaction) {
-        errors.push('Invalid API response structure');
+        errors.push("Invalid API response structure");
         return { isValid: false, errors };
       }
 
@@ -47,11 +42,11 @@ export class AdamikSDK {
         }
       };
 
-      verifyField('senderAddress', 'Sender address');
-      verifyField('recipientAddress', 'Recipient address');
-      verifyField('validatorAddress', 'Validator address');
-      verifyField('targetValidatorAddress', 'Target validator address');
-      verifyField('tokenId', 'Token ID');
+      verifyField("senderAddress", "Sender address");
+      verifyField("recipientAddress", "Recipient address");
+      verifyField("validatorAddress", "Validator address");
+      verifyField("targetValidatorAddress", "Target validator address");
+      verifyField("tokenId", "Token ID");
 
       // Step 4: Verify amounts (if not using max amount)
       if (!originalIntent.useMaxAmount && originalIntent.amount !== undefined) {
@@ -83,10 +78,9 @@ export class AdamikSDK {
         decodedData: {
           chainId,
           transaction: data,
-          raw: decodedRaw
-        }
+          raw: decodedRaw,
+        },
       };
-
     } catch (error) {
       errors.push(`Verification error: ${error}`);
       return { isValid: false, errors };
@@ -101,17 +95,23 @@ export class AdamikSDK {
    */
   compareTransactionData(data1: TransactionData, data2: TransactionData): boolean {
     const keysToCompare: (keyof TransactionData)[] = [
-      'mode', 'senderAddress', 'recipientAddress', 'amount',
-      'tokenId', 'validatorAddress', 'targetValidatorAddress'
+      "mode",
+      "senderAddress",
+      "recipientAddress",
+      "amount",
+      "tokenId",
+      "validatorAddress",
+      "targetValidatorAddress",
     ];
 
-    return keysToCompare.every(key => data1[key] === data2[key]);
+    return keysToCompare.every((key) => data1[key] === data2[key]);
   }
 }
 
 // Export main functions and types
-export * from './types';
-export { DecoderRegistry } from './decoders/registry';
+export * from "./types";
+export { DecoderRegistry } from "./decoders/registry";
+export { AdamikAPIClient } from "./client";
 
 // Default export for convenience
 export default AdamikSDK;

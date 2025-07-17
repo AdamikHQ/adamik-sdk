@@ -1,11 +1,14 @@
 {
   "folders": [
-	{
-		"path": "../adamik-api"
-	},
-	{
-		"path": "."
-	}
-],
-  "settings": {}
+    {
+      "path": "../adamik-api",
+    },
+    {
+      "path": ".",
+    },
+    {
+      "path": "../adamik-link",
+    },
+  ],
+  "settings": {},
 }

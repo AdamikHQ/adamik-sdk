@@ -1,7 +1,7 @@
-import { ChainId, RawFormat } from '../types';
-import { BaseDecoder } from './base';
-import { EVMDecoder } from './evm';
-import { BitcoinDecoder } from './bitcoin';
+import { ChainId, RawFormat } from "../types";
+import { BaseDecoder } from "./base";
+import { EVMDecoder } from "./evm";
+import { BitcoinDecoder } from "./bitcoin";
 
 export class DecoderRegistry {
   private decoders: Map<string, BaseDecoder> = new Map();
@@ -16,17 +16,23 @@ export class DecoderRegistry {
   private registerDefaultDecoders(): void {
     // EVM chains
     const evmChains: ChainId[] = [
-      'ethereum', 'sepolia', 'polygon', 'bsc', 'avalanche', 
-      'arbitrum', 'optimism', 'base'
+      "ethereum",
+      "sepolia",
+      "polygon",
+      "bsc",
+      "avalanche",
+      "arbitrum",
+      "optimism",
+      "base",
     ];
-    
-    evmChains.forEach(chainId => {
+
+    evmChains.forEach((chainId) => {
       this.registerDecoder(new EVMDecoder(chainId));
     });
 
     // Bitcoin-like chains
-    const bitcoinChains: ChainId[] = ['bitcoin', 'bitcoin-testnet'];
-    bitcoinChains.forEach(chainId => {
+    const bitcoinChains: ChainId[] = ["bitcoin", "bitcoin-testnet"];
+    bitcoinChains.forEach((chainId) => {
       this.registerDecoder(new BitcoinDecoder(chainId));
     });
 

@@ -17,11 +17,23 @@ A TypeScript/Node.js SDK for verifying Adamik API responses. This SDK allows dev
 ## Installation
 
 ```bash
-npm install
-npm run build
+npm install adamik-sdk
 ```
 
+## Configuration
+
+For real API integration, you'll need:
+
+```bash
+export ADAMIK_API_BASE_URL=https://api.adamik.io
+export ADAMIK_API_KEY=your-actual-api-key
+```
+
+Visit [Adamik](https://dashboard.adamik.io) to get your API key.
+
 ## Usage
+
+### Basic Usage with Mock Data
 
 ```typescript
 import AdamikSDK from "adamik-sdk";
@@ -75,14 +87,53 @@ if (result.isValid) {
 }
 ```
 
+### Real API Integration
+
+```typescript
+import AdamikSDK, { AdamikAPIClient } from "adamik-sdk";
+
+// Create API client
+const apiClient = new AdamikAPIClient({
+  baseUrl: "https://api.adamik.io",
+  apiKey: "your-api-key-here",
+});
+
+// Or create from environment variables
+const apiClient = AdamikAPIClient.fromEnvironment();
+
+const sdk = new AdamikSDK();
+
+// Define your transaction intent
+const intent = {
+  mode: "transfer",
+  senderAddress: "0x1234567890123456789012345678901234567890",
+  recipientAddress: "0x0987654321098765432109876543210987654321",
+  amount: "1000000000000000000", // 1 ETH in wei
+};
+
+// Call real Adamik API to encode the transaction
+const apiResponse = await apiClient.encodeTransaction("ethereum", intent);
+
+// Verify the API response against your original intent
+const result = await sdk.verify(apiResponse, intent);
+
+if (result.isValid) {
+  console.log("✅ Transaction verified! Ready for signing.");
+  console.log("Hash to sign:", apiResponse.transaction.encoded[0]?.hash?.value);
+} else {
+  console.error("❌ Verification failed:", result.errors);
+}
+```
+
 ## Architecture
 
 ### Core Components
 
 1. **AdamikSDK**: Main class providing the `verify` method
-2. **DecoderRegistry**: Manages decoders for different blockchain formats
-3. **BaseDecoder**: Abstract base class for implementing decoders
-4. **Chain-specific decoders**: EVMDecoder, BitcoinDecoder, etc.
+2. **AdamikAPIClient**: HTTP client for calling the real Adamik API
+3. **DecoderRegistry**: Manages decoders for different blockchain formats
+4. **BaseDecoder**: Abstract base class for implementing decoders
+5. **Chain-specific decoders**: EVMDecoder, BitcoinDecoder, etc.
 
 ### Supported Chains
 

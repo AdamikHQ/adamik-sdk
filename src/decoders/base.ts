@@ -1,4 +1,4 @@
-import { ChainId, RawFormat } from '../types';
+import { ChainId, RawFormat } from "../types";
 
 export abstract class BaseDecoder {
   constructor(
@@ -25,14 +25,14 @@ export abstract class BaseDecoder {
    */
   protected hexToBuffer(hex: string): Buffer {
     // Remove 0x prefix if present
-    const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex;
-    return Buffer.from(cleanHex, 'hex');
+    const cleanHex = hex.startsWith("0x") ? hex.slice(2) : hex;
+    return Buffer.from(cleanHex, "hex");
   }
 
   /**
    * Helper method to convert buffer to hex string
    */
   protected bufferToHex(buffer: Buffer): string {
-    return '0x' + buffer.toString('hex');
+    return "0x" + buffer.toString("hex");
   }
 }
