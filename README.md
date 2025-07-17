@@ -4,15 +4,138 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/adamik-sdk.svg)](https://badge.fury.io/js/adamik-sdk)
 
-A TypeScript/Node.js SDK for verifying Adamik API responses. This SDK allows developers to verify that transaction data returned by the Adamik API matches the original transaction intent.
+A TypeScript/Node.js SDK for verifying Adamik API responses. This open-source SDK allows developers to verify that transaction data returned by the Adamik API matches the original transaction intent.
+
+**⚠️ Note**: This SDK currently provides **Layer 1 verification** (readable data fields) with **placeholder decoders** for Layer 2 (encoded transaction verification). See [Security & Current Limitations](#️-security--current-limitations) below.
+
+## Core Principle: Two-Variable Verification
+
+The Adamik SDK follows a simple but crucial security pattern:
+
+```typescript
+// 🔒 Security Pattern: Always verify API responses against original intent
+
+// Variable A: Your original intent (what you want to do)
+const originalIntent = {
+  mode: "transfer",
+  senderAddress: "0x...",
+  recipientAddress: "0x...",
+  amount: "1000000000000000000",
+};
+
+// Variable B: API response (intent + computed fields like fees)
+const apiResponse = await adamikAPI.encodeTransaction(chainId, originalIntent);
+
+// ✅ Verification: Does B match A?
+const result = await sdk.verify(apiResponse, originalIntent);
+```
+
+**Why this matters**: This prevents malicious APIs from changing recipient addresses, amounts, or transaction types without your knowledge.
+
+### What Gets Verified
+
+The SDK compares these critical fields between your intent and the API response:
+
+- ✅ **Transaction mode** (`transfer`, `stake`, `transferToken`, etc.)
+- ✅ **Sender address** (your wallet address)
+- ✅ **Recipient address** (where funds are going)
+- ✅ **Amount** (how much you want to send)
+- ✅ **Token ID** (which token for token transfers)
+- ✅ **Validator addresses** (for staking operations)
+
+**Note**: The API is allowed to add computed fields like `fees`, `gas`, `nonce` - these are expected and safe.
+
+## ⚠️ Security & Current Limitations
+
+### Two-Layer Security Model
+
+Complete transaction verification requires **two layers of checking**:
+
+```typescript
+// 🔍 LAYER 1: Data Field Verification (✅ Currently Implemented)
+// Check: transaction.data vs your original intent
+const dataMatches = sdk.verify(apiResponse, originalIntent);
+
+// 🔍 LAYER 2: Encoded Transaction Verification (❌ Currently Limited)
+// Check: Decode transaction.encoded and verify it matches your intent
+const decoded = decoder.decode(apiResponse.transaction.encoded[0].raw.value);
+const encodedMatches = decoded.amount === originalIntent.amount;
+```
+
+### ⚠️ Current Implementation Status
+
+**Layer 1** ✅ **Fully Implemented**:
+
+- Verifies `transaction.data` fields match your intent
+- Catches API tampering with readable fields
+
+**Layer 2** ❌ **Currently Using Placeholder Decoders**:
+
+- The decoders return mock data, not real decoded transactions
+- **This means the encoded transaction is NOT actually verified**
+- A malicious API could return correct `transaction.data` but incorrect `transaction.encoded`
+
+### 🚨 Security Implications
+
+**What you're protected from**:
+
+- ✅ API changing recipient address in `transaction.data`
+- ✅ API modifying amount in `transaction.data`
+- ✅ API switching transaction mode in `transaction.data`
+
+**What you're NOT currently protected from**:
+
+- ❌ Malicious API providing correct `transaction.data` but wrong `transaction.encoded`
+- ❌ Bugs causing mismatch between readable data and encoded transaction
+- ❌ Hash verification of the encoded transaction
+
+### 💡 Production Recommendations
+
+For production use, you should:
+
+1. **Implement real decoders** using libraries like:
+   - `ethers.js` or `viem` for EVM chains
+   - `bitcoinjs-lib` for Bitcoin
+   - Chain-specific libraries for other networks
+
+2. **Verify the decoded transaction** matches your original intent
+3. **Implement hash verification** of the encoded data
+4. **Consider using multiple verification methods**
+
+```typescript
+// Production-ready verification would look like:
+const sdk = new AdamikSDK();
+const result = await sdk.verify(apiResponse, originalIntent);
+
+if (result.isValid) {
+  // Additional verification with real decoder
+  const realDecoder = new RealEthereumDecoder();
+  const decoded = await realDecoder.decode(apiResponse.transaction.encoded[0].raw.value);
+
+  if (decoded.to !== originalIntent.recipientAddress) {
+    throw new Error("🚨 SECURITY ALERT: Encoded transaction doesn't match intent!");
+  }
+
+  // Now safe to sign
+  console.log("✅ Both layers verified - safe to sign");
+}
+```
 
 ## Features
 
-- ✅ Verify transaction integrity between intent and API response
-- ✅ Support for multiple blockchain types (EVM, Bitcoin, etc.)
-- ✅ Extensible decoder architecture for different transaction formats
-- ✅ TypeScript support with full type definitions
-- ✅ Comprehensive test coverage
+### ✅ Currently Implemented
+
+- **Layer 1 Verification**: Compare readable `transaction.data` fields against your intent
+- **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
+- **Real API Integration**: `AdamikAPIClient` for calling actual Adamik API
+- **TypeScript Support**: Full type definitions and IDE support
+- **Comprehensive Testing**: 30+ tests covering core functionality
+
+### 🚧 In Development
+
+- **Layer 2 Verification**: Real decoding of `transaction.encoded` (currently placeholder)
+- **Production Decoders**: Integration with `ethers.js`, `bitcoinjs-lib`, etc.
+- **Hash Validation**: Cryptographic verification of encoded transactions
 
 ## Installation
 
@@ -35,12 +158,14 @@ Visit [Adamik](https://dashboard.adamik.io) to get your API key.
 
 ### Basic Usage with Mock Data
 
+The core pattern: **always compare your original intent with the API response**.
+
 ```typescript
 import AdamikSDK from "adamik-sdk";
 
 const sdk = new AdamikSDK();
 
-// Define your transaction intent
+// VARIABLE A: Your original transaction intent (what you want to do)
 const intent = {
   mode: "transfer",
   senderAddress: "0x1234567890123456789012345678901234567890",
@@ -48,7 +173,7 @@ const intent = {
   amount: "1000000000000000000", // 1 ETH in wei
 };
 
-// Get response from Adamik API (example)
+// VARIABLE B: API response (simulated - in real usage, this comes from Adamik API)
 const apiResponse = {
   chainId: "ethereum",
   transaction: {
@@ -76,7 +201,7 @@ const apiResponse = {
   },
 };
 
-// Verify the response
+// 🔒 SECURITY CHECK: Verify API response matches your original intent
 const result = await sdk.verify(apiResponse, intent);
 
 if (result.isValid) {
@@ -88,6 +213,8 @@ if (result.isValid) {
 ```
 
 ### Real API Integration
+
+Here's the two-variable pattern with a real API:
 
 ```typescript
 import AdamikSDK, { AdamikAPIClient } from "adamik-sdk";
@@ -103,7 +230,7 @@ const apiClient = AdamikAPIClient.fromEnvironment();
 
 const sdk = new AdamikSDK();
 
-// Define your transaction intent
+// VARIABLE A: Your original transaction intent (what you want to do)
 const intent = {
   mode: "transfer",
   senderAddress: "0x1234567890123456789012345678901234567890",
@@ -111,10 +238,10 @@ const intent = {
   amount: "1000000000000000000", // 1 ETH in wei
 };
 
-// Call real Adamik API to encode the transaction
+// VARIABLE B: Call real Adamik API to encode the transaction
 const apiResponse = await apiClient.encodeTransaction("ethereum", intent);
 
-// Verify the API response against your original intent
+// 🔒 SECURITY CHECK: Verify the API response matches your original intent
 const result = await sdk.verify(apiResponse, intent);
 
 if (result.isValid) {
@@ -122,6 +249,7 @@ if (result.isValid) {
   console.log("Hash to sign:", apiResponse.transaction.encoded[0]?.hash?.value);
 } else {
   console.error("❌ Verification failed:", result.errors);
+  console.error("⚠️  DO NOT SIGN - API response doesn't match your intent!");
 }
 ```
 
@@ -205,26 +333,32 @@ this.registerDecoder(new MyChainDecoder("mychain"));
 
 ## Future Enhancements
 
-For enhanced production capabilities, consider:
+### Planned Security Improvements
 
-1. **Real Decoding Libraries**:
-   - Use ethers.js or web3.js for EVM transaction decoding
-   - Use bitcoinjs-lib for Bitcoin transaction parsing
+1. **Real Decoder Implementation**:
+   - Replace placeholder decoders with production-grade libraries
+   - Full RLP decoding for EVM chains using `ethers.js` or `viem`
+   - PSBT parsing for Bitcoin using `bitcoinjs-lib`
+   - Support for additional chain formats
 
-2. **Enhanced Verification**:
-   - Deep validation of decoded transaction fields
-   - Signature verification
-   - Hash validation
+2. **Enhanced Layer 2 Verification**:
+   - Cryptographic hash validation
+   - Signature verification capabilities
+   - Transaction replay protection
+   - Deep field-by-field comparison of decoded vs intent
 
-3. **Additional Features**:
-   - Transaction simulation
+### Additional Features
+
+3. **Development Tools**:
+   - Transaction simulation and dry-run capabilities
    - Gas estimation verification
-   - Multi-signature support
+   - Multi-signature transaction support
+   - Debugging and analysis tools
 
-4. **Error Handling**:
-   - More detailed error messages
-   - Recovery suggestions
-   - Retry mechanisms
+4. **Developer Experience**:
+   - More detailed error messages with recovery suggestions
+   - Retry mechanisms for network issues
+   - Better TypeScript inference and IDE support
 
 ## API Reference
 
@@ -250,7 +384,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for det
 
 ## Security
 
-Please see [SECURITY.md](SECURITY.md) for information about reporting security vulnerabilities.
+Security considerations and current limitations are covered in the [Security & Current Limitations](#️-security--current-limitations) section above.
 
 ## License
 
