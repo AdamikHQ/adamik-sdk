@@ -4,11 +4,10 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**45 tests** across **5 test suites** providing complete coverage of:
+**30 tests** across **4 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM)
 - ✅ Security attack scenarios
-- ✅ API integration
 - ✅ Multi-chain support
 
 ## Test Files
@@ -18,7 +17,6 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 - **`sdk-validation.test.ts`** (10 tests) - Core SDK validation with real data
 - **`scenarios.test.ts`** (8 tests) - Simple scenario-based testing
 - **`decoders.test.ts`** (10 tests) - Decoder functionality and registry
-- **`api-client.test.ts`** (15 tests) - HTTP client and API integration
 - **`integration.test.ts`** (2 tests) - End-to-end workflow testing
 
 ### Fixtures

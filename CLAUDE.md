@@ -10,7 +10,9 @@
 
 ## Project Overview
 
-**Adamik SDK** - TypeScript/Node.js SDK for verifying Adamik API responses against original transaction intent.
+**Adamik SDK** - TypeScript/Node.js **Pure Verification SDK** for validating API responses against original transaction intent.
+
+**Design Philosophy**: This SDK follows the Unix principle of "do one thing well" - it focuses solely on verification, not API integration. Users bring their own API responses (from fetch, axios, backends, etc.) and the SDK verifies them.
 
 **Core Security Problem**: Malicious APIs can show correct readable data but provide tampered encoded transactions.
 
@@ -20,8 +22,8 @@
 
 **Key Classes**:
 - `AdamikSDK.verify(apiResponse, originalIntent)` - Main verification method
-- `AdamikAPIClient` - HTTP client for real API integration
 - `DecoderRegistry` - Manages blockchain-specific decoders
+- `BaseDecoder` - Abstract class for chain-specific implementations
 
 ## Current Architecture
 
@@ -29,7 +31,7 @@
 ```
 src/
 ├── index.ts              # Main AdamikSDK class with verify() method
-├── client.ts             # AdamikAPIClient for HTTP integration
+├── client.ts             # API client (legacy - see Future Enhancements)
 ├── types/index.ts        # TypeScript type definitions
 └── decoders/
     ├── base.ts           # Abstract BaseDecoder class
@@ -41,7 +43,6 @@ src/
 ### Test Structure
 ```
 tests/
-├── api-client.test.ts    # API client tests (15 tests)
 ├── decoders.test.ts      # Decoder tests (10 tests) 
 ├── sdk-validation.test.ts # Core SDK tests (10 tests)
 ├── integration.test.ts   # End-to-end tests (2 tests)
@@ -49,14 +50,14 @@ tests/
 └── fixtures/real-transactions.json # Real blockchain data
 ```
 
-**Total: 45 tests across 5 suites, all passing ✅**
+**Total: 30 tests across 4 suites, all passing ✅**
 
 ## Current Implementation Status
 
 ### ✅ Fully Implemented
 - **Intent validation** for all transaction types
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
-- **API client** with real HTTP integration
+- **Pure verification design** - no network calls, just validation
 - **Comprehensive test suite** with security attack scenarios
 - **TypeScript support** with strict mode
 
@@ -109,7 +110,6 @@ tests/
 - `scenarios.test.ts` (8 tests) - Simple, clear scenarios covering valid/invalid/attack cases
 - `sdk-validation.test.ts` (10 tests) - Core validation with real transaction data
 - `decoders.test.ts` (10 tests) - Blockchain decoder functionality
-- `api-client.test.ts` (15 tests) - HTTP client with timeout/error handling
 - `integration.test.ts` (2 tests) - End-to-end API + SDK workflows
 
 ## Development Patterns
@@ -166,7 +166,6 @@ npm test -- --testNamePattern="SDK Validation"     # Core validation tests
 npm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests  
 npm test -- --testNamePattern="Decoders"           # Decoder functionality
 npm test -- --testNamePattern="Integration"        # End-to-end tests
-npm test -- --testNamePattern="AdamikAPIClient"    # API client tests
 ```
 
 ## Technical Stack
@@ -264,3 +263,20 @@ npm test -- --testNamePattern="AdamikAPIClient"    # API client tests
 **Session**: Codebase review and test simplification  
 **Major Changes**: Code quality improvements, test suite simplification (1,200+ lines → clean scenarios), documentation streamlining  
 **Next Session Should**: Consider adding new chain support or enhancing Bitcoin decoder
+
+## Future Product Direction
+
+### Current: Pure Verification SDK
+- **Focus**: Security validation only
+- **User provides**: API responses from any source
+- **SDK provides**: Verification that response matches intent
+- **Benefits**: Clean separation of concerns, no network dependencies
+
+### Potential Future: Full Integration SDK
+- **Would include**: Built-in API client + verification
+- **User provides**: Just the transaction intent
+- **SDK provides**: API calls + automatic verification
+- **Benefits**: Simpler integration, one-stop solution
+- **Trade-offs**: More opinionated, harder to customize
+
+**Note**: The AdamikAPIClient exists in the codebase but is not part of the current Pure Verification SDK design. It may be utilized if we pivot to a Full Integration SDK approach.

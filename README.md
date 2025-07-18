@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/adamik-sdk.svg)](https://badge.fury.io/js/adamik-sdk)
 
-A TypeScript/Node.js SDK for verifying Adamik API responses. This open-source SDK allows developers to verify that transaction data returned by the Adamik API matches the original transaction intent.
+A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
 
 **⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
 
@@ -132,10 +132,10 @@ if (result.isValid) {
 
 - **Intent Validation**: Compare readable `transaction.data` fields against your intent
 - **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
-- **Real API Integration**: `AdamikAPIClient` for calling actual Adamik API
+- **Pure Verification Focus**: Security-first design that validates any API response
 - **TypeScript Support**: Full type definitions and IDE support
 - **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
-- **Comprehensive Testing**: 45+ tests with streamlined organization and reduced complexity
+- **Comprehensive Testing**: 30+ tests focused on verification logic
 
 ### 🚧 In Development
 
@@ -149,16 +149,13 @@ if (result.isValid) {
 npm install adamik-sdk
 ```
 
-## Configuration
+## Getting Started
 
-For real API integration, you'll need:
+Since this is a pure verification SDK, you'll need:
 
-```bash
-export ADAMIK_API_BASE_URL=https://api.adamik.io
-export ADAMIK_API_KEY=your-actual-api-key
-```
-
-Visit [Adamik](https://dashboard.adamik.io) to get your API key.
+1. **An API key from Adamik** - Visit [Adamik](https://dashboard.adamik.io) to get your API key
+2. **Your own HTTP client** - fetch, axios, or any other method to call the Adamik API
+3. **This SDK** - To verify responses before signing transactions
 
 ## Usage
 
@@ -218,53 +215,62 @@ if (result.isValid) {
 }
 ```
 
-### Real API Integration
+### Real-World Usage Pattern
 
-Here's the two-variable pattern with a real API:
+The SDK is designed for **pure verification** - it doesn't fetch data, it verifies data you already have:
 
 ```typescript
-import AdamikSDK, { AdamikAPIClient } from "adamik-sdk";
-
-// Create API client
-const apiClient = new AdamikAPIClient({
-  baseUrl: "https://api.adamik.io",
-  apiKey: "your-api-key-here",
-});
-
-// Or create from environment variables
-const apiClient = AdamikAPIClient.fromEnvironment();
+import AdamikSDK from "adamik-sdk";
 
 const sdk = new AdamikSDK();
 
-// VARIABLE A: Your original transaction intent (what you want to do)
-const intent = {
-  mode: "transfer",
-  senderAddress: "0x1234567890123456789012345678901234567890",
-  recipientAddress: "0x0987654321098765432109876543210987654321",
-  amount: "1000000000000000000", // 1 ETH in wei
-};
+// STEP 1: Get API response from ANY source
+// This could be from fetch(), axios, your backend, or any other method
+const apiResponse = await fetch('https://api.adamik.io/v1/ethereum/transaction/encode', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'your-api-key',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ transaction: { data: intent } })
+}).then(r => r.json());
 
-// VARIABLE B: Call real Adamik API to encode the transaction
-const apiResponse = await apiClient.encodeTransaction("ethereum", intent);
-
-// 🔒 SECURITY CHECK: Verify the API response matches your original intent
+// STEP 2: Verify BEFORE signing
 const result = await sdk.verify(apiResponse, intent);
 
 if (result.isValid) {
-  console.log("✅ Transaction verified! Ready for signing.");
-  console.log("Hash to sign:", apiResponse.transaction.encoded[0]?.hash?.value);
+  // SAFE: The encoded transaction matches your intent
+  const encodedTx = apiResponse.transaction.encoded[0].raw.value;
+  // Now you can safely sign with your wallet
+  await wallet.signTransaction(encodedTx);
 } else {
-  console.error("❌ Verification failed:", result.errors);
-  console.error("⚠️  DO NOT SIGN - API response doesn't match your intent!");
+  // DANGER: DO NOT SIGN!
+  console.error("🚨 Security Alert:", result.errors);
+  // The API returned a transaction that doesn't match what you intended
 }
 ```
+
+### Why Pure Verification?
+
+This SDK follows the Unix philosophy of "do one thing well":
+
+- **You control the API integration** - Use fetch, axios, or any HTTP client
+- **You control error handling** - Retry logic, timeouts, etc.
+- **You control the workflow** - Backend proxy, direct calls, caching
+- **SDK focuses on security** - Just verification, nothing else
+
+This separation of concerns means:
+- No hidden API calls or network dependencies
+- Works with any HTTP client or integration pattern
+- Can verify responses from any source (not just Adamik)
+- Easier to test and mock in your applications
 
 ## Architecture
 
 ### Core Components
 
 1. **AdamikSDK**: Main class providing the `verify` method
-2. **AdamikAPIClient**: HTTP client for calling the real Adamik API
+2. **Transaction Types**: Comprehensive type definitions for all supported chains
 3. **DecoderRegistry**: Manages decoders for different blockchain formats
 4. **BaseDecoder**: Abstract base class for implementing decoders
 5. **Chain-specific decoders**: EVMDecoder, BitcoinDecoder, etc.
@@ -310,7 +316,6 @@ The SDK includes a streamlined test suite with:
 tests/sdk-validation.test.ts     # Complete validation tests (10 tests)
 tests/scenarios.test.ts          # Simple scenario-based tests (8 tests)
 tests/decoders.test.ts          # Decoder and registry tests (10 tests)
-tests/api-client.test.ts        # API client tests (15 tests)
 tests/integration.test.ts       # End-to-end tests (2 tests)
 
 # Fixtures
