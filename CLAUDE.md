@@ -6,7 +6,7 @@
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
 - **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos placeholder
 - **Tests**: 23 tests across 5 suites (22 passing, 1 skipped - Cosmos placeholder)
-- **Recent**: Cosmos decoder added + Test suite consolidation (removed redundancies)
+- **Recent**: Bruno test removal + Manual API response fixtures + Cosmos decoder support
 
 ## Project Overview
 
@@ -76,7 +76,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
-- **Comprehensive test suite** with security attack scenarios + Bruno imported data
+- **Comprehensive test suite** with security attack scenarios + real API response data
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
@@ -158,6 +158,17 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Added 4 new decoder tests
 - Note: Real implementation requires protobuf parsing libraries
 
+### ✅ Completed: Bruno Test Removal and Manual API Response Tests (January 2025)
+**What**: Replaced Bruno-imported tests with manual API response fixtures
+**Impact**: Cleaner test structure with real API responses organized by blockchain
+**Changes**:
+- Removed bruno-imported.test.ts and all bruno-imported fixtures per CTO feedback
+- Created api-responses.test.ts with JSON fixtures per blockchain family
+- Now have ethereum.json, bitcoin.json, cosmos.json with real API responses
+- Test count reduced from 51 to 23 (focusing on quality over quantity)
+- Added status field to AdamikEncodeResponse type with support for warnings
+- Updated Cosmos decoder registration to support multiple formats (SIGNDOC_DIRECT, etc.)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -177,9 +188,9 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ### Test File Breakdown
 - `scenarios.test.ts` (3 tests) - Attack scenarios and security testing only
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
-- `decoders.test.ts` (13 tests) - Blockchain decoder functionality with Bruno data
+- `decoders.test.ts` (13 tests) - Blockchain decoder functionality
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `bruno-imported.test.ts` (28 tests) - Comprehensive testing of all Bruno imported chains
+- `api-responses.test.ts` (3 tests) - Real API response validation
 
 ## Development Patterns
 
@@ -204,8 +215,8 @@ export class NewChainDecoder extends BaseDecoder {
 // 2. Register in DecoderRegistry.registerDefaultDecoders()
 this.registerDecoder(new NewChainDecoder("newchain"));
 
-// 3. Add real transaction data to fixtures/bruno-imported/[chain].json
-// 4. Add tests to decoders.test.ts
+// 3. Add real transaction data to fixtures/api-responses/[chain].json
+// 4. Add tests to api-responses.test.ts or decoders.test.ts
 // 5. Update ChainId type in src/types/index.ts
 ```
 
@@ -229,7 +240,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 51 tests
+pnpm test             # All 23 tests
 pnpm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
@@ -237,7 +248,7 @@ pnpm test -- --testNamePattern="SDK Validation"     # Core validation tests
 pnpm test -- --testNamePattern="Attack Scenarios"   # Security attack tests  
 pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
 pnpm test -- --testNamePattern="Integration"        # End-to-end tests
-pnpm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
+pnpm test -- --testNamePattern="API Response"       # API response validation tests
 
 # Blockchain-specific tests
 pnpm test:bitcoin    # Run only Bitcoin-related tests
@@ -259,7 +270,7 @@ pnpm test:decoders   # Run all decoder tests
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 58 tests across 5 suites
+- **Jest** (^30.0.4) - Testing framework, 23 tests across 5 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ts-node** (^10.9.2) - Development execution
 - **ts-jest** (^29.4.0) - TypeScript Jest integration
@@ -334,7 +345,7 @@ This prevents permission prompts during the development session and ensures smoo
 
 ### ⚠️ Key Constraints
 - **EVM and Bitcoin only** for real encoded validation - Cosmos and other chains use placeholder decoders
-- **Test with real data** - Use `fixtures/bruno-imported/` for authentic API responses
+- **Test with real data** - Use `fixtures/api-responses/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
 - **EIP-55 compliance** - All EVM addresses must use proper checksumming
@@ -360,14 +371,15 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Cosmos decoder addition and test suite consolidation  
+**Session**: Bruno test removal and manual API response structure  
 **Major Changes**: 
-- Added Cosmos SDK decoder (placeholder implementation for 4 chains)
-- Consolidated test suite: removed redundancies, reduced from 58 to 51 tests
-- Clear test separation: sdk-validation for happy path, scenarios for attacks only
-- Added COSMOS_PROTOBUF format and updated ChainId types
-- Test organization now cleaner without losing any coverage
-**Next Session Should**: Implement real Cosmos protobuf parsing or add hash validation
+- Removed all Bruno-imported tests and fixtures per CTO feedback
+- Created new test structure with JSON fixtures per blockchain family
+- Added real API responses for Ethereum, Bitcoin, and Cosmos
+- Reduced test count from 51 to 23 (focusing on real-world cases)
+- Added support for warning messages as objects in status field
+- Fixed Cosmos decoder registration for multiple format types
+**Next Session Should**: Add more real API response examples as they become available
 
 ## Future Product Direction
 
