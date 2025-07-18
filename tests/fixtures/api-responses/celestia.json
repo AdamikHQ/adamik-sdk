@@ -1,0 +1,106 @@
+{
+  "transfer_use_max": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "celestia1v6md7tx33a4rlth8jrmapzkqrxmh4ptvzkw045",
+          "recipientAddress": "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
+          "useMaxAmount": true
+        }
+      }
+    },
+    "response": {
+      "chainId": "celestia",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "celestia1v6md7tx33a4rlth8jrmapzkqrxmh4ptvzkw045",
+          "recipientAddress": "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
+          "useMaxAmount": true,
+          "amount": "634482",
+          "fees": "2000",
+          "gas": "99960",
+          "nonce": "3",
+          "senderPubKey": "Az1ijJMPa7WgSUdKXouGdDJev5zo4bBoDQOAR1R5FZPf"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0a95010a92010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412720a2f63656c65737469613176366d6437747833336134726c7468386a726d61707a6b7172786d68347074767a6b77303435122f63656c657374696131746b657066796c686c37666d6b727a737670686b79327a3072377570767239747464356373331a0e0a0475746961120636333434383212660a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21033d628c930f6bb5a049474a5e8b8674325ebf9ce8e1b0680d03804754791593df12040a020801180312120a0c0a047574696112043230303010f88c061a0863656c657374696120d29e62"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "6e95a1b742f3fb8fd63a5ad542e9743e220d41f38268f127ab4d2144d3f21be5"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"CpIBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnIKL2NlbGVzdGlhMXY2bWQ3dHgzM2E0cmx0aDhqcm1hcHprcXJ4bWg0cHR2emt3MDQ1Ei9jZWxlc3RpYTF0a2VwZnlsaGw3Zm1rcnpzdnBoa3kyejByN3VwdnI5dHRkNWNzMxoOCgR1dGlhEgY2MzQ0ODI=\",\"authInfoBytes\":\"ClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDPWKMkw9rtaBJR0pei4Z0Ml6/nOjhsGgNA4BHVHkVk98SBAoCCAEYAxISCgwKBHV0aWESBDIwMDAQ+IwG\",\"chainId\":\"celestia\",\"accountNumber\":\"1609554\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  },
+  "transfer_specific_amount": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "celestia1v6md7tx33a4rlth8jrmapzkqrxmh4ptvzkw045",
+          "recipientAddress": "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
+          "amount": "1234"
+        }
+      }
+    },
+    "response": {
+      "chainId": "celestia",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "celestia1v6md7tx33a4rlth8jrmapzkqrxmh4ptvzkw045",
+          "recipientAddress": "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
+          "amount": "1234",
+          "useMaxAmount": false,
+          "fees": "1999",
+          "gas": "99934",
+          "nonce": "3",
+          "senderPubKey": "Az1ijJMPa7WgSUdKXouGdDJev5zo4bBoDQOAR1R5FZPf"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0a93010a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2f63656c65737469613176366d6437747833336134726c7468386a726d61707a6b7172786d68347074767a6b77303435122f63656c657374696131746b657066796c686c37666d6b727a737670686b79327a3072377570767239747464356373331a0c0a047574696112043132333412660a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21033d628c930f6bb5a049474a5e8b8674325ebf9ce8e1b0680d03804754791593df12040a020801180312120a0c0a047574696112043139393910de8c061a0863656c657374696120d29e62"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "c4f20498afdd62b1abaf2aa611a59954f75a895effcd247d5174976e7467673f"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"CpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKL2NlbGVzdGlhMXY2bWQ3dHgzM2E0cmx0aDhqcm1hcHprcXJ4bWg0cHR2emt3MDQ1Ei9jZWxlc3RpYTF0a2VwZnlsaGw3Zm1rcnpzdnBoa3kyejByN3VwdnI5dHRkNWNzMxoMCgR1dGlhEgQxMjM0\",\"authInfoBytes\":\"ClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDPWKMkw9rtaBJR0pei4Z0Ml6/nOjhsGgNA4BHVHkVk98SBAoCCAEYAxISCgwKBHV0aWESBDE5OTkQ3owG\",\"chainId\":\"celestia\",\"accountNumber\":\"1609554\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Network fees are above 10% of the amount"
+          }
+        ]
+      }
+    }
+  }
+}
