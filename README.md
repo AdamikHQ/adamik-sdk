@@ -9,7 +9,7 @@ A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verific
 **Latest Updates** (January 2025):
 - ✅ Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
 - ✅ EIP-55 checksum address support for enhanced security
-- ✅ Expanded test suite with real API response data (58 tests)
+- ✅ Streamlined test suite with real API response data (23 tests)
 
 **⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and Bitcoin chains, and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
 
@@ -141,7 +141,7 @@ if (result.isValid) {
 - **Pure Verification Focus**: Security-first design that validates any API response
 - **TypeScript Support**: Full type definitions and IDE support
 - **EIP-55 Address Support**: Proper checksum validation for Ethereum addresses
-- **Comprehensive Testing**: 58 tests with real API response data
+- **Comprehensive Testing**: 23 tests with real API response data
 - **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
 
 ### 🚧 In Development
@@ -320,14 +320,14 @@ The SDK includes a streamlined test suite with:
 
 ```bash
 # Core test files
-tests/sdk-validation.test.ts     # Complete validation tests (10 tests)
-tests/scenarios.test.ts          # Simple scenario-based tests (8 tests)
-tests/decoders.test.ts          # Decoder and registry tests (9 tests)
-tests/integration.test.ts       # End-to-end tests (2 tests)
-tests/bruno-imported.test.ts    # Bruno imported data tests (29 tests)
+tests/sdk-validation.test.ts     # Complete validation tests (6 tests)
+tests/scenarios.test.ts          # Attack scenario tests (3 tests)
+tests/decoders.test.ts          # Decoder and registry tests (13 tests)
+tests/integration.test.ts       # End-to-end tests (1 test)
+tests/api-responses.test.ts     # API response validation tests (3 tests)
 
 # Fixtures
-tests/fixtures/bruno-imported/   # Real API response data from Bruno
+tests/fixtures/api-responses/    # Real API response data per blockchain
 ```
 
 See `tests/README.md` for detailed test documentation.
