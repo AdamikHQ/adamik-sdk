@@ -42,5 +42,7 @@ export interface DecodedTransaction {
   amount?: string;
   senderAddress?: string;
   tokenId?: string;
+  validatorAddress?: string;
+  targetValidatorAddress?: string;
   raw?: unknown;
 }

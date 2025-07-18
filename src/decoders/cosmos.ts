@@ -3,6 +3,7 @@ import { ChainId, DecodedTransaction, TransactionMode } from "../types";
 import { decodeTxRaw } from "@cosmjs/proto-signing";
 import { fromHex } from "@cosmjs/encoding";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
+import { MsgDelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 /**
@@ -45,7 +46,7 @@ export class CosmosDecoder extends BaseDecoder {
         
         const decodedTx = decodeTxRaw(txRaw);
         
-        // Process the first message (usually MsgSend for transfers)
+        // Process the first message
         if (decodedTx.body.messages.length > 0) {
           const firstMsg = decodedTx.body.messages[0];
           
@@ -64,6 +65,22 @@ export class CosmosDecoder extends BaseDecoder {
               mode: "transfer" as TransactionMode,
               senderAddress: msgSend.fromAddress,
               recipientAddress: msgSend.toAddress,
+              amount: totalAmount,
+              raw: rawData,
+            };
+          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
+            const msgDelegate = MsgDelegate.decode(firstMsg.value);
+            
+            // For staking, amount is in the delegation
+            let totalAmount = "0";
+            if (msgDelegate.amount) {
+              totalAmount = msgDelegate.amount.amount;
+            }
+            
+            return {
+              mode: "stake" as TransactionMode,
+              senderAddress: msgDelegate.delegatorAddress,
+              targetValidatorAddress: msgDelegate.validatorAddress,
               amount: totalAmount,
               raw: rawData,
             };
@@ -99,6 +116,21 @@ export class CosmosDecoder extends BaseDecoder {
               mode: "transfer" as TransactionMode,
               senderAddress: msgSend.fromAddress,
               recipientAddress: msgSend.toAddress,
+              amount: totalAmount,
+              raw: rawData,
+            };
+          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
+            const msgDelegate = MsgDelegate.decode(firstMsg.value);
+            
+            let totalAmount = "0";
+            if (msgDelegate.amount) {
+              totalAmount = msgDelegate.amount.amount;
+            }
+            
+            return {
+              mode: "stake" as TransactionMode,
+              senderAddress: msgDelegate.delegatorAddress,
+              targetValidatorAddress: msgDelegate.validatorAddress,
               amount: totalAmount,
               raw: rawData,
             };

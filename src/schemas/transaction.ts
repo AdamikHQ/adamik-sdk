@@ -45,7 +45,7 @@ export const TransactionIntentSchema = z.discriminatedUnion("mode", [
   z.object({
     ...baseTransactionFields,
     mode: z.literal("stake"),
-    validatorAddress: z.string(),
+    targetValidatorAddress: z.string(),
     amount: stringToBigIntSchema.optional(),
     useMaxAmount: z.boolean().optional(),
   }),

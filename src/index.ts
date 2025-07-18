@@ -222,6 +222,15 @@ export class AdamikSDK {
       );
     }
     
+    if ('targetValidatorAddress' in intent && intent.targetValidatorAddress !== undefined && txData.targetValidatorAddress !== intent.targetValidatorAddress) {
+      errorCollector.addFieldMismatch(
+        ErrorCode.VALIDATOR_MISMATCH,
+        "targetValidatorAddress",
+        intent.targetValidatorAddress,
+        txData.targetValidatorAddress
+      );
+    }
+    
     if ('tokenId' in intent && intent.tokenId !== undefined && txData.tokenId !== intent.tokenId) {
       errorCollector.addFieldMismatch(
         ErrorCode.TOKEN_MISMATCH,
@@ -258,6 +267,26 @@ export class AdamikSDK {
         `Critical: Decoded transaction recipient mismatch: expected ${intent.recipientAddress}, got ${decoded.recipientAddress}`,
         "critical",
         { expected: intent.recipientAddress, actual: String(decoded.recipientAddress) }
+      );
+    }
+    
+    // Verify validator address for staking operations
+    if ('validatorAddress' in intent && decoded.validatorAddress !== intent.validatorAddress) {
+      errorCollector.addError(
+        ErrorCode.CRITICAL_VALIDATOR_MISMATCH,
+        `Critical: Decoded transaction validator mismatch: expected ${intent.validatorAddress}, got ${decoded.validatorAddress}`,
+        "critical",
+        { expected: intent.validatorAddress, actual: String(decoded.validatorAddress) }
+      );
+    }
+    
+    // Verify target validator address for staking operations (alternative field name)
+    if ('targetValidatorAddress' in intent && decoded.targetValidatorAddress !== intent.targetValidatorAddress) {
+      errorCollector.addError(
+        ErrorCode.CRITICAL_VALIDATOR_MISMATCH,
+        `Critical: Decoded transaction target validator mismatch: expected ${intent.targetValidatorAddress}, got ${decoded.targetValidatorAddress}`,
+        "critical",
+        { expected: intent.targetValidatorAddress, actual: String(decoded.targetValidatorAddress) }
       );
     }
 
@@ -300,13 +329,30 @@ export class AdamikSDK {
     apiData: TransactionData,
     errorCollector: ErrorCollector
   ): void {
-    if (decoded.recipientAddress !== apiData.recipientAddress) {
-      errorCollector.addError(
-        ErrorCode.DECODED_API_MISMATCH,
-        `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`,
-        "warning",
-        { decoded: decoded.recipientAddress, apiData: apiData.recipientAddress }
-      );
+    // For staking transactions, skip recipient address check as they use targetValidatorAddress
+    if (apiData.mode !== 'stake' && apiData.mode !== 'unstake' && apiData.mode !== 'claimRewards') {
+      if (decoded.recipientAddress !== apiData.recipientAddress) {
+        errorCollector.addError(
+          ErrorCode.DECODED_API_MISMATCH,
+          `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`,
+          "warning",
+          { decoded: decoded.recipientAddress, apiData: apiData.recipientAddress }
+        );
+      }
+    }
+    
+    // For staking operations, verify the validator address instead
+    if (apiData.mode === 'stake' || apiData.mode === 'unstake') {
+      const decodedValidator = decoded.targetValidatorAddress || decoded.validatorAddress;
+      const apiValidator = apiData.targetValidatorAddress || apiData.validatorAddress;
+      if (decodedValidator !== apiValidator) {
+        errorCollector.addError(
+          ErrorCode.DECODED_API_MISMATCH,
+          `Warning: Decoded validator (${decodedValidator}) doesn't match API data (${apiValidator})`,
+          "warning",
+          { decoded: decodedValidator, apiData: apiValidator }
+        );
+      }
     }
 
     if (decoded.mode !== apiData.mode) {

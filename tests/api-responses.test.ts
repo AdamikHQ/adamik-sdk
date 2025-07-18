@@ -31,6 +31,9 @@ describe("API Response Validation", () => {
           
           const result = await sdk.verify(response, intent);
 
+          if (!result.isValid) {
+            console.log(`Test ${name} failed with errors:`, result.errors);
+          }
           expect(result.isValid).toBe(true);
           expect(result.errors || []).toHaveLength(0);
           
@@ -41,6 +44,12 @@ describe("API Response Validation", () => {
           // Common validations
           if ('recipientAddress' in intent) {
             expect(txData.recipientAddress).toBe(intent.recipientAddress);
+          }
+          if ('validatorAddress' in intent) {
+            expect(txData.validatorAddress).toBe(intent.validatorAddress);
+          }
+          if ('targetValidatorAddress' in intent) {
+            expect(txData.targetValidatorAddress).toBe(intent.targetValidatorAddress);
           }
           if ('amount' in intent && !intent.useMaxAmount) {
             expect(txData.amount).toBe(intent.amount);

@@ -5,8 +5,8 @@
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
 - **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding, Tron with real transaction parsing
-- **Tests**: 37 tests across 5 suites (all passing)
-- **Recent**: Real Tron decoder implementation using tronweb library
+- **Tests**: 38 tests across 5 suites (all passing)
+- **Recent**: Cosmos staking support with proper field validation
 
 ## Project Overview
 
@@ -59,7 +59,7 @@ tests/
         └── celestia.json    # Celestia test cases
 ```
 
-**Total: 29 tests across 5 suites (all passing)**
+**Total: 38 tests across 5 suites (all passing)**
 
 ### Test Summary Table
 All test runs now display a comprehensive summary table showing:
@@ -78,6 +78,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
+- **Cosmos staking support** - Handles MsgDelegate with targetValidatorAddress field
 - **Real Tron decoder** using tronweb library (Tron mainnet with TRC20 token support)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
@@ -240,7 +241,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
 - `decoders.test.ts` (13 tests) - Blockchain decoder functionality
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `api-responses.test.ts` (4 tests) - Real API response validation (Ethereum, Bitcoin, Cosmos, Injective, Tron, Celestia)
+- `api-responses.test.ts` (9 tests) - Real API response validation (Ethereum, Bitcoin, Cosmos, Injective, Tron, Celestia)
 
 ## Development Patterns
 
@@ -290,7 +291,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 29 tests
+pnpm test             # All 38 tests
 pnpm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
@@ -430,14 +431,18 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Real Tron decoder implementation  
+**Session**: Cosmos staking support implementation (continued)
 **Major Changes**: 
-- Implemented real Tron decoder using TronWeb library (v6.0.3)
-- Added support for both native TRX transfers (TransferContract) and TRC20 token transfers (TriggerSmartContract)
-- Implemented proper hex to base58 address conversion (41... to T... format)
-- Added Tron address validation using TronWeb.isAddress()
-- All 37 tests passing (increased from 29 due to Tron-specific tests)
-**Previous Session**: Test fixture standardization and Celestia support
+- Added support for Cosmos staking transactions (MsgDelegate)
+- Extended CosmosDecoder to handle stake mode with validator addresses
+- Added targetValidatorAddress field to DecodedTransaction interface (matching Adamik API)
+- Updated verification logic to handle both validatorAddress and targetValidatorAddress
+- Added CRITICAL_VALIDATOR_MISMATCH error code
+- Updated TransactionIntentSchema to use targetValidatorAddress for stake mode
+- Fixed cross-consistency validation to skip recipient checks for staking transactions
+- Properly handles different field naming: stake uses targetValidatorAddress, unstake/withdraw/etc use validatorAddress
+- All 38 tests passing (added cosmos_stake test with real API data)
+**Previous Session**: Real Tron decoder implementation
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction
