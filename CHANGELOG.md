@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Manual API Response Testing Structure** - New test framework for real API responses
+  - Created `api-responses.test.ts` for validating real API responses
+  - Added JSON fixtures organized by blockchain (`ethereum.json`, `bitcoin.json`, `cosmos.json`)
+  - Support for optional `status` field in `AdamikEncodeResponse` type
+  - Status warnings can be strings or objects with `message` property
+
+### Changed
+- **Bruno Test Removal** - Replaced Bruno-imported tests with manual fixtures
+  - Removed `bruno-imported.test.ts` and all Bruno test fixtures per CTO feedback
+  - Reduced test count from 51 to 23 (focusing on quality over quantity)
+  - Test fixtures now in `tests/fixtures/api-responses/` directory
+  - Cleaner test organization with real-world API responses
+- **Cosmos Decoder Enhancement** - Improved format support
+  - Updated decoder registry to support multiple Cosmos formats (SIGNDOC_DIRECT, SIGNDOC_DIRECT_JSON, etc.)
+  - Cosmos tests now properly skipped with clear explanation
+
 ### Fixed
 
 - **Codebase Review & Cleanup** - Complete code quality improvements
