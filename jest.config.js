@@ -10,4 +10,7 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
+  reporters: [
+    ['<rootDir>/scripts/jest-table-reporter.js', {}],
+  ],
 };

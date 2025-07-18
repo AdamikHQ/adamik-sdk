@@ -55,6 +55,16 @@ tests/
 
 **Total: 58 tests across 5 suites, all passing ✅**
 
+### Test Summary Table
+All test runs now display a comprehensive summary table showing:
+- Overall test results with pass rates
+- Per-suite breakdown with timing information  
+- Blockchain-specific test counts (Bitcoin, EVM, Other)
+- List of all executed tests with duration
+- Failed test details (if any)
+
+This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
+
 ## Current Implementation Status
 
 ### ✅ Fully Implemented
@@ -205,6 +215,11 @@ pnpm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests
 pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
 pnpm test -- --testNamePattern="Integration"        # End-to-end tests
 pnpm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
+
+# Blockchain-specific tests
+pnpm test:bitcoin    # Run only Bitcoin-related tests
+pnpm test:evm        # Run only EVM-related tests
+pnpm test:decoders   # Run all decoder tests
 ```
 
 ## Technical Stack

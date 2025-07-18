@@ -1,17 +1,51 @@
-# Bruno Test Import Scripts
+# Scripts
 
-This directory contains scripts for importing test scenarios from the Adamik API's Bruno test suite.
+This directory contains utility scripts and development tools for the Adamik SDK project.
 
-## Philosophy
+## jest-table-reporter.js
 
+Custom Jest reporter that displays comprehensive test results in a table format.
+
+**Features:**
+- Overall test summary with pass rates
+- Per-suite breakdown with timing information
+- Blockchain-specific test counts (Bitcoin, EVM, Other)
+- List of all executed tests with duration
+- Failed test details when applicable
+
+**Usage:**
+This reporter runs automatically with all test commands:
+```bash
+pnpm test              # All tests with table summary
+pnpm test:bitcoin      # Bitcoin tests with table summary
+pnpm test:evm          # EVM tests with table summary
+```
+
+**Example Output:**
+```
+====================================================================================================
+TEST SUMMARY TABLE
+====================================================================================================
+OVERALL RESULTS:
+--------------------------------------------------
+Total Tests:   58
+✅ Passed:     58 (100.0%)
+❌ Failed:     0
+⏭️  Skipped:    0
+```
+
+## import-bruno-tests.ts
+
+Imports test scenarios from the Adamik API's Bruno test suite for independent verification.
+
+**Philosophy:**
 The SDK performs **independent verification** of API responses. While we import test scenarios from the API's Bruno tests, we do NOT trust their assertions. Instead:
 
 1. We use Bruno tests for **test scenarios** (different transaction types, chains, edge cases)
 2. We perform our **own decoding and verification**
 3. We can **catch bugs in the API** even if the API's tests pass
 
-## Usage
-
+**Usage:**
 ```bash
 # Import Bruno tests from adamik-api
 pnpm run import-bruno-tests
@@ -23,7 +57,7 @@ This will:
 3. Generate test fixtures in `tests/fixtures/bruno-imported/`
 4. Group fixtures by chain (ethereum.json, bitcoin.json, etc.)
 
-## How It Works
+**How It Works:**
 
 The import process:
 ```
@@ -67,7 +101,7 @@ Becomes SDK fixture:
 }
 ```
 
-## Independent Verification
+**Independent Verification:**
 
 The SDK test suite (`bruno-imported.test.ts`) uses these fixtures but:
 - **Does NOT check against Bruno's expectations**
