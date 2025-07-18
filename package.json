@@ -9,7 +9,8 @@
     "test:watch": "jest --watch",
     "dev": "ts-node src/index.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "import-bruno-tests": "ts-node scripts/import-bruno-tests.ts"
   },
   "keywords": [
     "adamik",
@@ -33,8 +34,10 @@
   },
   "homepage": "https://github.com/fabricedautriat/adamik-sdk#readme",
   "devDependencies": {
+    "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",
+    "glob": "^11.0.3",
     "jest": "^30.0.4",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.0",
