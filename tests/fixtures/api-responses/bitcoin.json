@@ -1,12 +1,15 @@
-[
-  {
-    "name": "Bitcoin transfer",
+{
+  "bitcoin_transfer": {
     "intent": {
-      "mode": "transfer",
-      "senderAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
-      "recipientAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
-      "amount": "1000",
-      "useMaxAmount": false
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+          "recipientAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+          "amount": "1000",
+          "useMaxAmount": false
+        }
+      }
     },
     "response": {
       "chainId": "bitcoin",
@@ -38,4 +41,4 @@
       }
     }
   }
-]
+}

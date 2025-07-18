@@ -1,11 +1,14 @@
-[
-  {
-    "name": "useMaxAmount transfer",
+{
+  "useMaxAmount_transfer": {
     "intent": {
-      "mode": "transfer",
-      "senderAddress": "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
-      "recipientAddress": "0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6",
-      "useMaxAmount": true
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
+          "recipientAddress": "0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6",
+          "useMaxAmount": true
+        }
+      }
     },
     "response": {
       "chainId": "ethereum",
@@ -49,4 +52,4 @@
       }
     }
   }
-]
+}

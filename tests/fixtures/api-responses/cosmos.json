@@ -1,12 +1,15 @@
-[
-  {
-    "name": "Cosmos transfer with memo",
+{
+  "cosmos_transfer_with_memo": {
     "intent": {
-      "mode": "transfer",
-      "senderAddress": "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-      "recipientAddress": "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-      "amount": "10000",
-      "memo": "adamik-test-memo"
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+          "recipientAddress": "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+          "amount": "10000",
+          "memo": "adamik-test-memo"
+        }
+      }
     },
     "response": {
       "chainId": "cosmoshub",
@@ -55,4 +58,4 @@
       }
     }
   }
-]
+}

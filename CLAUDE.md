@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos placeholder
-- **Tests**: 23 tests across 5 suites (22 passing, 1 skipped - Cosmos placeholder)
-- **Recent**: Bruno test removal + Manual API response fixtures + Cosmos decoder support
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding
+- **Tests**: 29 tests across 5 suites (all passing)
+- **Recent**: Test fixture standardization to object format + DRY test helper function + Celestia support
 
 ## Project Overview
 
@@ -18,7 +18,7 @@
 
 **Solution - Two-Step Verification**:
 1. **Intent Validation** - Compare API response data vs user intent (✅ Implemented)
-2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM & Bitcoin, ⚠️ Cosmos & others placeholder)
+2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM, Bitcoin & Cosmos, ⚠️ others placeholder)
 
 **Key Classes**:
 - `AdamikSDK.verify(apiResponse, originalIntent)` - Main verification method
@@ -38,7 +38,7 @@ src/
     ├── registry.ts       # DecoderRegistry for managing decoders
     ├── evm.ts           # Real EVM RLP decoder using viem
     ├── bitcoin.ts       # Real Bitcoin PSBT decoder using bitcoinjs-lib
-    └── cosmos.ts        # Cosmos SDK decoder (placeholder - needs protobuf libs)
+    └── cosmos.ts        # Real Cosmos SDK decoder using @cosmjs/proto-signing
 ```
 
 ### Test Structure
@@ -47,14 +47,16 @@ tests/
 ├── decoders.test.ts         # Decoder tests (13 tests) 
 ├── sdk-validation.test.ts   # Core SDK tests (6 tests)
 ├── integration.test.ts      # End-to-end tests (1 test)
-├── scenarios.test.ts        # Attack scenarios (3 tests)
-├── api-responses.test.ts    # Real API response tests (3 tests)
+├── scenarios.test.ts        # Attack scenarios (5 tests)
+├── api-responses.test.ts    # Real API response tests (4 tests)
 └── fixtures/
-    └── api-responses/       # Real API response data by blockchain
+    └── api-responses/       # Real API response data by blockchain (object format)
         ├── ethereum.json    # Ethereum test cases
         ├── bitcoin.json     # Bitcoin test cases  
         ├── cosmos.json      # Cosmos test cases
-        └── injective.json   # Injective test cases
+        ├── injective.json   # Injective test cases
+        ├── tron.json        # Tron test cases
+        └── celestia.json    # Celestia test cases
 ```
 
 **Total: 29 tests across 5 suites (all passing)**
@@ -82,8 +84,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
-- **Tron decoder** - Placeholder implementation that needs protobuf parsing libraries
-- **Other chain decoders** - Only EVM, Bitcoin, and Cosmos have real implementations (Solana, Algorand, etc. still need decoders)
+- **Other chain decoders** - Only EVM, Bitcoin, and Cosmos have real implementations (Solana, Algorand, Tron, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - January 2025)
 
@@ -182,6 +183,18 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Added basic Cosmos address validation (bech32 format)
 - All 23 tests now passing (previously 1 was skipped)
 
+### ✅ Completed: Test Fixture Standardization (January 2025)
+**What**: Standardized all test fixtures to object format and implemented DRY test helper
+**Impact**: Improved test maintainability and consistency
+**Changes**:
+- Converted all API response fixtures from array format to object format
+  - Before: `[{name: "test1", ...}, {name: "test2", ...}]`
+  - After: `{"test1": {...}, "test2": {...}}`
+- Implemented `runBlockchainTests` helper function in api-responses.test.ts
+- Eliminated code duplication across blockchain tests
+- Added Celestia test fixtures with useMaxAmount and specific amount cases
+- Test count increased to 29 tests (added Celestia and more scenarios)
+
 ### ✅ Completed: Zod Validation & Enhanced Error Management (January 2025)
 **What**: Integrated Zod for runtime validation matching Adamik API patterns
 **Impact**: Type-safe validation with rich error reporting
@@ -213,9 +226,9 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ### Test File Breakdown
 - `scenarios.test.ts` (5 tests) - Attack scenarios and security testing (including Injective)
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
-- `decoders.test.ts` (17 tests) - Blockchain decoder functionality (includes Tron)
+- `decoders.test.ts` (13 tests) - Blockchain decoder functionality
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `api-responses.test.ts` (6 tests) - Real API response validation (includes Injective and Tron)
+- `api-responses.test.ts` (4 tests) - Real API response validation (Ethereum, Bitcoin, Cosmos, Injective, Tron, Celestia)
 
 ## Development Patterns
 
@@ -265,7 +278,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 23 tests
+pnpm test             # All 29 tests
 pnpm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
@@ -401,16 +414,15 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Tron blockchain support addition  
+**Session**: Test fixture standardization and Celestia support  
 **Major Changes**: 
-- Added Tron decoder with placeholder implementation (needs protobuf libraries)
-- Created Tron test fixtures with real API responses (transfer and transferToken)
-- Added Tron to decoder registry with RAW_TRANSACTION format
-- Implemented placeholder detection to skip encoded validation for incomplete decoders
-- Added 6 new tests for Tron validation (4 decoder tests, 2 API response tests)
-- All 35 tests passing (up from 29)
-**Previous Session**: Zod validation and enhanced error management implementation
-**Next Session Should**: Implement real Tron decoder with protobuf parsing or add more blockchain decoders
+- Standardized all API response fixtures from array to object format for better maintainability
+- Implemented runBlockchainTests helper function to eliminate test code duplication
+- Added Celestia test fixtures with useMaxAmount and specific amount test cases
+- Updated tests/README.md and CLAUDE.md to document new test organization
+- All 29 tests passing (consolidated from 35 by removing redundancies)
+**Previous Session**: Real Cosmos decoder implementation with protobuf parsing
+**Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction
 

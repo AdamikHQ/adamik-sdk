@@ -1,12 +1,15 @@
-[
-  {
-    "name": "Injective transfer with memo",
+{
+  "injective_transfer_with_memo": {
     "intent": {
-      "mode": "transfer",
-      "senderAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
-      "recipientAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
-      "amount": "10000",
-      "memo": "adamik-test-memo"
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+          "recipientAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+          "amount": "10000",
+          "memo": "adamik-test-memo"
+        }
+      }
     },
     "response": {
       "chainId": "injective",
@@ -55,4 +58,4 @@
       }
     }
   }
-]
+}
