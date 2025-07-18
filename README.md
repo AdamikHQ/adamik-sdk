@@ -7,19 +7,19 @@
 A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
 
 **Latest Updates** (January 2025):
-- ✅ Real Cosmos protobuf decoder implementation using @cosmjs libraries
-- ✅ Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
-- ✅ EIP-55 checksum address support for enhanced security
-- ✅ Streamlined test suite with real API response data (29 tests)
+- Real Cosmos protobuf decoder implementation using @cosmjs libraries
+- Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
+- EIP-55 checksum address support for enhanced security
+- Streamlined test suite with real API response data (29 tests)
 
-**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM, Bitcoin, and Cosmos chains. Other chains use placeholder decoders. See [Security & Current Limitations](#️-security--current-limitations) below.
+**Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM, Bitcoin, and Cosmos chains. Other chains use placeholder decoders. See [Security & Current Limitations](#security--current-limitations) below.
 
 ## Core Principle: Two-Variable Verification
 
 The Adamik SDK follows a simple but crucial security pattern:
 
 ```typescript
-// 🔒 Security Pattern: Always verify API responses against original intent
+// Security Pattern: Always verify API responses against original intent
 
 // Variable A: Your original intent (what you want to do)
 const originalIntent = {
@@ -32,7 +32,7 @@ const originalIntent = {
 // Variable B: API response (intent + computed fields like fees)
 const apiResponse = await adamikAPI.encodeTransaction(chainId, originalIntent);
 
-// ✅ Verification: Does B match A?
+// Verification: Does B match A?
 const result = await sdk.verify(apiResponse, originalIntent);
 ```
 
@@ -42,73 +42,73 @@ const result = await sdk.verify(apiResponse, originalIntent);
 
 The SDK compares these critical fields between your intent and the API response:
 
-- ✅ **Transaction mode** (`transfer`, `stake`, `transferToken`, etc.)
-- ✅ **Sender address** (your wallet address)
-- ✅ **Recipient address** (where funds are going)
-- ✅ **Amount** (how much you want to send)
-- ✅ **Token ID** (which token for token transfers)
-- ✅ **Validator addresses** (for staking operations)
+- **Transaction mode** (`transfer`, `stake`, `transferToken`, etc.)
+- **Sender address** (your wallet address)
+- **Recipient address** (where funds are going)
+- **Amount** (how much you want to send)
+- **Token ID** (which token for token transfers)
+- **Validator addresses** (for staking operations)
 
 **Note**: The API is allowed to add computed fields like `fees`, `gas`, `nonce` - these are expected and safe.
 
-## ⚠️ Security & Current Limitations
+## Security & Current Limitations
 
 ### Two-Step Security Model
 
 Complete transaction verification requires **two steps of checking**:
 
 ```typescript
-// 🔍 STEP 1: Intent Validation (✅ Fully Implemented)
+// STEP 1: Intent Validation (Fully Implemented)
 // Check: transaction.data vs your original intent
 const dataMatches = sdk.verify(apiResponse, originalIntent);
 
-// 🔍 STEP 2: Encoded Transaction Validation (✅ Implemented for EVM)
+// STEP 2: Encoded Transaction Validation (Implemented for EVM)
 // Check: Decode transaction.encoded and verify it matches your intent
 const decoded = decoder.decode(apiResponse.transaction.encoded[0].raw.value);
 const encodedMatches = decoded.amount === originalIntent.amount;
 ```
 
-### ⚠️ Current Implementation Status
+### Current Implementation Status
 
-**Step 1: Intent Validation** ✅ **Fully Implemented**:
+**Step 1: Intent Validation** - **Fully Implemented**:
 
 - Verifies `transaction.data` fields match your intent
 - Catches API tampering with readable fields
 
-**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM, Bitcoin & Cosmos, Limited for Others**:
+**Step 2: Encoded Transaction Validation** - **Implemented for EVM, Bitcoin & Cosmos, Limited for Others**:
 
-- ✅ **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
-- ✅ **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
-- ✅ **Cosmos**: Real protobuf decoding using `@cosmjs/proto-signing` library
-- ❌ **Other chains**: Using placeholder decoders with mock data
+- **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
+- **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
+- **Cosmos**: Real protobuf decoding using `@cosmjs/proto-signing` library
+- **Other chains**: Using placeholder decoders with mock data
 - **For EVM, Bitcoin & Cosmos transactions**: Both steps provide real security protection
 - **For other chains**: Only Step 1 provides protection
 
-### 🚨 Security Implications
+### Security Implications
 
 **For EVM, Bitcoin & Cosmos Chains** (Full Protection):
 
-- ✅ API changing recipient address in `transaction.data` (Intent validation)
-- ✅ API modifying amount in `transaction.data` (Intent validation)
-- ✅ API switching transaction mode in `transaction.data` (Intent validation)
-- ✅ Malicious API providing correct `transaction.data` but wrong `transaction.encoded` (Encoded validation)
-- ✅ Detection of encoded transaction tampering via RLP decoding (Encoded validation)
+- API changing recipient address in `transaction.data` (Intent validation)
+- API modifying amount in `transaction.data` (Intent validation)
+- API switching transaction mode in `transaction.data` (Intent validation)
+- Malicious API providing correct `transaction.data` but wrong `transaction.encoded` (Encoded validation)
+- Detection of encoded transaction tampering via RLP decoding (Encoded validation)
 
 **For Other Chains** (Intent Validation Only):
 
-- ✅ API changing recipient address in `transaction.data`
-- ✅ API modifying amount in `transaction.data`
-- ✅ API switching transaction mode in `transaction.data`
-- ❌ Malicious API providing correct `transaction.data` but wrong `transaction.encoded`
-- ❌ Bugs causing mismatch between readable data and encoded transaction
+- API changing recipient address in `transaction.data`
+- API modifying amount in `transaction.data`
+- API switching transaction mode in `transaction.data`
+- Malicious API providing correct `transaction.data` but wrong `transaction.encoded`
+- Bugs causing mismatch between readable data and encoded transaction
 
-### 💡 Production Recommendations
+### Production Recommendations
 
 For production use, you should:
 
 1. **Use the provided real decoders** or implement additional ones:
-   - ✅ EVM chains already use `viem` (included)
-   - ✅ Bitcoin already uses `bitcoinjs-lib` (included)
+   - EVM chains already use `viem` (included)
+   - Bitcoin already uses `bitcoinjs-lib` (included)
    - Chain-specific libraries needed for other networks
 
 2. **Verify the decoded transaction** matches your original intent
@@ -126,17 +126,17 @@ if (result.isValid) {
   const decoded = await realDecoder.decode(apiResponse.transaction.encoded[0].raw.value);
 
   if (decoded.to !== originalIntent.recipientAddress) {
-    throw new Error("🚨 SECURITY ALERT: Encoded transaction doesn't match intent!");
+    throw new Error("SECURITY ALERT: Encoded transaction doesn't match intent!");
   }
 
   // Now safe to sign
-  console.log("✅ Both steps verified - safe to sign");
+  console.log("Both steps verified - safe to sign");
 }
 ```
 
 ## Features
 
-### ✅ Currently Implemented
+### Currently Implemented
 
 - **Intent Validation**: Compare readable `transaction.data` fields against your intent
 - **Multi-chain Support**: EVM, Bitcoin, Cosmos, and extensible architecture
@@ -146,7 +146,7 @@ if (result.isValid) {
 - **Comprehensive Testing**: 29 tests with real API response data
 - **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
 
-### 🚧 In Development
+### In Development
 
 - **Encoded Transaction Validation**: Real decoding for remaining chains (Solana, Algorand, etc.)
 - **Hash Validation**: Cryptographic verification of encoded transactions
@@ -213,14 +213,14 @@ const apiResponse = {
   },
 };
 
-// 🔒 SECURITY CHECK: Verify API response matches your original intent
+// SECURITY CHECK: Verify API response matches your original intent
 const result = await sdk.verify(apiResponse, intent);
 
 if (result.isValid) {
-  console.log("✅ Transaction verified successfully");
+  console.log("Transaction verified successfully");
   console.log("Decoded data:", result.decodedData);
 } else {
-  console.error("❌ Verification failed:", result.errors);
+  console.error("Verification failed:", result.errors);
 }
 ```
 
@@ -254,7 +254,7 @@ if (result.isValid) {
   await wallet.signTransaction(encodedTx);
 } else {
   // DANGER: DO NOT SIGN!
-  console.error("🚨 Security Alert:", result.errors);
+  console.error("Security Alert:", result.errors);
   // The API returned a transaction that doesn't match what you intended
 }
 ```
@@ -429,7 +429,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for det
 
 ## Security
 
-Security considerations and current limitations are covered in the [Security & Current Limitations](#️-security--current-limitations) section above.
+Security considerations and current limitations are covered in the [Security & Current Limitations](#security--current-limitations) section above.
 
 ## License
 
