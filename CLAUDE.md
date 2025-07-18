@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding
-- **Tests**: 29 tests across 5 suites (all passing)
-- **Recent**: Test fixture standardization to object format + DRY test helper function + Celestia support
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding, Tron with real transaction parsing
+- **Tests**: 37 tests across 5 suites (all passing)
+- **Recent**: Real Tron decoder implementation using tronweb library
 
 ## Project Overview
 
@@ -78,13 +78,14 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
+- **Real Tron decoder** using tronweb library (Tron mainnet with TRC20 token support)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
 - **Comprehensive test suite** with security attack scenarios + real API response data
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
-- **Other chain decoders** - Only EVM, Bitcoin, and Cosmos have real implementations (Solana, Algorand, Tron, etc. still need decoders)
+- **Other chain decoders** - Only EVM, Bitcoin, Cosmos, and Tron have real implementations (Solana, Algorand, Aptos, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - January 2025)
 
@@ -207,6 +208,17 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Maintained backward compatibility with existing tests
 - Improved autocomplete through Zod type inference
 
+### ✅ Completed: Real Tron Decoder Implementation (January 2025)
+**What**: Replaced placeholder Tron decoder with real transaction parsing
+**Impact**: Tron transactions now have full validation capabilities
+**Changes**:
+- Integrated TronWeb library (v6.0.3) for transaction parsing and address conversion
+- Implemented hex pattern matching for TransferContract and TriggerSmartContract types
+- Added proper hex to base58 address conversion (41... to T... format)
+- Extracts sender, recipient, amount from both native TRX and TRC20 token transfers
+- Added Tron address validation using TronWeb.isAddress()
+- Test count increased from 29 to 37 tests (added Tron-specific tests)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -311,10 +323,14 @@ pnpm test:decoders   # Run all decoder tests
 - **@cosmjs/encoding** (^0.34.0) - Cosmos encoding utilities (fromHex, toBech32)
 - **@cosmjs/stargate** (^0.34.0) - Cosmos registry types for message decoding
 - **cosmjs-types** (^0.9.0) - Protobuf type definitions for Cosmos messages
+- **tronweb** (^6.0.3) - Tron transaction parsing and address conversion
+  - Used in `src/decoders/tron.ts` for transaction decoding
+  - Provides hex to base58 address conversion (41... to T... format)
+  - Validates Tron addresses and handles TRC20 token transfers
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 23 tests across 5 suites
+- **Jest** (^30.0.4) - Testing framework, 37 tests across 5 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ts-node** (^10.9.2) - Development execution
 - **ts-jest** (^29.4.0) - TypeScript Jest integration
@@ -414,14 +430,14 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Test fixture standardization and Celestia support  
+**Session**: Real Tron decoder implementation  
 **Major Changes**: 
-- Standardized all API response fixtures from array to object format for better maintainability
-- Implemented runBlockchainTests helper function to eliminate test code duplication
-- Added Celestia test fixtures with useMaxAmount and specific amount test cases
-- Updated tests/README.md and CLAUDE.md to document new test organization
-- All 29 tests passing (consolidated from 35 by removing redundancies)
-**Previous Session**: Real Cosmos decoder implementation with protobuf parsing
+- Implemented real Tron decoder using TronWeb library (v6.0.3)
+- Added support for both native TRX transfers (TransferContract) and TRC20 token transfers (TriggerSmartContract)
+- Implemented proper hex to base58 address conversion (41... to T... format)
+- Added Tron address validation using TronWeb.isAddress()
+- All 37 tests passing (increased from 29 due to Tron-specific tests)
+**Previous Session**: Test fixture standardization and Celestia support
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction
