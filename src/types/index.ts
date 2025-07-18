@@ -3,6 +3,7 @@ export type ChainId =
   | "sepolia"
   | "bitcoin"
   | "bitcoin-testnet"
+  | "bitcoin-signet"
   | "polygon"
   | "bsc"
   | "avalanche"
@@ -10,12 +11,18 @@ export type ChainId =
   | "optimism"
   | "base"
   | "aptos"
+  | "aptos-testnet"
   | "cosmos"
+  | "cosmoshub"
+  | "celestia"
+  | "injective"
+  | "babylon-testnet"
   | "algorand"
   | "ton"
   | "starknet"
   | "solana"
-  | "tron";
+  | "tron"
+  | "hoodi";
 
 export type TransactionMode =
   | "transfer"
@@ -42,7 +49,8 @@ export type RawFormat =
   | "MSGPACK"
   | "PSBT"
   | "BCS"
-  | "BORSH";
+  | "BORSH"
+  | "COSMOS_PROTOBUF";
 
 export interface TransactionIntent {
   mode: TransactionMode;

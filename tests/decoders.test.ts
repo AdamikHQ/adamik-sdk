@@ -1,8 +1,10 @@
 import { BitcoinDecoder } from "../src/decoders/bitcoin";
 import { EVMDecoder } from "../src/decoders/evm";
+import { CosmosDecoder } from "../src/decoders/cosmos";
 import { DecoderRegistry } from "../src/decoders/registry";
 import ethereumTransactions from "./fixtures/bruno-imported/ethereum.json";
 import bitcoinTransactions from "./fixtures/bruno-imported/bitcoin.json";
+import cosmosTransactions from "./fixtures/bruno-imported/cosmoshub.json";
 
 describe("Decoders", () => {
   describe("DecoderRegistry", () => {
@@ -15,9 +17,11 @@ describe("Decoders", () => {
     it("should have default decoders registered", () => {
       const evmDecoder = registry.getDecoder("ethereum", "RLP");
       const btcDecoder = registry.getDecoder("bitcoin", "PSBT");
+      const cosmosDecoder = registry.getDecoder("cosmoshub", "COSMOS_PROTOBUF");
 
       expect(evmDecoder).toBeInstanceOf(EVMDecoder);
       expect(btcDecoder).toBeInstanceOf(BitcoinDecoder);
+      expect(cosmosDecoder).toBeInstanceOf(CosmosDecoder);
     });
 
     it("should list all registered decoders", () => {
@@ -27,6 +31,8 @@ describe("Decoders", () => {
       expect(decoders).toContain("bitcoin:PSBT");
       expect(decoders).toContain("polygon:RLP");
       expect(decoders).toContain("bsc:RLP");
+      expect(decoders).toContain("cosmoshub:COSMOS_PROTOBUF");
+      expect(decoders).toContain("celestia:COSMOS_PROTOBUF");
     });
 
     it("should return undefined for unsupported decoder", () => {
@@ -116,6 +122,71 @@ describe("Decoders", () => {
       };
 
       expect(decoder.validate(invalidTx)).toBe(false);
+    });
+  });
+
+  describe("CosmosDecoder", () => {
+    let decoder: CosmosDecoder;
+
+    beforeEach(() => {
+      decoder = new CosmosDecoder("cosmoshub");
+    });
+
+    it("should decode Cosmos protobuf data (placeholder implementation)", async () => {
+      const transferTx = cosmosTransactions.find(tx => tx.intent.mode === "transfer");
+      expect(transferTx).toBeDefined();
+      
+      const decoded = await decoder.decode(transferTx!.encodedTransaction);
+
+      expect(decoded).toBeDefined();
+      expect(decoded).toHaveProperty("mode");
+      expect(decoded).toHaveProperty("recipientAddress");
+      expect(decoded).toHaveProperty("amount");
+      expect(decoded).toHaveProperty("raw");
+    });
+
+    it("should validate decoded transaction", () => {
+      const validTx = {
+        mode: "transfer",
+        recipientAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        amount: "10000",
+        senderAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        raw: "0x1234",
+      };
+
+      expect(decoder.validate(validTx)).toBe(true);
+    });
+
+    it("should reject invalid transaction", () => {
+      const invalidTx = {
+        mode: "transfer",
+        recipientAddress: "invalid-address", // Not a valid Cosmos address
+        amount: "10000",
+      };
+
+      expect(decoder.validate(invalidTx)).toBe(false);
+    });
+
+    it("should validate addresses from different Cosmos chains", () => {
+      const addresses = [
+        "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
+        "osmo1234567890abcdef",
+        "juno1234567890abcdef",
+        "secret1234567890abcdef",
+        "inj1234567890abcdef",
+        "bbn1234567890abcdef",
+      ];
+
+      addresses.forEach(address => {
+        const tx = {
+          mode: "transfer",
+          recipientAddress: address,
+          amount: "1000",
+          raw: "0x",
+        };
+        expect(decoder.validate(tx)).toBe(true);
+      });
     });
   });
 });

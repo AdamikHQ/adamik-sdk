@@ -2,6 +2,7 @@ import { ChainId, RawFormat } from "../types";
 import { BaseDecoder } from "./base";
 import { EVMDecoder } from "./evm";
 import { BitcoinDecoder } from "./bitcoin";
+import { CosmosDecoder } from "./cosmos";
 
 export class DecoderRegistry {
   private decoders: Map<string, BaseDecoder> = new Map();
@@ -31,9 +32,20 @@ export class DecoderRegistry {
     });
 
     // Bitcoin-like chains
-    const bitcoinChains: ChainId[] = ["bitcoin", "bitcoin-testnet"];
+    const bitcoinChains: ChainId[] = ["bitcoin", "bitcoin-testnet", "bitcoin-signet"];
     bitcoinChains.forEach((chainId) => {
       this.registerDecoder(new BitcoinDecoder(chainId));
+    });
+
+    // Cosmos SDK chains
+    const cosmosChains: ChainId[] = [
+      "cosmoshub",
+      "celestia",
+      "injective",
+      "babylon-testnet"
+    ];
+    cosmosChains.forEach((chainId) => {
+      this.registerDecoder(new CosmosDecoder(chainId));
     });
 
     // Additional decoders can be added here as they are implemented
