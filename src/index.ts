@@ -119,7 +119,7 @@ export class AdamikSDK {
             errorCollector.addError(
               ErrorCode.MISSING_DECODER,
               `No decoder available for ${chainId} with format ${encoded[0].raw.format}`,
-              "error",
+              "warning",
               { chainId, format: encoded[0].raw.format }
             );
           }
