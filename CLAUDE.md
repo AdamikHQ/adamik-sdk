@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin placeholder
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding
 - **Tests**: 58 tests passing across 5 suites (including new Bruno imported test suite)
-- **Recent**: EIP-55 address checksumming + Bruno test data migration completed
+- **Recent**: Real Bitcoin decoder + EIP-55 address checksumming + Bruno test data migration completed
 
 ## Project Overview
 
@@ -18,7 +18,7 @@
 
 **Solution - Two-Step Verification**:
 1. **Intent Validation** - Compare API response data vs user intent (✅ Implemented)
-2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM, ⚠️ Others placeholder)
+2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM & Bitcoin, ⚠️ Others placeholder)
 
 **Key Classes**:
 - `AdamikSDK.verify(apiResponse, originalIntent)` - Main verification method
@@ -32,12 +32,12 @@
 src/
 ├── index.ts              # Main AdamikSDK class with verify() method
 ├── client.ts             # API client (legacy - see Future Enhancements)
-├── types/index.ts        # TypeScript type definitions
+├── types/index.ts        # TypeScript type definitions including DecodedTransaction
 └── decoders/
     ├── base.ts           # Abstract BaseDecoder class
     ├── registry.ts       # DecoderRegistry for managing decoders
     ├── evm.ts           # Real EVM RLP decoder using viem
-    └── bitcoin.ts       # Placeholder Bitcoin PSBT decoder
+    └── bitcoin.ts       # Real Bitcoin PSBT decoder using bitcoinjs-lib
 ```
 
 ### Test Structure
@@ -60,14 +60,14 @@ tests/
 ### ✅ Fully Implemented
 - **Intent validation** for all transaction types
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
+- **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
 - **Comprehensive test suite** with security attack scenarios + Bruno imported data
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
-- **Bitcoin decoder** - Uses mock PSBT data (needs bitcoinjs-lib integration)
-- **Other chain decoders** - Only EVM has real implementation
+- **Other chain decoders** - Only EVM and Bitcoin have real implementations
 
 ## Recent Major Changes (December 2024 - January 2025)
 
@@ -115,12 +115,23 @@ tests/
 - Test count increased from 30 to 58 tests
 - Better coverage of edge cases and real API response formats
 
+### ✅ Completed: Real Bitcoin Decoder Implementation (January 2025)
+**What**: Replaced placeholder Bitcoin decoder with real PSBT parsing
+**Impact**: Bitcoin transactions now have full validation capabilities
+**Changes**:
+- Integrated `bitcoinjs-lib` for PSBT parsing
+- Implemented real address extraction from PSBT data
+- Added proper amount calculation from transaction outputs
+- Bitcoin decoder now returns consistent DecodedTransaction format
+- Supports both mainnet and testnet Bitcoin networks
+
 ## Key Security Features
 
 ### Attack Detection
 - **Malicious encoded transactions** - API shows correct data but sends to different recipient/amount
 - **Data tampering** - Mode, recipient, amount mismatches
 - **Real RLP verification** - Cryptographic validation for EVM chains
+- **Real PSBT verification** - Authentic Bitcoin transaction parsing
 
 ### Critical Security Tests
 - ✅ **Malicious API detection** - API shows correct data but encoded transaction sends elsewhere
@@ -128,6 +139,7 @@ tests/
 - ✅ **Amount manipulation** - `Critical: Decoded transaction amount mismatch`
 - ✅ **Mode confusion** - Transaction type switching attacks
 - ✅ **Real RLP decoding** - Uses `viem` library for authentic EVM validation
+- ✅ **Real PSBT decoding** - Uses `bitcoinjs-lib` for authentic Bitcoin validation
 
 ### Test File Breakdown
 - `scenarios.test.ts` (8 tests) - Simple, clear scenarios covering valid/invalid/attack cases
@@ -175,22 +187,24 @@ this.registerDecoder(new NewChainDecoder("newchain"));
 
 ## Build & Test Commands
 
+**IMPORTANT: Always use pnpm instead of npm for all commands.**
+
 ```bash
 # Development
-npm run dev          # Run with ts-node
-npm run build        # TypeScript compilation
-npm run format       # Prettier formatting
+pnpm run dev          # Run with ts-node
+pnpm run build        # TypeScript compilation
+pnpm run format       # Prettier formatting
 
 # Testing  
-npm test             # All 58 tests
-npm run test:watch   # Watch mode
+pnpm test             # All 58 tests
+pnpm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
-npm test -- --testNamePattern="SDK Validation"     # Core validation tests
-npm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests  
-npm test -- --testNamePattern="Decoders"           # Decoder functionality
-npm test -- --testNamePattern="Integration"        # End-to-end tests
-npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
+pnpm test -- --testNamePattern="SDK Validation"     # Core validation tests
+pnpm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests  
+pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
+pnpm test -- --testNamePattern="Integration"        # End-to-end tests
+pnpm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
 ```
 
 ## Technical Stack
@@ -200,27 +214,29 @@ npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
   - Used in `src/decoders/evm.ts` for authentic blockchain transaction parsing
   - Provides EIP-55 checksum address formatting via getAddress
   - Enables real security validation for EVM chains
+- **bitcoinjs-lib** (^6.1.7) - Real Bitcoin PSBT parsing and decoding
+  - Used in `src/decoders/bitcoin.ts` for PSBT transaction parsing
+  - Extracts addresses, amounts, and transaction details from PSBT format
+  - Supports both mainnet and testnet Bitcoin networks
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
 - **Jest** (^30.0.4) - Testing framework, 58 tests across 5 suites
-- **Prettier** (^3.6.2) - Code formatting (npm run format)
+- **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ts-node** (^10.9.2) - Development execution
 - **ts-jest** (^29.4.0) - TypeScript Jest integration
 
 ### Key Libraries NOT Used (Potential Additions)
-- **bitcoinjs-lib** - Needed for real Bitcoin PSBT decoding
 - **ethers.js** - Alternative to viem for EVM
 - **@solana/web3.js** - Future Solana support
+- **@cosmos-client/core** - Future Cosmos SDK chains support
 
 ## Future Enhancements (Planned)
 
 ### 🔥 High Priority (Next Features)
-- **Real Bitcoin decoder** - Replace `src/decoders/bitcoin.ts` placeholder with bitcoinjs-lib
-  - Current: Returns mock data
-  - Needed: Real PSBT parsing and validation
 - **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
+- **Other chain decoders** - Implement decoders for Cosmos, Solana, Algorand, etc.
 
 ### 📋 Medium Priority
 - **Gas estimation verification** - Ensure API doesn't overcharge fees
@@ -239,6 +255,11 @@ npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
 2. **Check recent changes section** - What was done and why
 3. **Review development patterns** - How to add features consistently
 4. **Note current limitations** - What's placeholder vs fully implemented
+
+### Important Development Guidelines
+- **Always use pnpm** - Never use npm for any commands
+- **Always challenge assumptions** - Verify data formats and API responses before implementation
+- **Propose alternatives** - When something seems suboptimal, suggest better approaches
 
 ### Effective Communication
 - **Reference specific locations**: `src/index.ts:45-60`, `tests/scenarios.test.ts:125`
@@ -262,16 +283,17 @@ npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
-- **EVM only** for real encoded validation - other chains use placeholder decoders
+- **EVM and Bitcoin only** for real encoded validation - other chains use placeholder decoders
 - **Test with real data** - Use `fixtures/bruno-imported/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
 - **EIP-55 compliance** - All EVM addresses must use proper checksumming
+- **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
-1. **Real Bitcoin decoder** - Replace placeholder with bitcoinjs-lib
-2. **Additional EVM chains** - Easy wins following existing pattern
-3. **Hash validation** - Cryptographic verification of encoded transactions
+1. **Additional EVM chains** - Easy wins following existing pattern
+2. **Hash validation** - Cryptographic verification of encoded transactions
+3. **Other blockchain decoders** - Cosmos, Solana, etc. following established patterns
 
 ### 🚫 Avoid These Patterns
 - Complex configuration-driven testing (was removed for good reason)
@@ -287,13 +309,14 @@ npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: EIP-55 implementation and Bruno test data migration  
+**Session**: Bitcoin decoder implementation and test data migration  
 **Major Changes**: 
+- Implemented real Bitcoin PSBT decoder using bitcoinjs-lib
 - Added EIP-55 checksum address support to EVM decoder
 - Migrated all tests to use Bruno imported data (real API responses)
 - Increased test coverage from 30 to 58 tests
-- Improved real-world test scenarios with actual API data
-**Next Session Should**: Consider implementing real Bitcoin decoder with bitcoinjs-lib or adding more EVM chain support
+- Added unified DecodedTransaction interface for all decoders
+**Next Session Should**: Consider adding hash validation or support for additional chains (Cosmos, Solana, etc.)
 
 ## Future Product Direction
 

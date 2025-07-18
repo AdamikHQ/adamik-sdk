@@ -45,6 +45,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "bitcoinjs-lib": "^6.1.7",
     "viem": "^2.32.0"
   }
 }

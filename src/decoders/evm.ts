@@ -1,26 +1,13 @@
 import { BaseDecoder } from "./base";
-import { ChainId, TransactionMode } from "../types";
+import { ChainId, TransactionMode, DecodedTransaction } from "../types";
 import { isAddress, isHex, parseTransaction, getAddress } from "viem";
-
-// Matches adamik-api CommonTransactionData structure
-interface DecodedEVMTransaction {
-  mode: TransactionMode;
-  senderAddress: string;
-  recipientAddress: string;
-  amount: bigint;
-  tokenId?: string;
-  fees?: bigint;
-  gas?: bigint;
-  nonce?: bigint;
-  data?: string;
-}
 
 export class EVMDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
     super(chainId, "RLP");
   }
 
-  async decode(rawData: string): Promise<DecodedEVMTransaction> {
+  async decode(rawData: string): Promise<DecodedTransaction> {
     try {
       // Ensure hex format
       const hexData = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
@@ -39,12 +26,14 @@ export class EVMDecoder extends BaseDecoder {
         mode,
         senderAddress: "", // Will be filled by verification logic from API response
         recipientAddress,
-        amount,
+        amount: amount.toString(), // Convert bigint to string
         tokenId,
-        fees: this.calculateFees(parsed),
-        gas: parsed.gas,
-        nonce: parsed.nonce ? BigInt(parsed.nonce) : undefined,
-        data: parsed.data,
+        raw: {
+          fees: this.calculateFees(parsed).toString(),
+          gas: parsed.gas?.toString(),
+          nonce: parsed.nonce ? BigInt(parsed.nonce).toString() : undefined,
+          data: parsed.data,
+        },
       };
     } catch (error) {
       throw new Error(`Failed to decode EVM transaction: ${error instanceof Error ? error.message : error}`);
@@ -109,17 +98,18 @@ export class EVMDecoder extends BaseDecoder {
   }
 
   validate(decodedData: unknown): boolean {
-    const tx = decodedData as DecodedEVMTransaction;
+    const tx = decodedData as DecodedTransaction;
 
     // Basic validation
     if (!tx || typeof tx !== "object") return false;
 
     // Check required fields exist
-    const requiredFields = ["mode", "senderAddress", "recipientAddress", "amount"];
+    const requiredFields = ["mode", "recipientAddress", "amount"];
     if (!requiredFields.every((field) => field in tx)) return false;
 
-    // Validate addresses
-    if (!isAddress(tx.senderAddress) || !isAddress(tx.recipientAddress)) return false;
+    // Validate addresses - senderAddress is optional in DecodedTransaction
+    if (!isAddress(tx.recipientAddress)) return false;
+    if (tx.senderAddress && !isAddress(tx.senderAddress)) return false;
 
     // Validate mode
     const validModes = ["transfer", "transferToken"];
@@ -131,18 +121,4 @@ export class EVMDecoder extends BaseDecoder {
     return true;
   }
 
-  private getChainIdNumber(): number {
-    const chainIdMap: Record<string, number> = {
-      ethereum: 1,
-      sepolia: 11155111,
-      polygon: 137,
-      bsc: 56,
-      avalanche: 43114,
-      arbitrum: 42161,
-      optimism: 10,
-      base: 8453,
-    };
-
-    return chainIdMap[this.chainId] || 1;
-  }
 }

@@ -7,10 +7,11 @@
 A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
 
 **Latest Updates** (January 2025):
+- ✅ Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
 - ✅ EIP-55 checksum address support for enhanced security
 - ✅ Expanded test suite with real API response data (58 tests)
 
-**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
+**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and Bitcoin chains, and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
 
 ## Core Principle: Two-Variable Verification
 
@@ -73,16 +74,17 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 - Verifies `transaction.data` fields match your intent
 - Catches API tampering with readable fields
 
-**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM, Limited for Others**:
+**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM & Bitcoin, Limited for Others**:
 
 - ✅ **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
-- ❌ **Bitcoin/Other chains**: Using placeholder decoders with mock data
-- **For EVM transactions**: Both steps provide real security protection
+- ✅ **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
+- ❌ **Other chains**: Using placeholder decoders with mock data
+- **For EVM & Bitcoin transactions**: Both steps provide real security protection
 - **For other chains**: Only Step 1 provides protection
 
 ### 🚨 Security Implications
 
-**For EVM Chains** (Full Protection):
+**For EVM & Bitcoin Chains** (Full Protection):
 
 - ✅ API changing recipient address in `transaction.data` (Intent validation)
 - ✅ API modifying amount in `transaction.data` (Intent validation)
@@ -102,10 +104,10 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 
 For production use, you should:
 
-1. **Implement real decoders** using libraries like:
-   - `ethers.js` or `viem` for EVM chains
-   - `bitcoinjs-lib` for Bitcoin
-   - Chain-specific libraries for other networks
+1. **Use the provided real decoders** or implement additional ones:
+   - ✅ EVM chains already use `viem` (included)
+   - ✅ Bitcoin already uses `bitcoinjs-lib` (included)
+   - Chain-specific libraries needed for other networks
 
 2. **Verify the decoded transaction** matches your original intent
 3. **Implement hash verification** of the encoded data

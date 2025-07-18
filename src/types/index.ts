@@ -86,6 +86,15 @@ export interface AdamikEncodeResponse {
   };
 }
 
+export interface DecodedTransaction {
+  mode: TransactionMode;
+  recipientAddress: string;
+  amount: string;
+  senderAddress?: string;
+  tokenId?: string;
+  raw?: unknown;
+}
+
 export interface VerificationResult {
   isValid: boolean;
   errors?: string[];

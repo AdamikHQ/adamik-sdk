@@ -54,7 +54,7 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
       expect(decoded.mode).toBe("transfer");
-      expect(typeof decoded.amount).toBe("bigint");
+      expect(typeof decoded.amount).toBe("string"); // DecodedTransaction uses string for amounts
     });
 
     it("should validate decoded transaction", () => {
@@ -62,10 +62,7 @@ describe("Decoders", () => {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: BigInt("1000000000000000000"),
-        fees: BigInt("21000000000000"),
-        gas: BigInt("21000"),
-        nonce: BigInt("5"),
+        amount: "1000000000000000000", // String format for DecodedTransaction
       };
 
       expect(decoder.validate(validTx)).toBe(true);
@@ -95,29 +92,18 @@ describe("Decoders", () => {
       const decoded = await decoder.decode(transferTx!.encodedTransaction);
 
       expect(decoded).toBeDefined();
-      expect(decoded).toHaveProperty("version");
-      expect(decoded).toHaveProperty("inputs");
-      expect(decoded).toHaveProperty("outputs");
-      expect(decoded).toHaveProperty("locktime");
+      expect(decoded).toHaveProperty("mode");
+      expect(decoded).toHaveProperty("recipientAddress");
+      expect(decoded).toHaveProperty("amount");
+      expect(decoded).toHaveProperty("raw");
     });
 
     it("should validate decoded transaction", () => {
       const validTx = {
-        version: 2,
-        inputs: [
-          {
-            txid: "0000000000000000000000000000000000000000000000000000000000000000",
-            vout: 0,
-            sequence: 0xffffffff,
-          },
-        ],
-        outputs: [
-          {
-            value: 100000,
-            scriptPubKey: "76a914...",
-          },
-        ],
-        locktime: 0,
+        mode: "transfer",
+        recipientAddress: "bc1q4gwr68h0sqqwca8p40kamch69ynttq4ypw8pwu",
+        amount: "1000",
+        senderAddress: "bc1qxwhn3cj8spt7kawsdsf2vw36qqjrkmj2ucaf0f",
       };
 
       expect(decoder.validate(validTx)).toBe(true);
