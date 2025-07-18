@@ -43,7 +43,7 @@ describe("Attack Scenarios", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
+      expect(result.criticalErrors?.some(err => err.message.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
     });
 
     it("should detect malicious encoded transaction with different amount", async () => {
@@ -81,7 +81,7 @@ describe("Attack Scenarios", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
+      expect(result.criticalErrors?.some(err => err.message.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
     });
 
     it("should detect malicious API providing correct data but wrong encoded transaction", async () => {
@@ -121,7 +121,7 @@ describe("Attack Scenarios", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
+      expect(result.criticalErrors?.some(err => err.message.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
     });
   });
 
@@ -170,7 +170,7 @@ describe("Attack Scenarios", () => {
 
       const result = await sdk.verify(maliciousResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
+      expect(result.criticalErrors?.some(err => err.message.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
     });
 
     it("should detect malicious Injective transaction with different amount", async () => {
@@ -216,7 +216,7 @@ describe("Attack Scenarios", () => {
 
       const result = await sdk.verify(maliciousResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
+      expect(result.criticalErrors?.some(err => err.message.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
     });
   });
 });

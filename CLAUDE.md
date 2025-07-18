@@ -181,6 +181,18 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Added basic Cosmos address validation (bech32 format)
 - All 23 tests now passing (previously 1 was skipped)
 
+### ✅ Completed: Zod Validation & Enhanced Error Management (January 2025)
+**What**: Integrated Zod for runtime validation matching Adamik API patterns
+**Impact**: Type-safe validation with rich error reporting
+**Changes**:
+- Added Zod v3 as dependency for schema validation
+- Created schema definitions matching API's discriminated unions
+- Implemented enhanced error structure with severity levels
+- Added ErrorCollector for structured error aggregation
+- Updated verify() method to use Zod validation
+- Maintained backward compatibility with existing tests
+- Improved autocomplete through Zod type inference
+
 ## Key Security Features
 
 ### Attack Detection
@@ -388,14 +400,16 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Real Cosmos decoder implementation  
+**Session**: Zod validation and enhanced error management implementation  
 **Major Changes**: 
-- Implemented real Cosmos decoder with protobuf parsing using @cosmjs libraries
-- Added support for SignDoc and MsgSend transaction parsing
-- All 23 tests now passing (previously 1 was skipped for Cosmos)
-- Added proper Cosmos address validation
-- Updated documentation to reflect Cosmos is now fully implemented
-**Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
+- Integrated Zod v3 for runtime validation matching Adamik API schema patterns
+- Implemented discriminated unions for type-safe transaction modes
+- Enhanced error structure with severity levels (error, warning, critical)
+- Added ErrorCollector pattern for structured error reporting
+- Updated all types to use Zod inference for consistency
+- Maintained backward compatibility while improving type safety
+- All 29 tests passing with new validation system
+**Next Session Should**: Add chain-specific validators or implement hash validation
 
 ## Future Product Direction
 

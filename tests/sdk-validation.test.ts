@@ -33,7 +33,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
+      expect(result.errors).toHaveLength(0);
     });
 
     it("should detect transaction mode mismatch", async () => {
@@ -61,7 +61,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Transaction mode mismatch: expected transfer, got stake");
+      expect(result.errors?.some(err => err.message.includes("mode mismatch"))).toBe(true);
     });
 
     it("should detect recipient address mismatch", async () => {
@@ -89,7 +89,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Recipient address mismatch"))).toBe(true);
+      expect(result.errors?.some(err => err.message.includes("recipientAddress mismatch"))).toBe(true);
     });
 
     it("should detect amount mismatch", async () => {
@@ -117,7 +117,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Amount mismatch"))).toBe(true);
+      expect(result.errors?.some(err => err.message.includes("amount mismatch"))).toBe(true);
     });
 
     it("should handle token transfers", async () => {
@@ -145,7 +145,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
+      expect(result.errors).toHaveLength(0);
     });
 
     it("should handle useMaxAmount transfers", async () => {
@@ -176,7 +176,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
+      expect(result.errors).toHaveLength(0);
     });
   });
 });

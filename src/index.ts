@@ -1,6 +1,24 @@
 import { DecoderRegistry } from "./decoders/registry";
-import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult } from "./types";
+import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult, VerificationError } from "./types";
+import { AdamikEncodeResponseSchema, TransactionIntentSchema, Schemas } from "./schemas";
+import { ErrorCollector, ErrorCode } from "./schemas/errors";
+import { z } from "zod";
 
+/**
+ * Adamik SDK - Pure verification SDK for validating API responses
+ * 
+ * @example
+ * ```typescript
+ * const sdk = new AdamikSDK();
+ * const result = await sdk.verify(apiResponse, originalIntent);
+ * 
+ * if (result.isValid) {
+ *   // Safe to sign the transaction
+ * } else {
+ *   console.error('Validation failed:', result.errors);
+ * }
+ * ```
+ */
 export class AdamikSDK {
   private decoderRegistry: DecoderRegistry;
 
@@ -10,73 +28,114 @@ export class AdamikSDK {
 
   /**
    * Verifies that an Adamik API response matches the original transaction intent
+   * 
    * @param apiResponse The response from Adamik API encode endpoint
    * @param originalIntent The original transaction intent sent to the API
    * @returns Verification result with validation status and any errors
+   * 
+   * @example
+   * ```typescript
+   * const result = await sdk.verify(apiResponse, {
+   *   mode: 'transfer',
+   *   recipientAddress: '0x...',
+   *   amount: '1000000000000000000'
+   * });
+   * ```
    */
   async verify(
-    apiResponse: AdamikEncodeResponse,
-    originalIntent: TransactionIntent
+    apiResponse: unknown,
+    originalIntent: unknown
   ): Promise<VerificationResult> {
-    const errors: string[] = [];
+    const errorCollector = new ErrorCollector();
 
     try {
-      // Step 1: Validate API response structure
-      if (!apiResponse.chainId || !apiResponse.transaction) {
-        errors.push("Invalid API response structure");
-        return { isValid: false, errors };
+      // Step 1: Validate inputs using Zod schemas
+      const intentValidation = TransactionIntentSchema.safeParse(originalIntent);
+      if (!intentValidation.success) {
+        errorCollector.addZodError(intentValidation.error, ErrorCode.INVALID_INTENT);
+        return errorCollector.getResult();
       }
 
-      const { chainId, transaction } = apiResponse;
+      const responseValidation = AdamikEncodeResponseSchema.safeParse(apiResponse);
+      if (!responseValidation.success) {
+        errorCollector.addZodError(responseValidation.error, ErrorCode.INVALID_API_RESPONSE);
+        return errorCollector.getResult();
+      }
+
+      const validatedIntent = intentValidation.data;
+      const validatedResponse = responseValidation.data;
+      const { chainId, transaction } = validatedResponse;
       const { data, encoded } = transaction;
 
       // Step 2: Verify transaction mode matches
-      if (data.mode !== originalIntent.mode) {
-        errors.push(`Transaction mode mismatch: expected ${originalIntent.mode}, got ${data.mode}`);
+      if (data.mode !== validatedIntent.mode) {
+        errorCollector.addFieldMismatch(
+          ErrorCode.MODE_MISMATCH,
+          "mode",
+          validatedIntent.mode,
+          data.mode
+        );
       }
 
       // Step 3: Verify core transaction fields
-      this.verifyTransactionFields(originalIntent, data, errors);
+      this.verifyTransactionFields(validatedIntent, data, errorCollector);
 
       // Step 4: Verify amounts (if not using max amount)
-      if (!originalIntent.useMaxAmount && originalIntent.amount !== undefined) {
-        if (data.amount !== originalIntent.amount) {
-          errors.push(`Amount mismatch: expected ${originalIntent.amount}, got ${data.amount}`);
+      if ('amount' in validatedIntent && validatedIntent.amount !== undefined) {
+        if (!('useMaxAmount' in validatedIntent) || !validatedIntent.useMaxAmount) {
+          if (data.amount !== validatedIntent.amount) {
+            errorCollector.addFieldMismatch(
+              ErrorCode.AMOUNT_MISMATCH,
+              "amount",
+              validatedIntent.amount,
+              data.amount
+            );
+          }
         }
       }
 
       // Step 5: Decode and verify encoded transaction (encoded validation)
       let decodedRaw: unknown;
-      if (encoded && encoded.length > 0) {
+      if (encoded && encoded.length > 0 && encoded[0].raw) {
         try {
           const decoder = this.decoderRegistry.getDecoder(chainId, encoded[0].raw.format);
           if (decoder) {
             decodedRaw = await decoder.decode(encoded[0].raw.value);
 
             // Encoded validation: Compare decoded transaction with original intent
-            const decodedVerificationErrors = this.verifyDecodedTransaction(decodedRaw, originalIntent, data);
-            errors.push(...decodedVerificationErrors);
+            this.verifyDecodedTransaction(decodedRaw, validatedIntent, data, errorCollector);
           } else {
-            errors.push(`No decoder available for ${chainId} with format ${encoded[0].raw.format}`);
+            errorCollector.addError(
+              ErrorCode.MISSING_DECODER,
+              `No decoder available for ${chainId} with format ${encoded[0].raw.format}`,
+              "error",
+              { chainId, format: encoded[0].raw.format }
+            );
           }
         } catch (decodeError) {
-          errors.push(`Failed to decode transaction: ${decodeError}`);
+          errorCollector.addError(
+            ErrorCode.DECODE_FAILED,
+            `Failed to decode transaction: ${decodeError}`,
+            "error",
+            { error: String(decodeError) }
+          );
         }
       }
 
       // Step 6: Return verification result
-      return {
-        isValid: errors.length === 0,
-        errors: errors.length > 0 ? errors : undefined,
-        decodedData: {
-          chainId,
-          transaction: data,
-          raw: decodedRaw,
-        },
-      };
+      return errorCollector.getResult({
+        chainId,
+        transaction: data,
+        raw: decodedRaw,
+      });
     } catch (error) {
-      errors.push(`Verification error: ${error}`);
-      return { isValid: false, errors };
+      errorCollector.addError(
+        ErrorCode.INVALID_API_RESPONSE,
+        `Verification error: ${error}`,
+        "error",
+        { error: String(error) }
+      );
+      return errorCollector.getResult();
     }
   }
 
@@ -85,30 +144,31 @@ export class AdamikSDK {
    * @param decodedTransaction The decoded transaction from the encoded data
    * @param originalIntent The original transaction intent
    * @param apiData The transaction data from API response
-   * @returns Array of error messages (empty if verification passes)
+   * @param errorCollector The error collector instance
    */
   private verifyDecodedTransaction(
     decodedTransaction: unknown,
     originalIntent: TransactionIntent,
-    apiData: TransactionData
-  ): string[] {
-    const errors: string[] = [];
-
+    apiData: TransactionData,
+    errorCollector: ErrorCollector
+  ): void {
     // Type guard for decoded transaction structure
     if (!decodedTransaction || typeof decodedTransaction !== "object") {
-      errors.push("Decoded transaction has invalid structure");
-      return errors;
+      errorCollector.addError(
+        ErrorCode.INVALID_DECODED_STRUCTURE,
+        "Decoded transaction has invalid structure",
+        "error"
+      );
+      return;
     }
 
     const decoded = decodedTransaction as Record<string, unknown>;
 
     // Verify core decoded transaction fields
-    this.verifyDecodedFields(decoded, originalIntent, errors);
+    this.verifyDecodedFields(decoded, originalIntent, errorCollector);
     
     // Cross-verify decoded transaction against API response data
-    this.verifyCrossConsistency(decoded, apiData, errors);
-
-    return errors;
+    this.verifyCrossConsistency(decoded, apiData, errorCollector);
   }
 
   /**
@@ -117,21 +177,48 @@ export class AdamikSDK {
   private verifyTransactionFields(
     originalIntent: TransactionIntent,
     data: TransactionData,
-    errors: string[]
+    errorCollector: ErrorCollector
   ): void {
-    const fieldMappings: Array<{ field: keyof TransactionIntent; label: string }> = [
-      { field: "senderAddress", label: "Sender address" },
-      { field: "recipientAddress", label: "Recipient address" },
-      { field: "validatorAddress", label: "Validator address" },
-      { field: "targetValidatorAddress", label: "Target validator address" },
-      { field: "tokenId", label: "Token ID" }
-    ];
+    // Check common fields
+    if (originalIntent.senderAddress !== undefined && data.senderAddress !== originalIntent.senderAddress) {
+      errorCollector.addFieldMismatch(
+        ErrorCode.SENDER_MISMATCH,
+        "senderAddress",
+        originalIntent.senderAddress,
+        data.senderAddress
+      );
+    }
 
-    fieldMappings.forEach(({ field, label }) => {
-      if (originalIntent[field] !== undefined && data[field] !== originalIntent[field]) {
-        errors.push(`${label} mismatch: expected ${originalIntent[field]}, got ${data[field]}`);
-      }
-    });
+    // Check mode-specific fields
+    const intent = originalIntent as any;
+    const txData = data as any;
+    
+    if ('recipientAddress' in intent && intent.recipientAddress !== undefined && txData.recipientAddress !== intent.recipientAddress) {
+      errorCollector.addFieldMismatch(
+        ErrorCode.RECIPIENT_MISMATCH,
+        "recipientAddress",
+        intent.recipientAddress,
+        txData.recipientAddress
+      );
+    }
+    
+    if ('validatorAddress' in intent && intent.validatorAddress !== undefined && txData.validatorAddress !== intent.validatorAddress) {
+      errorCollector.addFieldMismatch(
+        ErrorCode.VALIDATOR_MISMATCH,
+        "validatorAddress",
+        intent.validatorAddress,
+        txData.validatorAddress
+      );
+    }
+    
+    if ('tokenId' in intent && intent.tokenId !== undefined && txData.tokenId !== intent.tokenId) {
+      errorCollector.addFieldMismatch(
+        ErrorCode.TOKEN_MISMATCH,
+        "tokenId",
+        intent.tokenId,
+        txData.tokenId
+      );
+    }
   }
 
   /**
@@ -140,23 +227,32 @@ export class AdamikSDK {
   private verifyDecodedFields(
     decoded: Record<string, unknown>,
     originalIntent: TransactionIntent,
-    errors: string[]
+    errorCollector: ErrorCollector
   ): void {
     // Verify transaction mode
     if (decoded.mode !== originalIntent.mode) {
-      errors.push(`Decoded transaction mode mismatch: expected ${originalIntent.mode}, got ${decoded.mode}`);
+      errorCollector.addFieldMismatch(
+        ErrorCode.MODE_MISMATCH,
+        "mode",
+        originalIntent.mode,
+        String(decoded.mode)
+      );
     }
 
     // Verify recipient address
-    if (decoded.recipientAddress !== originalIntent.recipientAddress) {
-      errors.push(
-        `Critical: Decoded transaction recipient mismatch: expected ${originalIntent.recipientAddress}, got ${decoded.recipientAddress}`
+    const intent = originalIntent as any;
+    if ('recipientAddress' in intent && decoded.recipientAddress !== intent.recipientAddress) {
+      errorCollector.addError(
+        ErrorCode.CRITICAL_RECIPIENT_MISMATCH,
+        `Critical: Decoded transaction recipient mismatch: expected ${intent.recipientAddress}, got ${decoded.recipientAddress}`,
+        "critical",
+        { expected: intent.recipientAddress, actual: String(decoded.recipientAddress) }
       );
     }
 
     // Verify amount (handle bigint vs string conversion)
-    if (originalIntent.amount && !originalIntent.useMaxAmount) {
-      const expectedAmount = BigInt(originalIntent.amount);
+    if ('amount' in intent && intent.amount && !('useMaxAmount' in intent && intent.useMaxAmount)) {
+      const expectedAmount = BigInt(intent.amount);
       const decodedAmount =
         typeof decoded.amount === "bigint"
           ? decoded.amount
@@ -165,16 +261,22 @@ export class AdamikSDK {
             : 0n;
 
       if (decodedAmount !== expectedAmount) {
-        errors.push(
-          `Critical: Decoded transaction amount mismatch: expected ${expectedAmount.toString()}, got ${decodedAmount.toString()}`
+        errorCollector.addError(
+          ErrorCode.CRITICAL_AMOUNT_MISMATCH,
+          `Critical: Decoded transaction amount mismatch: expected ${expectedAmount.toString()}, got ${decodedAmount.toString()}`,
+          "critical",
+          { expected: expectedAmount.toString(), actual: decodedAmount.toString() }
         );
       }
     }
 
     // Verify token ID for token transfers
-    if (originalIntent.tokenId && decoded.tokenId !== originalIntent.tokenId) {
-      errors.push(
-        `Critical: Decoded transaction token mismatch: expected ${originalIntent.tokenId}, got ${decoded.tokenId}`
+    if ('tokenId' in intent && intent.tokenId && decoded.tokenId !== intent.tokenId) {
+      errorCollector.addError(
+        ErrorCode.CRITICAL_TOKEN_MISMATCH,
+        `Critical: Decoded transaction token mismatch: expected ${intent.tokenId}, got ${decoded.tokenId}`,
+        "critical",
+        { expected: intent.tokenId, actual: String(decoded.tokenId) }
       );
     }
   }
@@ -185,17 +287,23 @@ export class AdamikSDK {
   private verifyCrossConsistency(
     decoded: Record<string, unknown>,
     apiData: TransactionData,
-    errors: string[]
+    errorCollector: ErrorCollector
   ): void {
     if (decoded.recipientAddress !== apiData.recipientAddress) {
-      errors.push(
-        `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`
+      errorCollector.addError(
+        ErrorCode.DECODED_API_MISMATCH,
+        `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`,
+        "warning",
+        { decoded: decoded.recipientAddress, apiData: apiData.recipientAddress }
       );
     }
 
     if (decoded.mode !== apiData.mode) {
-      errors.push(
-        `Warning: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`
+      errorCollector.addError(
+        ErrorCode.DECODED_API_MISMATCH,
+        `Warning: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`,
+        "warning",
+        { decoded: decoded.mode, apiData: apiData.mode }
       );
     }
   }
@@ -207,7 +315,7 @@ export class AdamikSDK {
    * @returns true if they match, false otherwise
    */
   compareTransactionData(data1: TransactionData, data2: TransactionData): boolean {
-    const keysToCompare: (keyof TransactionData)[] = [
+    const keysToCompare = [
       "mode",
       "senderAddress",
       "recipientAddress",
@@ -215,7 +323,7 @@ export class AdamikSDK {
       "tokenId",
       "validatorAddress",
       "targetValidatorAddress",
-    ];
+    ] as const;
 
     return keysToCompare.every((key) => data1[key] === data2[key]);
   }
@@ -224,6 +332,7 @@ export class AdamikSDK {
 // Export main functions and types
 export { DecoderRegistry } from "./decoders/registry";
 export * from "./types";
+export { Schemas } from "./schemas";
 
 // Default export for convenience
 export default AdamikSDK;

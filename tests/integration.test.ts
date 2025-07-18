@@ -54,7 +54,7 @@ describe("Integration Tests", () => {
 
       // Assertions
       expect(verificationResult.isValid).toBe(true);
-      expect(verificationResult.errors).toBeUndefined();
+      expect(verificationResult.errors).toHaveLength(0);
       expect(verificationResult.decodedData).toBeDefined();
       expect(verificationResult.decodedData?.raw).toBeDefined();
     });

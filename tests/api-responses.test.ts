@@ -34,9 +34,12 @@ describe("API Response Validation", () => {
         
         // Verify decoded transaction matches intent
         expect(result.decodedData).toBeDefined();
-        expect(result.decodedData?.transaction.recipientAddress?.toLowerCase()).toBe(
-          fixture.intent.recipientAddress?.toLowerCase()
-        );
+        const txData = result.decodedData?.transaction as any;
+        if ('recipientAddress' in fixture.intent && fixture.intent.recipientAddress) {
+          expect(txData.recipientAddress?.toLowerCase()).toBe(
+            fixture.intent.recipientAddress.toLowerCase()
+          );
+        }
       });
     });
   });
@@ -53,8 +56,13 @@ describe("API Response Validation", () => {
         
         // Verify decoded transaction matches intent
         expect(result.decodedData).toBeDefined();
-        expect(result.decodedData?.transaction.recipientAddress).toBe(fixture.intent.recipientAddress);
-        expect(result.decodedData?.transaction.amount).toBe(fixture.intent.amount);
+        const txData = result.decodedData?.transaction as any;
+        if ('recipientAddress' in fixture.intent) {
+          expect(txData.recipientAddress).toBe(fixture.intent.recipientAddress);
+        }
+        if ('amount' in fixture.intent) {
+          expect(txData.amount).toBe(fixture.intent.amount);
+        }
       });
     });
   });
@@ -71,8 +79,13 @@ describe("API Response Validation", () => {
         
         // Verify decoded transaction matches intent
         expect(result.decodedData).toBeDefined();
-        expect(result.decodedData?.transaction.recipientAddress).toBe(fixture.intent.recipientAddress);
-        expect(result.decodedData?.transaction.amount).toBe(fixture.intent.amount);
+        const txData = result.decodedData?.transaction as any;
+        if ('recipientAddress' in fixture.intent) {
+          expect(txData.recipientAddress).toBe(fixture.intent.recipientAddress);
+        }
+        if ('amount' in fixture.intent) {
+          expect(txData.amount).toBe(fixture.intent.amount);
+        }
       });
     });
   });
@@ -89,11 +102,18 @@ describe("API Response Validation", () => {
         
         // Verify decoded transaction matches intent
         expect(result.decodedData).toBeDefined();
-        expect(result.decodedData?.transaction.recipientAddress).toBe(fixture.intent.recipientAddress);
-        expect(result.decodedData?.transaction.amount).toBe(fixture.intent.amount);
+        const txData = result.decodedData?.transaction as any;
+        if ('recipientAddress' in fixture.intent) {
+          expect(txData.recipientAddress).toBe(fixture.intent.recipientAddress);
+        }
+        if ('amount' in fixture.intent) {
+          expect(txData.amount).toBe(fixture.intent.amount);
+        }
         
         // Verify sender address for Injective
-        expect(result.decodedData?.transaction.senderAddress).toBe(fixture.intent.senderAddress);
+        if ('senderAddress' in fixture.intent) {
+          expect(txData.senderAddress).toBe(fixture.intent.senderAddress);
+        }
       });
     });
   });

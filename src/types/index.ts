@@ -1,80 +1,25 @@
-export type ChainId =
-  | "ethereum"
-  | "sepolia"
-  | "bitcoin"
-  | "bitcoin-testnet"
-  | "bitcoin-signet"
-  | "polygon"
-  | "bsc"
-  | "avalanche"
-  | "arbitrum"
-  | "optimism"
-  | "base"
-  | "aptos"
-  | "aptos-testnet"
-  | "cosmos"
-  | "cosmoshub"
-  | "celestia"
-  | "injective"
-  | "babylon-testnet"
-  | "algorand"
-  | "ton"
-  | "starknet"
-  | "solana"
-  | "tron"
-  | "hoodi";
+/**
+ * Re-export types from Zod schemas for backward compatibility
+ * All types are now inferred from Zod schemas for consistency
+ */
+export type {
+  ChainId,
+  TransactionMode,
+  HashFormat,
+  RawFormat,
+  TransactionIntent,
+  TransactionData,
+  AdamikEncodeResponse,
+} from "../schemas/transaction";
 
-export type TransactionMode =
-  | "transfer"
-  | "transferToken"
-  | "stake"
-  | "unstake"
-  | "claimRewards"
-  | "deployAccount"
-  | "withdraw"
-  | "registerStake"
-  | "convertAsset";
+export type { VerificationResult, VerificationError } from "../schemas/errors";
 
-export type HashFormat = "sha256" | "keccak256" | "sha512_256" | "pedersen";
+// Import types for use in legacy interfaces
+import type { HashFormat, RawFormat, TransactionMode } from "../schemas/transaction";
 
-export type RawFormat =
-  | "RLP"
-  | "WALLET_CONNECT"
-  | "SIGNDOC_DIRECT"
-  | "SIGNDOC_DIRECT_JSON"
-  | "SIGNDOC_AMINO"
-  | "SIGNDOC_AMINO_JSON"
-  | "BOC"
-  | "RAW_TRANSACTION"
-  | "MSGPACK"
-  | "PSBT"
-  | "BCS"
-  | "BORSH"
-  | "COSMOS_PROTOBUF";
-
-export interface TransactionIntent {
-  mode: TransactionMode;
-  senderAddress?: string;
-  senderPubKey?: string;
-  recipientAddress?: string;
-  amount?: string;
-  useMaxAmount?: boolean;
-  tokenId?: string;
-  validatorAddress?: string;
-  targetValidatorAddress?: string;
-  sourceValidatorAddress?: string;
-  stakeId?: string;
-  compound?: boolean;
-  memo?: string;
-}
-
-export interface TransactionData extends TransactionIntent {
-  fees: string;
-  gas?: string;
-  nonce?: string;
-  params?: unknown;
-}
-
+/**
+ * Legacy types maintained for backward compatibility
+ */
 export interface EncodedTransaction {
   hash: {
     format: HashFormat;
@@ -86,18 +31,6 @@ export interface EncodedTransaction {
   };
 }
 
-export interface AdamikEncodeResponse {
-  chainId: ChainId;
-  transaction: {
-    data: TransactionData;
-    encoded: EncodedTransaction[];
-  };
-  status?: {
-    errors: string[];
-    warnings: (string | { message: string })[];
-  };
-}
-
 export interface DecodedTransaction {
   mode: TransactionMode;
   recipientAddress: string;
@@ -105,14 +38,4 @@ export interface DecodedTransaction {
   senderAddress?: string;
   tokenId?: string;
   raw?: unknown;
-}
-
-export interface VerificationResult {
-  isValid: boolean;
-  errors?: string[];
-  decodedData?: {
-    chainId: ChainId;
-    transaction: TransactionData;
-    raw?: unknown;
-  };
 }

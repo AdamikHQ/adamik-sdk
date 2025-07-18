@@ -56,6 +56,7 @@
     "@cosmjs/stargate": "^0.34.0",
     "bitcoinjs-lib": "^6.1.7",
     "cosmjs-types": "^0.9.0",
-    "viem": "^2.32.0"
+    "viem": "^2.32.0",
+    "zod": "^3.23.8"
   }
 }
