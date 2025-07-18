@@ -1,0 +1,141 @@
+{
+  "transferToken": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "tokenId": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "mode": "transferToken",
+          "senderAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "recipientAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "amount": "12345",
+          "useMaxAmount": false
+        }
+      }
+    },
+    "response": {
+      "chainId": "tron",
+      "transaction": {
+        "data": {
+          "mode": "transferToken",
+          "tokenId": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "senderAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "recipientAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "amount": "12345",
+          "useMaxAmount": false,
+          "fees": "0",
+          "params": {
+            "txID": "86c3595d23b2f75c6720d554b083d481836e3ba94b594e2a1348cdbbee14a15c",
+            "raw_data": {
+              "contract": [
+                {
+                  "parameter": {
+                    "value": {
+                      "data": "a9059cbb0000000000000000000000001c506ba436e22d4892be0a949f3f065878a38d970000000000000000000000000000000000000000000000000000000000003039",
+                      "owner_address": "411c506ba436e22d4892be0a949f3f065878a38d97",
+                      "contract_address": "41a614f803b6fd780986a42c78ec9c7f77e6ded13c"
+                    },
+                    "type_url": "type.googleapis.com/protocol.TriggerSmartContract"
+                  },
+                  "type": "TriggerSmartContract"
+                }
+              ],
+              "ref_block_bytes": "1312",
+              "ref_block_hash": "8d6132fac1c0feff",
+              "expiration": 1752840756000,
+              "fee_limit": 150000000,
+              "timestamp": 1752840156668
+            },
+            "raw_data_hex": "0a02131222088d6132fac1c0feff40a0b6cdeb81335aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a15411c506ba436e22d4892be0a949f3f065878a38d97121541a614f803b6fd780986a42c78ec9c7f77e6ded13c2244a9059cbb0000000000000000000000001c506ba436e22d4892be0a949f3f065878a38d97000000000000000000000000000000000000000000000000000000000000303970fceba8eb8133900180a3c347",
+            "visible": false
+          }
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "RAW_TRANSACTION",
+              "value": "0a02131222088d6132fac1c0feff40a0b6cdeb81335aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a15411c506ba436e22d4892be0a949f3f065878a38d97121541a614f803b6fd780986a42c78ec9c7f77e6ded13c2244a9059cbb0000000000000000000000001c506ba436e22d4892be0a949f3f065878a38d97000000000000000000000000000000000000000000000000000000000000303970fceba8eb8133900180a3c347"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "86c3595d23b2f75c6720d554b083d481836e3ba94b594e2a1348cdbbee14a15c"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Same sender and recipient address"
+          }
+        ]
+      }
+    }
+  },
+  "transfer": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+          "recipientAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "amount": "12345",
+          "useMaxAmount": false
+        }
+      }
+    },
+    "response": {
+      "chainId": "tron",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+          "recipientAddress": "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+          "amount": "12345",
+          "useMaxAmount": false,
+          "fees": "0",
+          "params": {
+            "txID": "ed7e6ebe0339fa3efe24a199bdc4a83a051d16833d7cf338f38664f9fdcf87f2",
+            "raw_data": {
+              "contract": [
+                {
+                  "parameter": {
+                    "value": {
+                      "amount": 12345,
+                      "owner_address": "41d43543fa38eabb1d10a302dd4c249662f0da3de9",
+                      "to_address": "411c506ba436e22d4892be0a949f3f065878a38d97"
+                    },
+                    "type_url": "type.googleapis.com/protocol.TransferContract"
+                  },
+                  "type": "TransferContract"
+                }
+              ],
+              "ref_block_bytes": "170b",
+              "ref_block_hash": "c6e099ee41aa8ac7",
+              "expiration": 1752843753000,
+              "timestamp": 1752843153000
+            },
+            "raw_data_hex": "0a02170b2208c6e099ee41aa8ac740a8ac84ed81335a66080112620a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412310a1541d43543fa38eabb1d10a302dd4c249662f0da3de91215411c506ba436e22d4892be0a949f3f065878a38d9718b96070e8dcdfec8133",
+            "visible": false
+          }
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "RAW_TRANSACTION",
+              "value": "0a02170b2208c6e099ee41aa8ac740a8ac84ed81335a66080112620a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412310a1541d43543fa38eabb1d10a302dd4c249662f0da3de91215411c506ba436e22d4892be0a949f3f065878a38d9718b96070e8dcdfec8133"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "ed7e6ebe0339fa3efe24a199bdc4a83a051d16833d7cf338f38664f9fdcf87f2"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  }
+}

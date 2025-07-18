@@ -3,6 +3,7 @@ import { BaseDecoder } from "./base";
 import { EVMDecoder } from "./evm";
 import { BitcoinDecoder } from "./bitcoin";
 import { CosmosDecoder } from "./cosmos";
+import { TronDecoder } from "./tron";
 
 export class DecoderRegistry {
   private decoders: Map<string, BaseDecoder> = new Map();
@@ -63,6 +64,9 @@ export class DecoderRegistry {
         this.registerDecoder(decoder);
       });
     });
+
+    // Tron
+    this.registerDecoder(new TronDecoder("tron"));
 
     // Additional decoders can be added here as they are implemented
   }

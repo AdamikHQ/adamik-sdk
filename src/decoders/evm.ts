@@ -104,8 +104,7 @@ export class EVMDecoder extends BaseDecoder {
     if (!tx || typeof tx !== "object") return false;
 
     // Check required fields exist
-    const requiredFields = ["mode", "recipientAddress", "amount"];
-    if (!requiredFields.every((field) => field in tx)) return false;
+    if (!tx.recipientAddress || !tx.mode || !tx.amount) return false;
 
     // Validate addresses - senderAddress is optional in DecodedTransaction
     if (!isAddress(tx.recipientAddress)) return false;

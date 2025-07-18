@@ -4,6 +4,7 @@ import ethereumFixtures from "./fixtures/api-responses/ethereum.json";
 import bitcoinFixtures from "./fixtures/api-responses/bitcoin.json";
 import cosmosFixtures from "./fixtures/api-responses/cosmos.json";
 import injectiveFixtures from "./fixtures/api-responses/injective.json";
+import tronFixtures from "./fixtures/api-responses/tron.json";
 
 /**
  * API Response Test Suite
@@ -113,6 +114,41 @@ describe("API Response Validation", () => {
         // Verify sender address for Injective
         if ('senderAddress' in fixture.intent) {
           expect(txData.senderAddress).toBe(fixture.intent.senderAddress);
+        }
+      });
+    });
+  });
+
+  describe("Tron", () => {
+    const tronTestCases = Object.entries(tronFixtures).map(([name, data]) => ({
+      name,
+      intent: data.intent.transaction.data,
+      response: data.response
+    }));
+    
+    tronTestCases.forEach(testCase => {
+      it(`should validate ${testCase.name}`, async () => {
+        const result = await sdk.verify(testCase.response, testCase.intent);
+
+        expect(result.isValid).toBe(true);
+        expect(result.errors || []).toHaveLength(0);
+        
+        // Verify decoded transaction matches intent
+        expect(result.decodedData).toBeDefined();
+        const txData = result.decodedData?.transaction as any;
+        const intentData = testCase.intent as any;
+        
+        if ('recipientAddress' in intentData) {
+          expect(txData.recipientAddress).toBe(intentData.recipientAddress);
+        }
+        if ('amount' in intentData) {
+          expect(txData.amount).toBe(intentData.amount);
+        }
+        if ('tokenId' in intentData) {
+          expect(txData.tokenId).toBe(intentData.tokenId);
+        }
+        if ('senderAddress' in intentData) {
+          expect(txData.senderAddress).toBe(intentData.senderAddress);
         }
       });
     });

@@ -80,9 +80,10 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 - **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
 - **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
 - **Cosmos**: Real protobuf decoding using `@cosmjs/proto-signing` library
+- **Tron**: Placeholder decoder (protobuf parsing libraries needed)
 - **Other chains**: Using placeholder decoders with mock data
 - **For EVM, Bitcoin & Cosmos transactions**: Both steps provide real security protection
-- **For other chains**: Only Step 1 provides protection
+- **For Tron and other chains**: Only Step 1 provides protection
 
 ### Security Implications
 
@@ -288,12 +289,16 @@ This separation of concerns means:
 
 - **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base
 - **Bitcoin-like**: Bitcoin, Bitcoin Testnet
+- **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon
+- **Tron**: Tron mainnet (placeholder decoder - protobuf parsing coming soon)
 - More chains can be easily added by implementing new decoders
 
 ### Transaction Formats
 
 - **RLP**: Used by EVM chains
 - **PSBT**: Used by Bitcoin
+- **COSMOS_PROTOBUF/SIGNDOC_***: Used by Cosmos SDK chains
+- **RAW_TRANSACTION**: Used by Tron
 - Additional formats can be supported by extending the decoder system
 
 ## Development

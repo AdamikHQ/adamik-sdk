@@ -82,6 +82,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
+- **Tron decoder** - Placeholder implementation that needs protobuf parsing libraries
 - **Other chain decoders** - Only EVM, Bitcoin, and Cosmos have real implementations (Solana, Algorand, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - January 2025)
@@ -212,9 +213,9 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ### Test File Breakdown
 - `scenarios.test.ts` (5 tests) - Attack scenarios and security testing (including Injective)
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
-- `decoders.test.ts` (13 tests) - Blockchain decoder functionality
+- `decoders.test.ts` (17 tests) - Blockchain decoder functionality (includes Tron)
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `api-responses.test.ts` (4 tests) - Real API response validation (includes Injective)
+- `api-responses.test.ts` (6 tests) - Real API response validation (includes Injective and Tron)
 
 ## Development Patterns
 
@@ -400,16 +401,16 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Zod validation and enhanced error management implementation  
+**Session**: Tron blockchain support addition  
 **Major Changes**: 
-- Integrated Zod v3 for runtime validation matching Adamik API schema patterns
-- Implemented discriminated unions for type-safe transaction modes
-- Enhanced error structure with severity levels (error, warning, critical)
-- Added ErrorCollector pattern for structured error reporting
-- Updated all types to use Zod inference for consistency
-- Maintained backward compatibility while improving type safety
-- All 29 tests passing with new validation system
-**Next Session Should**: Add chain-specific validators or implement hash validation
+- Added Tron decoder with placeholder implementation (needs protobuf libraries)
+- Created Tron test fixtures with real API responses (transfer and transferToken)
+- Added Tron to decoder registry with RAW_TRANSACTION format
+- Implemented placeholder detection to skip encoded validation for incomplete decoders
+- Added 6 new tests for Tron validation (4 decoder tests, 2 API response tests)
+- All 35 tests passing (up from 29)
+**Previous Session**: Zod validation and enhanced error management implementation
+**Next Session Should**: Implement real Tron decoder with protobuf parsing or add more blockchain decoders
 
 ## Future Product Direction
 

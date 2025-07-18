@@ -2,6 +2,7 @@ import { BitcoinDecoder } from "../src/decoders/bitcoin";
 import { EVMDecoder } from "../src/decoders/evm";
 import { CosmosDecoder } from "../src/decoders/cosmos";
 import { DecoderRegistry } from "../src/decoders/registry";
+import { BaseDecoder } from "../src/decoders/base";
 
 describe("Decoders", () => {
   describe("DecoderRegistry", () => {
@@ -181,6 +182,68 @@ describe("Decoders", () => {
           recipientAddress: address,
           amount: "1000",
           raw: "0x",
+        };
+        expect(decoder.validate(tx)).toBe(true);
+      });
+    });
+  });
+
+  describe("TronDecoder", () => {
+    let decoder: BaseDecoder;
+
+    beforeEach(() => {
+      decoder = new DecoderRegistry().getDecoder("tron", "RAW_TRANSACTION")!;
+    });
+
+    it("should decode Tron transaction (placeholder)", async () => {
+      const rawTx = "0a02170b2208c6e099ee41aa8ac740a8ac84ed81335a66080112620a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412310a1541d43543fa38eabb1d10a302dd4c249662f0da3de91215411c506ba436e22d4892be0a949f3f065878a38d9718b96070e8dcdfec8133";
+      const decoded = await decoder.decode(rawTx);
+
+      // Since this is a placeholder decoder, it returns fixed values
+      expect(decoded).toHaveProperty("chainId", "tron");
+      expect(decoded).toHaveProperty("senderAddress");
+      expect(decoded).toHaveProperty("recipientAddress");
+      expect(decoded).toHaveProperty("amount");
+      expect(decoded).toHaveProperty("raw");
+    });
+
+    it("should validate decoded Tron transaction", () => {
+      const validTx = {
+        mode: "transfer",
+        recipientAddress: "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+        amount: "12345",
+        senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+        raw: "0x1234",
+      };
+
+      expect(decoder.validate(validTx)).toBe(true);
+    });
+
+    it("should reject invalid Tron address", () => {
+      const invalidTx = {
+        mode: "transfer",
+        recipientAddress: "not-a-tron-address", // Invalid Tron address
+        amount: "12345",
+        senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+      };
+
+      expect(decoder.validate(invalidTx)).toBe(false);
+    });
+
+    it("should validate Tron addresses starting with T", () => {
+      const addresses = [
+        "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
+        "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+        "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      ];
+
+      addresses.forEach(address => {
+        const tx = {
+          mode: "transfer",
+          recipientAddress: address,
+          amount: "1000",
+          senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
+          raw: "0x1234",
         };
         expect(decoder.validate(tx)).toBe(true);
       });

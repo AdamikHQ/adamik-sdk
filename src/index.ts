@@ -1,5 +1,5 @@
 import { DecoderRegistry } from "./decoders/registry";
-import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult, VerificationError } from "./types";
+import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult } from "./types";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema, Schemas } from "./schemas";
 import { ErrorCollector, ErrorCode } from "./schemas/errors";
 import { z } from "zod";
@@ -102,8 +102,19 @@ export class AdamikSDK {
           if (decoder) {
             decodedRaw = await decoder.decode(encoded[0].raw.value);
 
-            // Encoded validation: Compare decoded transaction with original intent
-            this.verifyDecodedTransaction(decodedRaw, validatedIntent, data, errorCollector);
+            // Skip encoded validation for placeholder decoders
+            if ((decoder as any).isPlaceholder) {
+              // For placeholder decoders, we only do intent validation (already done above)
+              // Add a warning to indicate this is a placeholder
+              errorCollector.addError(
+                ErrorCode.MISSING_DECODER,
+                `Using placeholder decoder for ${chainId} - encoded validation skipped`,
+                "warning"
+              );
+            } else {
+              // Encoded validation: Compare decoded transaction with original intent
+              this.verifyDecodedTransaction(decodedRaw, validatedIntent, data, errorCollector);
+            }
           } else {
             errorCollector.addError(
               ErrorCode.MISSING_DECODER,
