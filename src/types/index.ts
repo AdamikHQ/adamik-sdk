@@ -92,6 +92,10 @@ export interface AdamikEncodeResponse {
     data: TransactionData;
     encoded: EncodedTransaction[];
   };
+  status?: {
+    errors: string[];
+    warnings: (string | { message: string })[];
+  };
 }
 
 export interface DecodedTransaction {

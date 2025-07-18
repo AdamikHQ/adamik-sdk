@@ -2,9 +2,6 @@ import { BitcoinDecoder } from "../src/decoders/bitcoin";
 import { EVMDecoder } from "../src/decoders/evm";
 import { CosmosDecoder } from "../src/decoders/cosmos";
 import { DecoderRegistry } from "../src/decoders/registry";
-import ethereumTransactions from "./fixtures/bruno-imported/ethereum.json";
-import bitcoinTransactions from "./fixtures/bruno-imported/bitcoin.json";
-import cosmosTransactions from "./fixtures/bruno-imported/cosmoshub.json";
 
 describe("Decoders", () => {
   describe("DecoderRegistry", () => {
@@ -49,10 +46,10 @@ describe("Decoders", () => {
     });
 
     it("should decode real RLP transaction", async () => {
-      const transferTx = ethereumTransactions.find(tx => tx.intent.mode === "transfer");
-      expect(transferTx).toBeDefined();
+      // Real Ethereum transfer transaction RLP
+      const rlpData = "0xf86c098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83";
       
-      const decoded = await decoder.decode(transferTx!.encodedTransaction);
+      const decoded = await decoder.decode(rlpData);
 
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("mode");
@@ -92,10 +89,10 @@ describe("Decoders", () => {
     });
 
     it("should decode PSBT data (placeholder implementation)", async () => {
-      const transferTx = bitcoinTransactions.find(tx => tx.intent.mode === "transfer");
-      expect(transferTx).toBeDefined();
+      // Real PSBT data from Bitcoin API response (hex format)
+      const psbtData = "70736274ff01007102000000011b43b6166ed0207832f41f743b3ef1a1f1399a44f48ae760d82ed525426e252d0100000000fdffffff02e8030000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1a03f0000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000000001011f10470000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000";
       
-      const decoded = await decoder.decode(transferTx!.encodedTransaction);
+      const decoded = await decoder.decode(psbtData);
 
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("mode");
@@ -133,10 +130,10 @@ describe("Decoders", () => {
     });
 
     it("should decode Cosmos protobuf data (placeholder implementation)", async () => {
-      const transferTx = cosmosTransactions.find(tx => tx.intent.mode === "transfer");
-      expect(transferTx).toBeDefined();
+      // Example Cosmos protobuf data (base64)
+      const protoData = "CpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKLWNvc21vczFxeXFzenFnaDZreTlmNGdmeXVkM3g5dHRtOTRleDQzNTBrNDZyEi1jb3Ntb3MxNmg5d3VqZzR0bHBoZzg0Y3UzNjZreGg2dDNxMHowZnJ5MW1oMhoQCgV1YXRvbRIHMTAwMDAwMA==";
       
-      const decoded = await decoder.decode(transferTx!.encodedTransaction);
+      const decoded = await decoder.decode(protoData);
 
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("mode");

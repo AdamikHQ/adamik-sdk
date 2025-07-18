@@ -1,24 +1,5 @@
 import AdamikSDK from "../src";
 import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
-import ethereumFixtures from "./fixtures/bruno-imported/ethereum.json";
-
-interface BrunoFixture {
-  id: string;
-  name: string;
-  chainId: string;
-  intent: {
-    mode: string;
-    senderAddress?: string;
-    recipientAddress?: string;
-    amount?: string;
-    useMaxAmount?: boolean;
-    tokenId?: string;
-    targetValidatorAddress?: string;
-    stakeId?: string;
-  };
-  encodedTransaction: string;
-  source: string;
-}
 
 describe("Attack Scenarios", () => {
   let sdk: AdamikSDK;
@@ -29,12 +10,11 @@ describe("Attack Scenarios", () => {
 
   describe("Malicious Encoded Transactions", () => {
     it("should detect malicious encoded transaction with different recipient", async () => {
-      const transferFixture = ethereumFixtures.find(f => f.intent.mode === "transfer")!;
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
         recipientAddress: "0x1111111111111111111111111111111111111111", // User wants to send here
-        amount: transferFixture.intent.amount || "1000000000000000000",
+        amount: "1000000000000000000",
       };
 
       const apiResponse: AdamikEncodeResponse = {

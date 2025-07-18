@@ -1,25 +1,5 @@
 import AdamikSDK from "../src";
 import { AdamikEncodeResponse, TransactionIntent, TransactionMode } from "../src/types";
-import ethereumFixtures from "./fixtures/bruno-imported/ethereum.json";
-import bitcoinFixtures from "./fixtures/bruno-imported/bitcoin.json";
-
-interface BrunoFixture {
-  id: string;
-  name: string;
-  chainId: string;
-  intent: {
-    mode: string;
-    senderAddress?: string;
-    recipientAddress?: string;
-    amount?: string;
-    useMaxAmount?: boolean;
-    tokenId?: string;
-    targetValidatorAddress?: string;
-    stakeId?: string;
-  };
-  encodedTransaction: string;
-  source: string;
-}
 
 describe("AdamikSDK - Complete Validation Tests", () => {
   let sdk: AdamikSDK;

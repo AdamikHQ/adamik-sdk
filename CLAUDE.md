@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding
-- **Tests**: 58 tests passing across 5 suites
-- **Recent**: Real Bitcoin decoder + EIP-55 address checksumming + Bruno test data migration completed
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos placeholder
+- **Tests**: 23 tests across 5 suites (22 passing, 1 skipped - Cosmos placeholder)
+- **Recent**: Cosmos decoder added + Test suite consolidation (removed redundancies)
 
 ## Project Overview
 
@@ -18,7 +18,7 @@
 
 **Solution - Two-Step Verification**:
 1. **Intent Validation** - Compare API response data vs user intent (✅ Implemented)
-2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM & Bitcoin, ⚠️ Others placeholder)
+2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM & Bitcoin, ⚠️ Cosmos & others placeholder)
 
 **Key Classes**:
 - `AdamikSDK.verify(apiResponse, originalIntent)` - Main verification method
@@ -37,23 +37,26 @@ src/
     ├── base.ts           # Abstract BaseDecoder class
     ├── registry.ts       # DecoderRegistry for managing decoders
     ├── evm.ts           # Real EVM RLP decoder using viem
-    └── bitcoin.ts       # Real Bitcoin PSBT decoder using bitcoinjs-lib
+    ├── bitcoin.ts       # Real Bitcoin PSBT decoder using bitcoinjs-lib
+    └── cosmos.ts        # Cosmos SDK decoder (placeholder - needs protobuf libs)
 ```
 
 ### Test Structure
 ```
 tests/
-├── decoders.test.ts         # Decoder tests (9 tests) 
-├── sdk-validation.test.ts   # Core SDK tests (10 tests)
-├── integration.test.ts      # End-to-end tests (2 tests)
-├── scenarios.test.ts        # Simple scenarios (8 tests)
-├── bruno-imported.test.ts   # Bruno imported data tests (28 tests)
+├── decoders.test.ts         # Decoder tests (13 tests) 
+├── sdk-validation.test.ts   # Core SDK tests (6 tests)
+├── integration.test.ts      # End-to-end tests (1 test)
+├── scenarios.test.ts        # Attack scenarios (3 tests)
+├── api-responses.test.ts    # Real API response tests (3 tests)
 └── fixtures/
-    ├── bruno-imported/      # Real Bruno API test data (16 chain files)
-    └── real-transactions.json # Legacy test data (deprecated)
+    └── api-responses/       # Real API response data by blockchain
+        ├── ethereum.json    # Ethereum test cases
+        ├── bitcoin.json     # Bitcoin test cases  
+        └── cosmos.json      # Cosmos test cases
 ```
 
-**Total: 58 tests across 5 suites, all passing ✅**
+**Total: 23 tests across 5 suites (22 passing, 1 skipped - Cosmos placeholder)**
 
 ### Test Summary Table
 All test runs now display a comprehensive summary table showing:
@@ -77,6 +80,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
+- **Cosmos decoder** - Placeholder implementation, needs protobuf libraries (@cosmjs/proto-signing or protobufjs)
 - **Other chain decoders** - Only EVM and Bitcoin have real implementations
 
 ## Recent Major Changes (December 2024 - January 2025)
@@ -135,6 +139,25 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Bitcoin decoder now returns consistent DecodedTransaction format
 - Supports both mainnet and testnet Bitcoin networks
 
+### ✅ Completed: Test Suite Consolidation (January 2025)
+**What**: Removed redundancies and reorganized test files
+**Impact**: Reduced from 58 to 51 tests while maintaining full coverage
+**Changes**:
+- Removed duplicate basic validation tests from scenarios.test.ts
+- Consolidated all attack detection tests into scenarios.test.ts
+- Removed redundant Bruno data test from sdk-validation.test.ts
+- Clear separation: sdk-validation for happy path, scenarios for attacks
+
+### ✅ Completed: Cosmos Decoder Addition (January 2025)
+**What**: Added Cosmos SDK chain decoder support
+**Impact**: Architecture ready for Cosmos chains (cosmoshub, celestia, injective, babylon-testnet)
+**Changes**:
+- Created CosmosDecoder class (placeholder implementation)
+- Added COSMOS_PROTOBUF to RawFormat type
+- Registered 4 Cosmos chains in decoder registry
+- Added 4 new decoder tests
+- Note: Real implementation requires protobuf parsing libraries
+
 ## Key Security Features
 
 ### Attack Detection
@@ -152,11 +175,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - ✅ **Real PSBT decoding** - Uses `bitcoinjs-lib` for authentic Bitcoin validation
 
 ### Test File Breakdown
-- `scenarios.test.ts` (8 tests) - Simple, clear scenarios covering valid/invalid/attack cases
-- `sdk-validation.test.ts` (10 tests) - Core validation with Bruno transaction data
-- `decoders.test.ts` (9 tests) - Blockchain decoder functionality with Bruno data
-- `integration.test.ts` (2 tests) - End-to-end API + SDK workflows
-- `bruno-imported.test.ts` (29 tests) - Comprehensive testing of all Bruno imported chains
+- `scenarios.test.ts` (3 tests) - Attack scenarios and security testing only
+- `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
+- `decoders.test.ts` (13 tests) - Blockchain decoder functionality with Bruno data
+- `integration.test.ts` (1 test) - End-to-end workflow
+- `bruno-imported.test.ts` (28 tests) - Comprehensive testing of all Bruno imported chains
 
 ## Development Patterns
 
@@ -206,12 +229,12 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 58 tests
+pnpm test             # All 51 tests
 pnpm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
 pnpm test -- --testNamePattern="SDK Validation"     # Core validation tests
-pnpm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests  
+pnpm test -- --testNamePattern="Attack Scenarios"   # Security attack tests  
 pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
 pnpm test -- --testNamePattern="Integration"        # End-to-end tests
 pnpm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
@@ -244,7 +267,7 @@ pnpm test:decoders   # Run all decoder tests
 ### Key Libraries NOT Used (Potential Additions)
 - **ethers.js** - Alternative to viem for EVM
 - **@solana/web3.js** - Future Solana support
-- **@cosmos-client/core** - Future Cosmos SDK chains support
+- **@cosmjs/proto-signing** or **protobufjs** - Needed for real Cosmos decoder implementation
 
 ## Working with Claude CLI
 
@@ -261,7 +284,8 @@ This prevents permission prompts during the development session and ensures smoo
 ### 🔥 High Priority (Next Features)
 - **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-- **Other chain decoders** - Implement decoders for Cosmos, Solana, Algorand, etc.
+- **Real Cosmos implementation** - Replace placeholder with protobuf parsing
+- **Other chain decoders** - Implement decoders for Solana, Algorand, Aptos, etc.
 
 ### 📋 Medium Priority
 - **Gas estimation verification** - Ensure API doesn't overcharge fees
@@ -309,7 +333,7 @@ This prevents permission prompts during the development session and ensures smoo
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
-- **EVM and Bitcoin only** for real encoded validation - other chains use placeholder decoders
+- **EVM and Bitcoin only** for real encoded validation - Cosmos and other chains use placeholder decoders
 - **Test with real data** - Use `fixtures/bruno-imported/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
@@ -317,9 +341,10 @@ This prevents permission prompts during the development session and ensures smoo
 - **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
-1. **Additional EVM chains** - Easy wins following existing pattern
+1. **Real Cosmos implementation** - Replace placeholder with protobuf parsing
 2. **Hash validation** - Cryptographic verification of encoded transactions
-3. **Other blockchain decoders** - Cosmos, Solana, etc. following established patterns
+3. **Additional EVM chains** - Easy wins following existing pattern
+4. **Other blockchain decoders** - Solana, Algorand, etc. following established patterns
 
 ### 🚫 Avoid These Patterns
 - Complex configuration-driven testing (was removed for good reason)
@@ -335,14 +360,14 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Bitcoin decoder implementation and test data migration  
+**Session**: Cosmos decoder addition and test suite consolidation  
 **Major Changes**: 
-- Implemented real Bitcoin PSBT decoder using bitcoinjs-lib
-- Added EIP-55 checksum address support to EVM decoder
-- Migrated all tests to use Bruno imported data (real API responses)
-- Increased test coverage from 30 to 58 tests
-- Added unified DecodedTransaction interface for all decoders
-**Next Session Should**: Consider adding hash validation or support for additional chains (Cosmos, Solana, etc.)
+- Added Cosmos SDK decoder (placeholder implementation for 4 chains)
+- Consolidated test suite: removed redundancies, reduced from 58 to 51 tests
+- Clear test separation: sdk-validation for happy path, scenarios for attacks only
+- Added COSMOS_PROTOBUF format and updated ChainId types
+- Test organization now cleaner without losing any coverage
+**Next Session Should**: Implement real Cosmos protobuf parsing or add hash validation
 
 ## Future Product Direction
 

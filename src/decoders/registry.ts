@@ -44,8 +44,24 @@ export class DecoderRegistry {
       "injective",
       "babylon-testnet"
     ];
+    
+    // Cosmos chains can use multiple formats
+    const cosmosFormats: RawFormat[] = [
+      "COSMOS_PROTOBUF",
+      "SIGNDOC_DIRECT",
+      "SIGNDOC_DIRECT_JSON",
+      "SIGNDOC_AMINO",
+      "SIGNDOC_AMINO_JSON"
+    ];
+    
     cosmosChains.forEach((chainId) => {
-      this.registerDecoder(new CosmosDecoder(chainId));
+      // Register the same decoder for all Cosmos formats
+      cosmosFormats.forEach((format) => {
+        const decoder = new CosmosDecoder(chainId);
+        // Override the format for registration
+        (decoder as any).format = format;
+        this.registerDecoder(decoder);
+      });
     });
 
     // Additional decoders can be added here as they are implemented

@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Bitcoin transfer",
+    "intent": {
+      "mode": "transfer",
+      "senderAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+      "recipientAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+      "amount": "1000",
+      "useMaxAmount": false
+    },
+    "response": {
+      "chainId": "bitcoin",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+          "recipientAddress": "bc1q87kp4qcr5w5uy4vn7dqa8dcv7r0a6kwpw0r2dv",
+          "amount": "1000",
+          "useMaxAmount": false,
+          "fees": "904"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "PSBT",
+              "value": "70736274ff01007102000000011b43b6166ed0207832f41f743b3ef1a1f1399a44f48ae760d82ed525426e252d0100000000fdffffff02e8030000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1a03f0000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000000001011f10470000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "placeholder-hash"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  }
+]
