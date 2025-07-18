@@ -4,6 +4,7 @@ import { AdamikEncodeResponseSchema, TransactionIntentSchema, Schemas } from "./
 import { ErrorCollector, ErrorCode } from "./schemas/errors";
 import { DecoderWithPlaceholder } from "./decoders/base";
 import { z } from "zod";
+import { getAddress } from "viem";
 
 /**
  * Adamik SDK - Pure verification SDK for validating API responses
@@ -25,6 +26,37 @@ export class AdamikSDK {
 
   constructor() {
     this.decoderRegistry = new DecoderRegistry();
+  }
+
+  /**
+   * Checks if a chain is EVM-based
+   */
+  private isEVMChain(chainId: string): boolean {
+    const evmChains = [
+      "ethereum", "polygon", "bsc", "avalanche", "arbitrum", 
+      "optimism", "fantom", "cronos", "moonbeam", "celo"
+    ];
+    return evmChains.includes(chainId.toLowerCase());
+  }
+
+  /**
+   * Normalizes addresses for comparison based on chain type
+   */
+  private normalizeAddress(address: string, chainId: string): string {
+    if (!address) return address;
+    
+    if (this.isEVMChain(chainId)) {
+      try {
+        // For EVM chains, use checksummed address format for consistent comparison
+        return getAddress(address);
+      } catch {
+        // If not a valid address, return as-is
+        return address;
+      }
+    }
+    
+    // For non-EVM chains, return as-is
+    return address;
   }
 
   /**
@@ -79,7 +111,7 @@ export class AdamikSDK {
       }
 
       // Step 3: Verify core transaction fields
-      this.verifyTransactionFields(validatedIntent, data, errorCollector);
+      this.verifyTransactionFields(validatedIntent, data, errorCollector, chainId);
 
       // Step 4: Verify amounts (if not using max amount)
       if ('amount' in validatedIntent && validatedIntent.amount !== undefined) {
@@ -115,7 +147,7 @@ export class AdamikSDK {
               );
             } else {
               // Encoded validation: Compare decoded transaction with original intent
-              this.verifyDecodedTransaction(decodedRaw, validatedIntent, data, errorCollector);
+              this.verifyDecodedTransaction(decodedRaw, validatedIntent, data, errorCollector, chainId);
             }
           } else {
             errorCollector.addError(
@@ -158,12 +190,14 @@ export class AdamikSDK {
    * @param originalIntent The original transaction intent
    * @param apiData The transaction data from API response
    * @param errorCollector The error collector instance
+   * @param chainId The blockchain identifier
    */
   private verifyDecodedTransaction(
     decodedTransaction: unknown,
     originalIntent: TransactionIntent,
     apiData: TransactionData,
-    errorCollector: ErrorCollector
+    errorCollector: ErrorCollector,
+    chainId: string
   ): void {
     // Type guard for decoded transaction structure
     if (!decodedTransaction || typeof decodedTransaction !== "object") {
@@ -178,10 +212,10 @@ export class AdamikSDK {
     const decoded = decodedTransaction as Record<string, unknown>;
 
     // Verify core decoded transaction fields
-    this.verifyDecodedFields(decoded, originalIntent, errorCollector);
+    this.verifyDecodedFields(decoded, originalIntent, errorCollector, chainId);
     
     // Cross-verify decoded transaction against API response data
-    this.verifyCrossConsistency(decoded, apiData, errorCollector);
+    this.verifyCrossConsistency(decoded, apiData, errorCollector, chainId);
   }
 
   /**
@@ -190,29 +224,40 @@ export class AdamikSDK {
   private verifyTransactionFields(
     originalIntent: TransactionIntent,
     data: TransactionData,
-    errorCollector: ErrorCollector
+    errorCollector: ErrorCollector,
+    chainId: string
   ): void {
-    // Check common fields
-    if (originalIntent.senderAddress !== undefined && data.senderAddress !== originalIntent.senderAddress) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.SENDER_MISMATCH,
-        "senderAddress",
-        originalIntent.senderAddress,
-        data.senderAddress
-      );
+    // Check common fields with normalized addresses for EVM chains
+    if (originalIntent.senderAddress !== undefined) {
+      const normalizedIntentSender = this.normalizeAddress(originalIntent.senderAddress, chainId);
+      const normalizedDataSender = this.normalizeAddress(data.senderAddress || '', chainId);
+      
+      if (normalizedDataSender !== normalizedIntentSender) {
+        errorCollector.addFieldMismatch(
+          ErrorCode.SENDER_MISMATCH,
+          "senderAddress",
+          originalIntent.senderAddress,
+          data.senderAddress
+        );
+      }
     }
 
     // Check mode-specific fields
     const intent = originalIntent as any;
     const txData = data as any;
     
-    if ('recipientAddress' in intent && intent.recipientAddress !== undefined && txData.recipientAddress !== intent.recipientAddress) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.RECIPIENT_MISMATCH,
-        "recipientAddress",
-        intent.recipientAddress,
-        txData.recipientAddress
-      );
+    if ('recipientAddress' in intent && intent.recipientAddress !== undefined) {
+      const normalizedIntentRecipient = this.normalizeAddress(intent.recipientAddress, chainId);
+      const normalizedDataRecipient = this.normalizeAddress(txData.recipientAddress || '', chainId);
+      
+      if (normalizedDataRecipient !== normalizedIntentRecipient) {
+        errorCollector.addFieldMismatch(
+          ErrorCode.RECIPIENT_MISMATCH,
+          "recipientAddress",
+          intent.recipientAddress,
+          txData.recipientAddress
+        );
+      }
     }
     
     if ('validatorAddress' in intent && intent.validatorAddress !== undefined && txData.validatorAddress !== intent.validatorAddress) {
@@ -249,7 +294,8 @@ export class AdamikSDK {
   private verifyDecodedFields(
     decoded: Record<string, unknown>,
     originalIntent: TransactionIntent,
-    errorCollector: ErrorCollector
+    errorCollector: ErrorCollector,
+    chainId: string
   ): void {
     // Verify transaction mode
     if (decoded.mode !== originalIntent.mode) {
@@ -261,15 +307,20 @@ export class AdamikSDK {
       );
     }
 
-    // Verify recipient address
+    // Verify recipient address with normalization for EVM chains
     const intent = originalIntent as any;
-    if ('recipientAddress' in intent && decoded.recipientAddress !== intent.recipientAddress) {
-      errorCollector.addError(
-        ErrorCode.CRITICAL_RECIPIENT_MISMATCH,
-        `Critical: Decoded transaction recipient mismatch: expected ${intent.recipientAddress}, got ${decoded.recipientAddress}`,
-        "critical",
-        { expected: intent.recipientAddress, actual: String(decoded.recipientAddress) }
-      );
+    if ('recipientAddress' in intent && intent.recipientAddress !== undefined) {
+      const normalizedIntentRecipient = this.normalizeAddress(intent.recipientAddress, chainId);
+      const normalizedDecodedRecipient = this.normalizeAddress(String(decoded.recipientAddress || ''), chainId);
+      
+      if (normalizedDecodedRecipient !== normalizedIntentRecipient) {
+        errorCollector.addError(
+          ErrorCode.CRITICAL_RECIPIENT_MISMATCH,
+          `Critical: Decoded transaction recipient mismatch: expected ${intent.recipientAddress}, got ${decoded.recipientAddress}`,
+          "critical",
+          { expected: intent.recipientAddress, actual: String(decoded.recipientAddress) }
+        );
+      }
     }
     
     // Verify validator address for staking operations
@@ -329,11 +380,15 @@ export class AdamikSDK {
   private verifyCrossConsistency(
     decoded: Record<string, unknown>,
     apiData: TransactionData,
-    errorCollector: ErrorCollector
+    errorCollector: ErrorCollector,
+    chainId: string
   ): void {
     // For staking transactions, skip recipient address check as they use targetValidatorAddress
     if (apiData.mode !== 'stake' && apiData.mode !== 'unstake' && apiData.mode !== 'claimRewards') {
-      if (decoded.recipientAddress !== apiData.recipientAddress) {
+      const normalizedDecodedRecipient = this.normalizeAddress(String(decoded.recipientAddress || ''), chainId);
+      const normalizedApiRecipient = this.normalizeAddress(apiData.recipientAddress || '', chainId);
+      
+      if (normalizedDecodedRecipient !== normalizedApiRecipient) {
         errorCollector.addError(
           ErrorCode.DECODED_API_MISMATCH,
           `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`,

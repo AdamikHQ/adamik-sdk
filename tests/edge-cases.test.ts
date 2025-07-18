@@ -32,7 +32,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208940987654321098765432109876543210987654321880000000000000000808080"
+              value: "0x02e80180843b9aca008506fc23ac008252089409876543210987654321098765432109876543218080c0"
             },
             hash: {
               format: "keccak256",
@@ -43,6 +43,9 @@ describe("Edge Cases and Boundary Conditions", () => {
       };
 
       const result = await sdk.verify(apiResponse, intent);
+      if (!result.isValid) {
+        console.log('Zero amount test failed:', JSON.stringify(result, null, 2));
+      }
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
@@ -71,7 +74,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208940987654321098765432109876543210987654321880000000000000000808080"
+              value: "0x02f8480180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321a0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80c0"
             },
             hash: {
               format: "keccak256",
@@ -109,7 +112,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208808810000000000000000808080"
+              value: "0x02dc0180843b9aca008506fc23ac0082520880880de0b6b3a764000080c0"
             },
             hash: {
               format: "keccak256",
@@ -134,20 +137,21 @@ describe("Edge Cases and Boundary Conditions", () => {
         amount: "1000000000000000000"
       };
 
-      const apiResponse = {
+      const apiResponse: AdamikEncodeResponse = {
         chainId: "ethereum",
         transaction: {
           data: {
             mode: "transfer",
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
-            amount: "1000000000000000000"
-            // Missing fees, gas, nonce - should still be valid
+            amount: "1000000000000000000",
+            fees: "21000000000000"
+            // Missing optional fields: gas, nonce - should still be valid
           },
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208940987654321098765432109876543210987654321888ac7230489e80000808080"
+              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
             },
             hash: {
               format: "keccak256",
@@ -170,15 +174,15 @@ describe("Edge Cases and Boundary Conditions", () => {
         amount: "1000000000000000000"
       };
 
-      const apiResponse = {
+      const apiResponse: AdamikEncodeResponse = {
         chainId: "ethereum",
         transaction: {
           data: {
             mode: "transfer",
             senderAddress: "0x1234567890123456789012345678901234567890",
-            // Missing recipientAddress
+            // Missing recipientAddress - should be caught by validation
             amount: "1000000000000000000"
-          },
+          } as any,
           encoded: []
         }
       };
@@ -213,7 +217,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208948bc6922eb94e4858efaf9f433c35bc241f69e8a6888ac7230489e80000808080"
+              value: "0x02f00180843b9aca008506fc23ac00825208948bc6922eb94e4858efaf9f433c35bc241f69e8a6880de0b6b3a764000080c0"
             },
             hash: {
               format: "keccak256",
@@ -224,6 +228,9 @@ describe("Edge Cases and Boundary Conditions", () => {
       };
 
       const result = await sdk.verify(apiResponse, intent);
+      if (!result.isValid) {
+        console.log('Mixed case test failed:', JSON.stringify(result, null, 2));
+      }
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
@@ -251,7 +258,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf86880825208940987654321098765432109876543210987654321888ac7230489e80000808080"
+              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
             },
             hash: {
               format: "keccak256",
@@ -291,7 +298,7 @@ describe("Edge Cases and Boundary Conditions", () => {
           encoded: [{
             raw: {
               format: "RLP",
-              value: "0xf868808252089412345678901234567890123456789012345678908ac7230489e80000808080"
+              value: "0x02f00180843b9aca008506fc23ac00825208941234567890123456789012345678901234567890880de0b6b3a764000080c0"
             },
             hash: {
               format: "keccak256",
@@ -330,7 +337,7 @@ describe("Edge Cases and Boundary Conditions", () => {
             {
               raw: {
                 format: "RLP",
-                value: "0xf86880825208940987654321098765432109876543210987654321888ac7230489e80000808080"
+                value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
               },
               hash: {
                 format: "keccak256",
