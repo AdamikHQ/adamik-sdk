@@ -4,10 +4,12 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**23 tests** across **5 test suites** providing complete coverage of:
+**63 tests** across **7 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM, PSBT for Bitcoin, and protobuf for Cosmos)
-- ✅ Security attack scenarios
+- ✅ Security attack scenarios with comprehensive coverage
+- ✅ Edge cases and boundary conditions
+- ✅ Error handling paths and exception scenarios
 - ✅ Multi-chain support (Bitcoin, Ethereum, Cosmos, Injective, Tron, Celestia)
 
 ## Test Files
@@ -15,10 +17,12 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 ### Core Test Suites
 
 - **`sdk-validation.test.ts`** (6 tests) - Core SDK validation logic (happy path)
-- **`scenarios.test.ts`** (5 tests) - Attack scenarios and security testing
-- **`decoders.test.ts`** (13 tests) - Decoder functionality and registry
+- **`attack-scenarios.test.ts`** (9 tests) - Security attack detection and tampering scenarios
+- **`edge-cases.test.ts`** (11 tests) - Boundary conditions and special cases
+- **`error-handling.test.ts`** (10 tests) - Error paths and exception handling
+- **`decoders.test.ts`** (17 tests) - Decoder functionality and registry
 - **`integration.test.ts`** (1 test) - End-to-end workflow testing
-- **`api-responses.test.ts`** (4 tests) - Real API response validation
+- **`api-responses.test.ts`** (9 tests) - Real API response validation
 
 ### Fixtures
 
@@ -39,6 +43,8 @@ pnpm test
 # Specific suites
 pnpm test -- --testNamePattern="SDK Validation"
 pnpm test -- --testNamePattern="Attack Scenarios"
+pnpm test -- --testNamePattern="Edge Cases"
+pnpm test -- --testNamePattern="Error Handling"
 pnpm test -- --testNamePattern="Decoders"
 pnpm test -- --testNamePattern="Integration"
 pnpm test -- --testNamePattern="API Response"
@@ -194,10 +200,26 @@ it("should detect [specific attack]", async () => {
   - Token transfer validation
   - useMaxAmount handling
 
-- **`scenarios.test.ts`** - Security attack scenarios
+- **`attack-scenarios.test.ts`** - Security attack scenarios
   - Malicious encoded transactions
   - Recipient/amount tampering
-  - Critical security tests
+  - Token contract manipulation
+  - Cosmos staking attacks
+  - Complex multi-format attacks
+
+- **`edge-cases.test.ts`** - Boundary conditions
+  - Zero and max uint256 amounts
+  - Empty recipient addresses
+  - Mixed case addresses
+  - Self-transfers
+  - Multiple encoded formats
+
+- **`error-handling.test.ts`** - Error path coverage
+  - Decoder exceptions
+  - Schema validation errors
+  - Null/undefined handling
+  - Cross-validation mismatches
+  - Graceful exception handling
 
 - **`decoders.test.ts`** - Decoder unit tests
   - Registry functionality
