@@ -1,5 +1,5 @@
 import AdamikSDK from "../src";
-import { AdamikEncodeResponse, TransactionIntent, TransactionMode } from "../src/types";
+import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
 import ethereumFixtures from "./fixtures/bruno-imported/ethereum.json";
 
 interface BrunoFixture {
@@ -20,236 +20,14 @@ interface BrunoFixture {
   source: string;
 }
 
-describe("Test Scenarios", () => {
+describe("Attack Scenarios", () => {
   let sdk: AdamikSDK;
 
   beforeEach(() => {
     sdk = new AdamikSDK();
   });
 
-  describe("Valid Scenarios", () => {
-    it("should validate basic ETH transfer", async () => {
-      const intent: TransactionIntent = {
-        mode: "transfer",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: "0x3535353535353535353535353535353535353535",
-        amount: "1000000000000000000",
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            fees: "21000000000000",
-            gas: "21000",
-            nonce: "9",
-          },
-          encoded: [],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
-    });
-
-    it("should validate ETH transfer with real Bruno data", async () => {
-      const transferFixture = ethereumFixtures.find(f => f.intent.mode === "transfer")!;
-      const intent: TransactionIntent = {
-        mode: transferFixture.intent.mode as TransactionMode,
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc", // Use consistent sender
-        recipientAddress: transferFixture.intent.recipientAddress,
-        amount: transferFixture.intent.amount,
-        useMaxAmount: transferFixture.intent.useMaxAmount,
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            fees: "105000000000000",
-            gas: "21000",
-            nonce: "9",
-          },
-          encoded: [
-            {
-              hash: {
-                format: "keccak256",
-                value: "0x374f3a049e006f36f6cf91b02a3b0ee16c858af2f75858733eb0e927b5b7126c",
-              },
-              raw: {
-                format: "RLP",
-                value: transferFixture.encodedTransaction,
-              },
-            },
-          ],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      // Note: This might fail due to case sensitivity issues found in Bruno data
-      // but that's exactly what we want to catch!
-      if (!result.isValid) {
-        console.log("Real Bruno data revealed issues:", result.errors);
-      }
-      expect(result.isValid).toBeDefined();
-    });
-
-    it("should validate token transfer", async () => {
-      const intent: TransactionIntent = {
-        mode: "transferToken",
-        tokenId: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: "0x3535353535353535353535353535353535353535",
-        amount: "1000000",
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            fees: "105000000000000",
-            gas: "50000",
-            nonce: "9",
-          },
-          encoded: [], // No encoded validation for token transfers in this test
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      expect(result.isValid).toBe(true);
-      expect(result.errors).toBeUndefined();
-    });
-
-    it("should validate ETH staking with real Bruno data", async () => {
-      const stakeFixture = ethereumFixtures.find(f => f.intent.mode === "stake")!;
-      const intent: TransactionIntent = {
-        mode: stakeFixture.intent.mode as TransactionMode,
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc", // Use consistent sender
-        targetValidatorAddress: stakeFixture.intent.targetValidatorAddress,
-        amount: stakeFixture.intent.amount,
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            fees: "105000000000000",
-            gas: "50000",
-            nonce: "9",
-          },
-          encoded: [
-            {
-              hash: {
-                format: "keccak256",
-                value: "0x374f3a049e006f36f6cf91b02a3b0ee16c858af2f75858733eb0e927b5b7126c",
-              },
-              raw: {
-                format: "RLP",
-                value: stakeFixture.encodedTransaction,
-              },
-            },
-          ],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      // Note: Staking might have complex transaction structure that doesn't match simple transfer validation
-      if (!result.isValid) {
-        console.log("Staking validation issues (expected):", result.errors);
-      }
-      expect(result.isValid).toBeDefined();
-    });
-  });
-
-  describe("Invalid Scenarios", () => {
-    it("should detect mode mismatch", async () => {
-      const intent: TransactionIntent = {
-        mode: "transfer",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: "0x3535353535353535353535353535353535353535",
-        amount: "1000000000000000000",
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            mode: "stake", // Different mode
-            fees: "21000000000000",
-            gas: "21000",
-            nonce: "9",
-          },
-          encoded: [],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Transaction mode mismatch: expected transfer, got stake");
-    });
-
-    it("should detect recipient mismatch", async () => {
-      const intent: TransactionIntent = {
-        mode: "transfer",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: "0x3535353535353535353535353535353535353535",
-        amount: "1000000000000000000",
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            recipientAddress: "0x1111111111111111111111111111111111111111", // Different recipient
-            fees: "21000000000000",
-            gas: "21000",
-            nonce: "9",
-          },
-          encoded: [],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Recipient address mismatch"))).toBe(true);
-    });
-
-    it("should detect amount mismatch", async () => {
-      const intent: TransactionIntent = {
-        mode: "transfer",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: "0x3535353535353535353535353535353535353535",
-        amount: "1000000000000000000",
-      };
-
-      const apiResponse: AdamikEncodeResponse = {
-        chainId: "ethereum",
-        transaction: {
-          data: {
-            ...intent,
-            amount: "2000000000000000000", // Different amount
-            fees: "21000000000000",
-            gas: "21000",
-            nonce: "9",
-          },
-          encoded: [],
-        },
-      };
-
-      const result = await sdk.verify(apiResponse, intent);
-      expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.includes("Amount mismatch"))).toBe(true);
-    });
-  });
-
-  describe("Attack Scenarios", () => {
+  describe("Malicious Encoded Transactions", () => {
     it("should detect malicious encoded transaction with different recipient", async () => {
       const transferFixture = ethereumFixtures.find(f => f.intent.mode === "transfer")!;
       const intent: TransactionIntent = {
@@ -325,6 +103,46 @@ describe("Test Scenarios", () => {
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors?.some(err => err.includes("Critical: Decoded transaction amount mismatch"))).toBe(true);
+    });
+
+    it("should detect malicious API providing correct data but wrong encoded transaction", async () => {
+      // This is the most critical security test - API shows what user expects but encoded transaction is malicious
+      const maliciousTransaction = "0xf86c098504a817c800825208941111111111111111111111111111111111111111880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83";
+      
+      const intent: TransactionIntent = {
+        mode: "transfer",
+        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
+        recipientAddress: "0x3535353535353535353535353535353535353535", // User expects funds to go here
+        amount: "1000000000000000000",
+      };
+
+      const apiResponse: AdamikEncodeResponse = {
+        chainId: "ethereum",
+        transaction: {
+          data: {
+            ...intent, // API shows correct recipient and amount
+            fees: "21000000000000",
+            gas: "21000",
+            nonce: "9",
+          },
+          encoded: [
+            {
+              hash: {
+                format: "keccak256",
+                value: "0xf4bf8d3c9861b0f2c6c5e8fa4b4b7f23e3f7dc9b8ae96d25e4d5b7c5af62b17f",
+              },
+              raw: {
+                format: "RLP",
+                value: maliciousTransaction, // But this sends to 0x1111... instead
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await sdk.verify(apiResponse, intent);
+      expect(result.isValid).toBe(false);
+      expect(result.errors?.some(err => err.includes("Critical: Decoded transaction recipient mismatch"))).toBe(true);
     });
   });
 });

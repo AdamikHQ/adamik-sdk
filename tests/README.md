@@ -4,41 +4,46 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**30 tests** across **4 test suites** providing complete coverage of:
+**~45 tests** across **5 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
-- ✅ Encoded transaction validation (real RLP decoding for EVM)
+- ✅ Encoded transaction validation (real RLP decoding for EVM and PSBT for Bitcoin)
 - ✅ Security attack scenarios
-- ✅ Multi-chain support
+- ✅ Multi-chain support (16 blockchains)
 
 ## Test Files
 
 ### Core Test Suites
 
-- **`sdk-validation.test.ts`** (10 tests) - Core SDK validation with real data
-- **`scenarios.test.ts`** (8 tests) - Simple scenario-based testing
-- **`decoders.test.ts`** (10 tests) - Decoder functionality and registry
-- **`integration.test.ts`** (2 tests) - End-to-end workflow testing
+- **`sdk-validation.test.ts`** (6 tests) - Core SDK validation logic (happy path)
+- **`scenarios.test.ts`** (3 tests) - Attack scenarios and security testing
+- **`decoders.test.ts`** (9 tests) - Decoder functionality and registry
+- **`integration.test.ts`** (1 test) - End-to-end workflow testing
+- **`bruno-imported.test.ts`** (28 tests) - Comprehensive real-world API data testing
 
 ### Fixtures
 
-- **`fixtures/real-transactions.json`** - Real blockchain transaction data
+- **`fixtures/bruno-imported/`** - Real blockchain transaction data from Bruno API tests (16 chain files)
 
 ## Running Tests
 
 ```bash
 # All tests
-npm test
+pnpm test
 
 # Specific suites
-npm test -- --testNamePattern="SDK Validation"
-npm test -- --testNamePattern="Test Scenarios"
-npm test -- --testNamePattern="Decoders"
+pnpm test -- --testNamePattern="SDK Validation"
+pnpm test -- --testNamePattern="Attack Scenarios"
+pnpm test -- --testNamePattern="Decoders"
+pnpm test -- --testNamePattern="Integration"
+pnpm test -- --testNamePattern="Bruno imported"
 
-# Verbose output
-npm test -- --verbose
+# Blockchain-specific tests
+pnpm test:bitcoin    # Bitcoin-related tests
+pnpm test:evm        # EVM-related tests
+pnpm test:decoders   # All decoder tests
 
 # Watch mode
-npm run test:watch
+pnpm run test:watch
 ```
 
 ## Test Architecture
@@ -160,21 +165,46 @@ it("should detect [specific attack]", async () => {
 });
 ```
 
+## Test Organization
+
+### Test File Purposes
+
+- **`sdk-validation.test.ts`** - Core validation logic (happy path scenarios)
+  - Basic intent validation
+  - Field matching tests
+  - Token transfer validation
+  - useMaxAmount handling
+
+- **`scenarios.test.ts`** - Security attack scenarios
+  - Malicious encoded transactions
+  - Recipient/amount tampering
+  - Critical security tests
+
+- **`decoders.test.ts`** - Decoder unit tests
+  - Registry functionality
+  - EVM/Bitcoin decoder tests
+  - Format validation
+
+- **`integration.test.ts`** - End-to-end workflow
+  - Complete verification flow
+
+- **`bruno-imported.test.ts`** - Real-world data validation
+  - 16 blockchain chains
+  - Actual API responses
+  - Independent verification
+
 ## Security Testing Coverage
 
-### Attack Scenarios Covered
+### Attack Scenarios (in scenarios.test.ts)
 
 1. **Malicious encoded transactions**
-   - API shows recipient A but encoded transaction sends to recipient B
-   - API shows amount X but encoded transaction sends amount Y
+   - API shows correct data but encoded transaction differs
+   - Recipient tampering detection
+   - Amount manipulation detection
 
-2. **Data tampering detection** 
-   - Transaction mode mismatches
-   - Recipient address manipulation
-   - Amount tampering
-
-3. **EVM security validation**
-   - Real RLP decoding and verification
+2. **Critical security validation**
+   - Real RLP decoding for EVM chains
+   - PSBT parsing for Bitcoin
    - Cross-validation between intent and decoded data
 
 ### Real Transaction Data

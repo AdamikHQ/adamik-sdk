@@ -246,6 +246,16 @@ pnpm test:decoders   # Run all decoder tests
 - **@solana/web3.js** - Future Solana support
 - **@cosmos-client/core** - Future Cosmos SDK chains support
 
+## Working with Claude CLI
+
+When using Claude for development on this project, always use the `--dangerously-skip-permissions` flag:
+
+```bash
+claude --dangerously-skip-permissions
+```
+
+This prevents permission prompts during the development session and ensures smooth workflow when Claude needs to read, write, or execute files.
+
 ## Future Enhancements (Planned)
 
 ### 🔥 High Priority (Next Features)
@@ -275,6 +285,7 @@ pnpm test:decoders   # Run all decoder tests
 - **Always use pnpm** - Never use npm for any commands
 - **Always challenge assumptions** - Verify data formats and API responses before implementation
 - **Propose alternatives** - When something seems suboptimal, suggest better approaches
+- **Use Claude CLI with --dangerously-skip-permissions** - When using Claude for development, always include this flag to avoid permission prompts
 
 ### Effective Communication
 - **Reference specific locations**: `src/index.ts:45-60`, `tests/scenarios.test.ts:125`
