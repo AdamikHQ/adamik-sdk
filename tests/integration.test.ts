@@ -1,25 +1,11 @@
 import AdamikSDK from "../src";
-import { AdamikAPIClient } from "../src/client";
-import { TransactionIntent } from "../src/types";
-
-// Mock fetch for integration tests
-global.fetch = jest.fn();
+import { TransactionIntent, AdamikEncodeResponse } from "../src/types";
 
 describe("Integration Tests", () => {
   let sdk: AdamikSDK;
-  let apiClient: AdamikAPIClient;
 
   beforeEach(() => {
     sdk = new AdamikSDK();
-    apiClient = new AdamikAPIClient({
-      baseUrl: "https://test-api.adamik.io",
-      apiKey: "test-api-key",
-    });
-    jest.clearAllMocks();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
   });
 
   describe("End-to-End Verification Flow", () => {
@@ -31,7 +17,7 @@ describe("Integration Tests", () => {
         amount: "1000000000000000000", // 1 ETH
       };
 
-      const mockApiResponse = {
+      const mockApiResponse: AdamikEncodeResponse = {
         chainId: "ethereum",
         transaction: {
           data: {
@@ -58,20 +44,10 @@ describe("Integration Tests", () => {
             },
           ],
         },
-        status: {
-          errors: [],
-          warnings: [],
-        },
       };
 
-      // Mock successful API call
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(mockApiResponse),
-      });
-
-      // Step 1: Encode transaction via API
-      const apiResponse = await apiClient.encodeTransaction("ethereum", intent);
+      // Step 1: Simulate API response (in real usage, this would come from your own API call)
+      const apiResponse = mockApiResponse;
 
       // Step 2: Verify the API response
       const verificationResult = await sdk.verify(apiResponse, intent);
@@ -91,7 +67,7 @@ describe("Integration Tests", () => {
         amount: "1000000000000000000",
       };
 
-      const maliciousApiResponse = {
+      const maliciousApiResponse: AdamikEncodeResponse = {
         chainId: "ethereum",
         transaction: {
           data: {
@@ -118,20 +94,10 @@ describe("Integration Tests", () => {
             },
           ],
         },
-        status: {
-          errors: [],
-          warnings: [],
-        },
       };
 
-      // Mock malicious API response
-      (fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: jest.fn().mockResolvedValueOnce(maliciousApiResponse),
-      });
-
-      // Step 1: Get response from (malicious) API
-      const apiResponse = await apiClient.encodeTransaction("ethereum", intent);
+      // Step 1: Simulate malicious API response
+      const apiResponse = maliciousApiResponse;
 
       // Step 2: SDK verification should catch the attack
       const verificationResult = await sdk.verify(apiResponse, intent);

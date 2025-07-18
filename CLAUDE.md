@@ -5,7 +5,7 @@
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
 - **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding
-- **Tests**: 58 tests passing across 5 suites (including new Bruno imported test suite)
+- **Tests**: 58 tests passing across 5 suites
 - **Recent**: Real Bitcoin decoder + EIP-55 address checksumming + Bruno test data migration completed
 
 ## Project Overview
@@ -31,7 +31,7 @@
 ```
 src/
 ├── index.ts              # Main AdamikSDK class with verify() method
-├── client.ts             # API client (legacy - see Future Enhancements)
+├── (removed client.ts)   # Previously API client - removed for Pure Verification design
 ├── types/index.ts        # TypeScript type definitions including DecodedTransaction
 └── decoders/
     ├── base.ts           # Abstract BaseDecoder class
@@ -47,7 +47,7 @@ tests/
 ├── sdk-validation.test.ts   # Core SDK tests (10 tests)
 ├── integration.test.ts      # End-to-end tests (2 tests)
 ├── scenarios.test.ts        # Simple scenarios (8 tests)
-├── bruno-imported.test.ts   # Bruno imported data tests (29 tests)
+├── bruno-imported.test.ts   # Bruno imported data tests (28 tests)
 └── fixtures/
     ├── bruno-imported/      # Real Bruno API test data (16 chain files)
     └── real-transactions.json # Legacy test data (deprecated)
@@ -348,4 +348,4 @@ pnpm test:decoders   # Run all decoder tests
 - **Benefits**: Simpler integration, one-stop solution
 - **Trade-offs**: More opinionated, harder to customize
 
-**Note**: The AdamikAPIClient exists in the codebase but is not part of the current Pure Verification SDK design. It may be utilized if we pivot to a Full Integration SDK approach.
+**Note**: The AdamikAPIClient has been removed to maintain the Pure Verification SDK design philosophy. Users should bring their own API responses from any source.

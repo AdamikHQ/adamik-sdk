@@ -222,7 +222,6 @@ export class AdamikSDK {
 }
 
 // Export main functions and types
-export { AdamikAPIClient } from "./client";
 export { DecoderRegistry } from "./decoders/registry";
 export * from "./types";
 
