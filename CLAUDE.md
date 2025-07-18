@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented, Bitcoin placeholder
-- **Tests**: 45 tests passing across 5 suites
-- **Recent**: Major code quality improvements and test simplification completed
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin placeholder
+- **Tests**: 58 tests passing across 5 suites (including new Bruno imported test suite)
+- **Recent**: EIP-55 address checksumming + Bruno test data migration completed
 
 ## Project Overview
 
@@ -43,29 +43,33 @@ src/
 ### Test Structure
 ```
 tests/
-├── decoders.test.ts      # Decoder tests (10 tests) 
-├── sdk-validation.test.ts # Core SDK tests (10 tests)
-├── integration.test.ts   # End-to-end tests (2 tests)
-├── scenarios.test.ts     # Simple scenarios (8 tests)
-└── fixtures/real-transactions.json # Real blockchain data
+├── decoders.test.ts         # Decoder tests (9 tests) 
+├── sdk-validation.test.ts   # Core SDK tests (10 tests)
+├── integration.test.ts      # End-to-end tests (2 tests)
+├── scenarios.test.ts        # Simple scenarios (8 tests)
+├── bruno-imported.test.ts   # Bruno imported data tests (29 tests)
+└── fixtures/
+    ├── bruno-imported/      # Real Bruno API test data (16 chain files)
+    └── real-transactions.json # Legacy test data (deprecated)
 ```
 
-**Total: 30 tests across 4 suites, all passing ✅**
+**Total: 58 tests across 5 suites, all passing ✅**
 
 ## Current Implementation Status
 
 ### ✅ Fully Implemented
 - **Intent validation** for all transaction types
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
+- **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
-- **Comprehensive test suite** with security attack scenarios
+- **Comprehensive test suite** with security attack scenarios + Bruno imported data
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
 - **Bitcoin decoder** - Uses mock PSBT data (needs bitcoinjs-lib integration)
 - **Other chain decoders** - Only EVM has real implementation
 
-## Recent Major Changes (December 2024)
+## Recent Major Changes (December 2024 - January 2025)
 
 ### ✅ Completed: Code Quality Improvements
 **What**: Complete codebase review and cleanup
@@ -92,6 +96,25 @@ tests/
 - Enhanced `tests/README.md` as single source of test documentation
 - Updated `README.md` and `CHANGELOG.md` to reflect simplifications
 
+### ✅ Completed: EIP-55 Checksum Implementation (January 2025)
+**What**: Added proper EIP-55 address checksumming to EVM decoder
+**Impact**: Enhanced security and standards compliance
+**Changes**:
+- Updated `src/decoders/evm.ts` to use viem's `getAddress` for EIP-55 checksumming
+- All decoded EVM addresses now returned in proper checksum format
+- Ensures address integrity throughout transaction verification flow
+- Example: `0x8bc6922eb94e4858efaf9f433c35bc241f69e8a6` → `0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6`
+
+### ✅ Completed: Bruno Test Data Migration (January 2025)
+**What**: Migrated from legacy test fixtures to Bruno imported data
+**Impact**: Better real-world test coverage with actual API responses
+**Changes**:
+- Added `tests/fixtures/bruno-imported/` with 16 chain-specific test files
+- Updated all decoder tests to use Bruno data instead of `real-transactions.json`
+- Added new `bruno-imported.test.ts` with 29 tests covering all imported chains
+- Test count increased from 30 to 58 tests
+- Better coverage of edge cases and real API response formats
+
 ## Key Security Features
 
 ### Attack Detection
@@ -108,9 +131,10 @@ tests/
 
 ### Test File Breakdown
 - `scenarios.test.ts` (8 tests) - Simple, clear scenarios covering valid/invalid/attack cases
-- `sdk-validation.test.ts` (10 tests) - Core validation with real transaction data
-- `decoders.test.ts` (10 tests) - Blockchain decoder functionality
+- `sdk-validation.test.ts` (10 tests) - Core validation with Bruno transaction data
+- `decoders.test.ts` (9 tests) - Blockchain decoder functionality with Bruno data
 - `integration.test.ts` (2 tests) - End-to-end API + SDK workflows
+- `bruno-imported.test.ts` (29 tests) - Comprehensive testing of all Bruno imported chains
 
 ## Development Patterns
 
@@ -135,7 +159,7 @@ export class NewChainDecoder extends BaseDecoder {
 // 2. Register in DecoderRegistry.registerDefaultDecoders()
 this.registerDecoder(new NewChainDecoder("newchain"));
 
-// 3. Add real transaction data to fixtures/real-transactions.json
+// 3. Add real transaction data to fixtures/bruno-imported/[chain].json
 // 4. Add tests to decoders.test.ts
 // 5. Update ChainId type in src/types/index.ts
 ```
@@ -158,7 +182,7 @@ npm run build        # TypeScript compilation
 npm run format       # Prettier formatting
 
 # Testing  
-npm test             # All 45 tests
+npm test             # All 58 tests
 npm run test:watch   # Watch mode
 
 # Specific test suites (use exact names)
@@ -166,18 +190,20 @@ npm test -- --testNamePattern="SDK Validation"     # Core validation tests
 npm test -- --testNamePattern="Test Scenarios"     # Simple scenario tests  
 npm test -- --testNamePattern="Decoders"           # Decoder functionality
 npm test -- --testNamePattern="Integration"        # End-to-end tests
+npm test -- --testNamePattern="Bruno imported"     # Bruno imported data tests
 ```
 
 ## Technical Stack
 
 ### Production Dependencies
-- **viem** (^2.32.0) - Real EVM RLP decoding (parseTransaction, isAddress, isHex)
+- **viem** (^2.32.0) - Real EVM RLP decoding (parseTransaction, isAddress, isHex, getAddress)
   - Used in `src/decoders/evm.ts` for authentic blockchain transaction parsing
+  - Provides EIP-55 checksum address formatting via getAddress
   - Enables real security validation for EVM chains
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 45 tests across 5 suites
+- **Jest** (^30.0.4) - Testing framework, 58 tests across 5 suites
 - **Prettier** (^3.6.2) - Code formatting (npm run format)
 - **ts-node** (^10.9.2) - Development execution
 - **ts-jest** (^29.4.0) - TypeScript Jest integration
@@ -237,9 +263,10 @@ npm test -- --testNamePattern="Integration"        # End-to-end tests
 
 ### ⚠️ Key Constraints
 - **EVM only** for real encoded validation - other chains use placeholder decoders
-- **Test with real data** - Use `fixtures/real-transactions.json` for authentic scenarios
+- **Test with real data** - Use `fixtures/bruno-imported/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
+- **EIP-55 compliance** - All EVM addresses must use proper checksumming
 
 ### 🎯 Current Priorities
 1. **Real Bitcoin decoder** - Replace placeholder with bitcoinjs-lib
@@ -259,10 +286,14 @@ npm test -- --testNamePattern="Integration"        # End-to-end tests
 ---
 
 ## Last Updated
-**Date**: December 2024  
-**Session**: Codebase review and test simplification  
-**Major Changes**: Code quality improvements, test suite simplification (1,200+ lines → clean scenarios), documentation streamlining  
-**Next Session Should**: Consider adding new chain support or enhancing Bitcoin decoder
+**Date**: January 2025  
+**Session**: EIP-55 implementation and Bruno test data migration  
+**Major Changes**: 
+- Added EIP-55 checksum address support to EVM decoder
+- Migrated all tests to use Bruno imported data (real API responses)
+- Increased test coverage from 30 to 58 tests
+- Improved real-world test scenarios with actual API data
+**Next Session Should**: Consider implementing real Bitcoin decoder with bitcoinjs-lib or adding more EVM chain support
 
 ## Future Product Direction
 

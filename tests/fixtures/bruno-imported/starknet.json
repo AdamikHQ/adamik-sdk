@@ -1,0 +1,41 @@
+[
+  {
+    "id": "starknet-starknet-[transfer]",
+    "name": "starknet [transfer]",
+    "chainId": "starknet",
+    "intent": {
+      "mode": "transfer",
+      "senderAddress": "0x05e1dfe469A9b7a504cA84102359467453aE530cFB5Ec70FF4239f91e964A08e",
+      "recipientAddress": "0x064C87F27Cf25c3c29DD7CbeFdC7cB0f25Ec89384C00Ae2c8e243Ff87017489E",
+      "amount": "200000000000000000"
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  },
+  {
+    "id": "starknet-starknet-[transfertoken]",
+    "name": "starknet [transferToken]",
+    "chainId": "starknet",
+    "intent": {
+      "mode": "transferToken",
+      "senderAddress": "0x05e1dfe469A9b7a504cA84102359467453aE530cFB5Ec70FF4239f91e964A08e",
+      "recipientAddress": "0x064C87F27Cf25c3c29DD7CbeFdC7cB0f25Ec89384C00Ae2c8e243Ff87017489E",
+      "tokenId": "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+      "amount": "123"
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  },
+  {
+    "id": "starknet-starknet-[deployaccount]",
+    "name": "starknet [deployAccount]",
+    "chainId": "starknet",
+    "intent": {
+      "mode": "deployAccount",
+      "type": "argentx",
+      "senderPubKey": "0x00f3Ec751F0C50F6c903a6bE345264d56114373fD3394D74be794b539BaF6218"
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  }
+]

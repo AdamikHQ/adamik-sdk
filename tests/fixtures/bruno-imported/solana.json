@@ -1,0 +1,15 @@
+[
+  {
+    "id": "solana",
+    "name": "solana",
+    "chainId": "solana",
+    "intent": {
+      "mode": "transfer",
+      "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+      "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+      "useMaxAmount": true
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  }
+]

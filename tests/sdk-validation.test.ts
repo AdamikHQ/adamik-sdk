@@ -1,6 +1,25 @@
 import AdamikSDK from "../src";
-import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
-import realTransactions from "./fixtures/real-transactions.json";
+import { AdamikEncodeResponse, TransactionIntent, TransactionMode } from "../src/types";
+import ethereumFixtures from "./fixtures/bruno-imported/ethereum.json";
+import bitcoinFixtures from "./fixtures/bruno-imported/bitcoin.json";
+
+interface BrunoFixture {
+  id: string;
+  name: string;
+  chainId: string;
+  intent: {
+    mode: string;
+    senderAddress?: string;
+    recipientAddress?: string;
+    amount?: string;
+    useMaxAmount?: boolean;
+    tokenId?: string;
+    targetValidatorAddress?: string;
+    stakeId?: string;
+  };
+  encodedTransaction: string;
+  source: string;
+}
 
 describe("AdamikSDK - Complete Validation Tests", () => {
   let sdk: AdamikSDK;
@@ -183,25 +202,23 @@ describe("AdamikSDK - Complete Validation Tests", () => {
 
   describe("Encoded Transaction Validation", () => {
     it("should validate real RLP transaction", async () => {
-      const realTx = realTransactions.ethereum.transfer;
-      const intent: TransactionIntent = {
-        mode: "transfer",
-        senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: realTx.decoded.recipientAddress,
-        amount: realTx.decoded.amount,
-      };
-
+      // This test validates that we can decode real RLP transactions from Bruno fixtures
+      const transferFixture = ethereumFixtures.find((f: BrunoFixture) => f.intent.mode === "transfer")!;
+      
+      // For this test, we'll create an API response that matches what the decoded transaction actually contains
+      // This tests the decoding functionality rather than attack detection
       const apiResponse: AdamikEncodeResponse = {
         chainId: "ethereum",
         transaction: {
           data: {
             mode: "transfer",
-            senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-            recipientAddress: realTx.decoded.recipientAddress,
-            amount: realTx.decoded.amount,
+            senderAddress: transferFixture.intent.senderAddress || "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
+            recipientAddress: "0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6", // Use EIP-55 checksummed address
+            amount: "15318337003738306", // The actual amount in the encoded transaction
+            useMaxAmount: true,
             fees: "105000000000000",
             gas: "21000",
-            nonce: "9",
+            nonce: "7",
           },
           encoded: [
             {
@@ -211,27 +228,41 @@ describe("AdamikSDK - Complete Validation Tests", () => {
               },
               raw: {
                 format: "RLP",
-                value: realTx.encoded,
+                value: transferFixture.encodedTransaction,
               },
             },
           ],
         },
       };
 
+      // Create intent that matches the decoded transaction
+      const intent: TransactionIntent = {
+        mode: "transfer" as TransactionMode,
+        senderAddress: apiResponse.transaction.data.senderAddress,
+        recipientAddress: apiResponse.transaction.data.recipientAddress,
+        amount: apiResponse.transaction.data.amount,
+        useMaxAmount: apiResponse.transaction.data.useMaxAmount,
+      };
+
       const result = await sdk.verify(apiResponse, intent);
 
+      if (!result.isValid) {
+        console.log("Validation errors:", result.errors);
+        console.log("Decoded data:", result.decodedData);
+      }
+      
       expect(result.isValid).toBe(true);
       expect(result.errors).toBeUndefined();
       expect(result.decodedData).toBeDefined();
     });
 
     it("should detect encoded recipient tampering", async () => {
-      const realTx = realTransactions.ethereum.transfer;
+      const transferFixture = ethereumFixtures.find((f: BrunoFixture) => f.intent.mode === "transfer")!;
       const intent: TransactionIntent = {
-        mode: "transfer",
+        mode: "transfer" as TransactionMode,
         senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
         recipientAddress: "0x1111111111111111111111111111111111111111", // Different from encoded
-        amount: realTx.decoded.amount,
+        amount: transferFixture.intent.amount || "1000000000000000000",
       };
 
       const apiResponse: AdamikEncodeResponse = {
@@ -241,7 +272,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
             mode: "transfer",
             senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
             recipientAddress: "0x1111111111111111111111111111111111111111", // Matches intent but not encoded
-            amount: realTx.decoded.amount,
+            amount: transferFixture.intent.amount || "1000000000000000000",
             fees: "105000000000000",
             gas: "21000",
             nonce: "9",
@@ -254,7 +285,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
               },
               raw: {
                 format: "RLP",
-                value: realTx.encoded, // Still sends to 0x3535...3535
+                value: transferFixture.encodedTransaction, // Still sends to original recipient
               },
             },
           ],
@@ -268,12 +299,12 @@ describe("AdamikSDK - Complete Validation Tests", () => {
     });
 
     it("should detect encoded amount tampering", async () => {
-      const realTx = realTransactions.ethereum.transfer;
+      const transferFixture = ethereumFixtures.find((f: BrunoFixture) => f.intent.mode === "transfer")!;
       const intent: TransactionIntent = {
-        mode: "transfer",
+        mode: "transfer" as TransactionMode,
         senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-        recipientAddress: realTx.decoded.recipientAddress,
-        amount: "500000000000000000", // Different from encoded (0.5 ETH vs 1 ETH)
+        recipientAddress: transferFixture.intent.recipientAddress,
+        amount: "500000000000000000", // Different from encoded (0.5 ETH vs original)
       };
 
       const apiResponse: AdamikEncodeResponse = {
@@ -282,7 +313,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
           data: {
             mode: "transfer",
             senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
-            recipientAddress: realTx.decoded.recipientAddress,
+            recipientAddress: transferFixture.intent.recipientAddress,
             amount: "500000000000000000", // Matches intent but not encoded
             fees: "105000000000000",
             gas: "21000",
@@ -296,7 +327,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
               },
               raw: {
                 format: "RLP",
-                value: realTx.encoded, // Still sends 1 ETH
+                value: transferFixture.encodedTransaction, // Still sends original amount
               },
             },
           ],
@@ -310,9 +341,9 @@ describe("AdamikSDK - Complete Validation Tests", () => {
     });
 
     it("should detect malicious API providing correct data but wrong encoded transaction", async () => {
-      const realTx = realTransactions.ethereum.transfer;
+      const transferFixture = ethereumFixtures.find((f: BrunoFixture) => f.intent.mode === "transfer")!;
       const intent: TransactionIntent = {
-        mode: "transfer",
+        mode: "transfer" as TransactionMode,
         senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
         recipientAddress: "0x1111111111111111111111111111111111111111",
         amount: "500000000000000000",
@@ -339,7 +370,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
               },
               raw: {
                 format: "RLP",
-                value: realTx.encoded, // But actually sends 1 ETH to 0x3535...3535
+                value: transferFixture.encodedTransaction, // But actually sends to different recipient/amount
               },
             },
           ],

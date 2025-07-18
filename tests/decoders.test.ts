@@ -1,7 +1,8 @@
 import { BitcoinDecoder } from "../src/decoders/bitcoin";
 import { EVMDecoder } from "../src/decoders/evm";
 import { DecoderRegistry } from "../src/decoders/registry";
-import realTransactions from "./fixtures/real-transactions.json";
+import ethereumTransactions from "./fixtures/bruno-imported/ethereum.json";
+import bitcoinTransactions from "./fixtures/bruno-imported/bitcoin.json";
 
 describe("Decoders", () => {
   describe("DecoderRegistry", () => {
@@ -42,8 +43,10 @@ describe("Decoders", () => {
     });
 
     it("should decode real RLP transaction", async () => {
-      const realTx = realTransactions.ethereum.transfer;
-      const decoded = await decoder.decode(realTx.encoded);
+      const transferTx = ethereumTransactions.find(tx => tx.intent.mode === "transfer");
+      expect(transferTx).toBeDefined();
+      
+      const decoded = await decoder.decode(transferTx!.encodedTransaction);
 
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("mode");
@@ -86,8 +89,10 @@ describe("Decoders", () => {
     });
 
     it("should decode PSBT data (placeholder implementation)", async () => {
-      const realTx = realTransactions.bitcoin.transfer;
-      const decoded = await decoder.decode(realTx.encoded);
+      const transferTx = bitcoinTransactions.find(tx => tx.intent.mode === "transfer");
+      expect(transferTx).toBeDefined();
+      
+      const decoded = await decoder.decode(transferTx!.encodedTransaction);
 
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("version");

@@ -6,6 +6,10 @@
 
 A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
 
+**Latest Updates** (January 2025):
+- ✅ EIP-55 checksum address support for enhanced security
+- ✅ Expanded test suite with real API response data (58 tests)
+
 **⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
 
 ## Core Principle: Two-Variable Verification
@@ -71,7 +75,7 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 
 **Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM, Limited for Others**:
 
-- ✅ **EVM**: Real RLP decoding using `viem` library
+- ✅ **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
 - ❌ **Bitcoin/Other chains**: Using placeholder decoders with mock data
 - **For EVM transactions**: Both steps provide real security protection
 - **For other chains**: Only Step 1 provides protection
@@ -134,8 +138,9 @@ if (result.isValid) {
 - **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
 - **Pure Verification Focus**: Security-first design that validates any API response
 - **TypeScript Support**: Full type definitions and IDE support
+- **EIP-55 Address Support**: Proper checksum validation for Ethereum addresses
+- **Comprehensive Testing**: 58 tests with real API response data
 - **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
-- **Comprehensive Testing**: 30+ tests focused on verification logic
 
 ### 🚧 In Development
 
@@ -315,11 +320,12 @@ The SDK includes a streamlined test suite with:
 # Core test files
 tests/sdk-validation.test.ts     # Complete validation tests (10 tests)
 tests/scenarios.test.ts          # Simple scenario-based tests (8 tests)
-tests/decoders.test.ts          # Decoder and registry tests (10 tests)
+tests/decoders.test.ts          # Decoder and registry tests (9 tests)
 tests/integration.test.ts       # End-to-end tests (2 tests)
+tests/bruno-imported.test.ts    # Bruno imported data tests (29 tests)
 
 # Fixtures
-tests/fixtures/real-transactions.json  # Real transaction data
+tests/fixtures/bruno-imported/   # Real API response data from Bruno
 ```
 
 See `tests/README.md` for detailed test documentation.

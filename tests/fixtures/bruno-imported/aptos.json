@@ -1,0 +1,30 @@
+[
+  {
+    "id": "aptos-aptos-[transfer]",
+    "name": "aptos [transfer]",
+    "chainId": "aptos",
+    "intent": {
+      "mode": "transfer",
+      "senderAddress": "0xca459d0248f1b55e211e3d795cf35927963e8951b487f2f1ea79f5cbef84b533",
+      "recipientAddress": "0x061bec04ef6641af7c45c42291920cbba4d50a392bdb420b982609afd6ced807",
+      "amount": "123456",
+      "useMaxAmount": false
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  },
+  {
+    "id": "aptos-aptos-[transfertoken]",
+    "name": "aptos [transferToken]",
+    "chainId": "aptos",
+    "intent": {
+      "mode": "transferToken",
+      "tokenId": "0x397071c01929cc6672a17f130bd62b1bce224309029837ce4f18214cc83ce2a7::USDC::USDC",
+      "senderAddress": "0xae1a6f3d3daccaf77b55044cea133379934bba04a11b9d0bbd643eae5e6e9c70",
+      "recipientAddress": "0x6b13ac8af6993a87f19fd3cd2c6b31b7cc24ac846d127922078cf8ba888c7c23",
+      "amount": "1234560"
+    },
+    "encodedTransaction": "",
+    "source": "bruno/undefined"
+  }
+]

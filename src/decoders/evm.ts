@@ -1,6 +1,6 @@
 import { BaseDecoder } from "./base";
 import { ChainId, TransactionMode } from "../types";
-import { isAddress, isHex, parseTransaction } from "viem";
+import { isAddress, isHex, parseTransaction, getAddress } from "viem";
 
 // Matches adamik-api CommonTransactionData structure
 interface DecodedEVMTransaction {
@@ -66,7 +66,7 @@ export class EVMDecoder extends BaseDecoder {
       // ERC-20 transfer function signature
       return {
         mode: "transferToken",
-        tokenId: to, // Contract address
+        tokenId: to ? getAddress(to) : undefined, // Contract address
         recipientAddress: this.extractERC20Recipient(data),
         amount: this.extractERC20Amount(data),
       };
@@ -75,7 +75,7 @@ export class EVMDecoder extends BaseDecoder {
     // Regular ETH transfer
     return {
       mode: "transfer",
-      recipientAddress: to || "",
+      recipientAddress: to ? getAddress(to) : "",
       amount: BigInt(value),
     };
   }
@@ -84,7 +84,7 @@ export class EVMDecoder extends BaseDecoder {
     // ERC-20 transfer data format: 0xa9059cbb + 32 bytes recipient + 32 bytes amount
     // Extract recipient address (bytes 4-35, but take last 20 bytes for address)
     const recipientHex = data.slice(34, 74); // Skip function sig (8 chars) + padding (24 chars)
-    return `0x${recipientHex}`;
+    return getAddress(`0x${recipientHex}`);
   }
 
   private extractERC20Amount(data: string): bigint {
