@@ -53,10 +53,11 @@ tests/
     └── api-responses/       # Real API response data by blockchain
         ├── ethereum.json    # Ethereum test cases
         ├── bitcoin.json     # Bitcoin test cases  
-        └── cosmos.json      # Cosmos test cases
+        ├── cosmos.json      # Cosmos test cases
+        └── injective.json   # Injective test cases
 ```
 
-**Total: 23 tests across 5 suites (22 passing, 1 skipped - Cosmos placeholder)**
+**Total: 29 tests across 5 suites (all passing)**
 
 ### Test Summary Table
 All test runs now display a comprehensive summary table showing:
@@ -74,14 +75,14 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Intent validation** for all transaction types
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
+- **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
 - **Comprehensive test suite** with security attack scenarios + real API response data
 - **TypeScript support** with strict mode
 
 ### ⚠️ Placeholder/Limited
-- **Cosmos decoder** - Placeholder implementation, needs protobuf libraries (@cosmjs/proto-signing or protobufjs)
-- **Other chain decoders** - Only EVM and Bitcoin have real implementations
+- **Other chain decoders** - Only EVM, Bitcoin, and Cosmos have real implementations (Solana, Algorand, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - January 2025)
 
@@ -169,6 +170,17 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Added status field to AdamikEncodeResponse type with support for warnings
 - Updated Cosmos decoder registration to support multiple formats (SIGNDOC_DIRECT, etc.)
 
+### ✅ Completed: Real Cosmos Decoder Implementation (January 2025)
+**What**: Replaced placeholder Cosmos decoder with real protobuf parsing
+**Impact**: Cosmos chains now have full transaction validation capabilities
+**Changes**:
+- Integrated @cosmjs/proto-signing, @cosmjs/encoding, and @cosmjs/stargate for protobuf parsing
+- Implemented SignDoc parsing for SIGNDOC_DIRECT format
+- Added support for MsgSend transaction type decoding
+- Properly extracts sender, recipient, and amount from Cosmos transactions
+- Added basic Cosmos address validation (bech32 format)
+- All 23 tests now passing (previously 1 was skipped)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -186,11 +198,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - ✅ **Real PSBT decoding** - Uses `bitcoinjs-lib` for authentic Bitcoin validation
 
 ### Test File Breakdown
-- `scenarios.test.ts` (3 tests) - Attack scenarios and security testing only
+- `scenarios.test.ts` (5 tests) - Attack scenarios and security testing (including Injective)
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
 - `decoders.test.ts` (13 tests) - Blockchain decoder functionality
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `api-responses.test.ts` (3 tests) - Real API response validation
+- `api-responses.test.ts` (4 tests) - Real API response validation (includes Injective)
 
 ## Development Patterns
 
@@ -267,6 +279,12 @@ pnpm test:decoders   # Run all decoder tests
   - Used in `src/decoders/bitcoin.ts` for PSBT transaction parsing
   - Extracts addresses, amounts, and transaction details from PSBT format
   - Supports both mainnet and testnet Bitcoin networks
+- **@cosmjs/proto-signing** (^0.34.0) - Cosmos protobuf transaction decoding
+  - Used in `src/decoders/cosmos.ts` for SignDoc and transaction parsing
+  - Provides decodeTxRaw for parsing Cosmos transactions
+- **@cosmjs/encoding** (^0.34.0) - Cosmos encoding utilities (fromHex, toBech32)
+- **@cosmjs/stargate** (^0.34.0) - Cosmos registry types for message decoding
+- **cosmjs-types** (^0.9.0) - Protobuf type definitions for Cosmos messages
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
@@ -278,7 +296,8 @@ pnpm test:decoders   # Run all decoder tests
 ### Key Libraries NOT Used (Potential Additions)
 - **ethers.js** - Alternative to viem for EVM
 - **@solana/web3.js** - Future Solana support
-- **@cosmjs/proto-signing** or **protobufjs** - Needed for real Cosmos decoder implementation
+- **algosdk** - Future Algorand support
+- **@aptos-labs/ts-sdk** - Future Aptos support
 
 ## Working with Claude CLI
 
@@ -295,7 +314,6 @@ This prevents permission prompts during the development session and ensures smoo
 ### 🔥 High Priority (Next Features)
 - **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-- **Real Cosmos implementation** - Replace placeholder with protobuf parsing
 - **Other chain decoders** - Implement decoders for Solana, Algorand, Aptos, etc.
 
 ### 📋 Medium Priority
@@ -344,7 +362,7 @@ This prevents permission prompts during the development session and ensures smoo
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
-- **EVM and Bitcoin only** for real encoded validation - Cosmos and other chains use placeholder decoders
+- **EVM, Bitcoin, and Cosmos** have real encoded validation - Other chains still need decoders
 - **Test with real data** - Use `fixtures/api-responses/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
@@ -352,10 +370,9 @@ This prevents permission prompts during the development session and ensures smoo
 - **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
-1. **Real Cosmos implementation** - Replace placeholder with protobuf parsing
-2. **Hash validation** - Cryptographic verification of encoded transactions
-3. **Additional EVM chains** - Easy wins following existing pattern
-4. **Other blockchain decoders** - Solana, Algorand, etc. following established patterns
+1. **Hash validation** - Cryptographic verification of encoded transactions
+2. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
+3. **Other blockchain decoders** - Solana, Algorand, Aptos following established patterns
 
 ### 🚫 Avoid These Patterns
 - Complex configuration-driven testing (was removed for good reason)
@@ -371,15 +388,14 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: January 2025  
-**Session**: Bruno test removal and manual API response structure  
+**Session**: Real Cosmos decoder implementation  
 **Major Changes**: 
-- Removed all Bruno-imported tests and fixtures per CTO feedback
-- Created new test structure with JSON fixtures per blockchain family
-- Added real API responses for Ethereum, Bitcoin, and Cosmos
-- Reduced test count from 51 to 23 (focusing on real-world cases)
-- Added support for warning messages as objects in status field
-- Fixed Cosmos decoder registration for multiple format types
-**Next Session Should**: Add more real API response examples as they become available
+- Implemented real Cosmos decoder with protobuf parsing using @cosmjs libraries
+- Added support for SignDoc and MsgSend transaction parsing
+- All 23 tests now passing (previously 1 was skipped for Cosmos)
+- Added proper Cosmos address validation
+- Updated documentation to reflect Cosmos is now fully implemented
+**Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction
 

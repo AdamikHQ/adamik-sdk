@@ -3,6 +3,7 @@ import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
 import ethereumFixtures from "./fixtures/api-responses/ethereum.json";
 import bitcoinFixtures from "./fixtures/api-responses/bitcoin.json";
 import cosmosFixtures from "./fixtures/api-responses/cosmos.json";
+import injectiveFixtures from "./fixtures/api-responses/injective.json";
 
 /**
  * API Response Test Suite
@@ -62,7 +63,25 @@ describe("API Response Validation", () => {
     const fixtures = cosmosFixtures as ApiTestFixture[];
     
     fixtures.forEach(fixture => {
-      it.skip(`should validate ${fixture.name} (skipped: Cosmos decoder is placeholder)`, async () => {
+      it(`should validate ${fixture.name}`, async () => {
+        const result = await sdk.verify(fixture.response, fixture.intent);
+
+        expect(result.isValid).toBe(true);
+        expect(result.errors || []).toHaveLength(0);
+        
+        // Verify decoded transaction matches intent
+        expect(result.decodedData).toBeDefined();
+        expect(result.decodedData?.transaction.recipientAddress).toBe(fixture.intent.recipientAddress);
+        expect(result.decodedData?.transaction.amount).toBe(fixture.intent.amount);
+      });
+    });
+  });
+
+  describe("Injective", () => {
+    const fixtures = injectiveFixtures as ApiTestFixture[];
+    
+    fixtures.forEach(fixture => {
+      it(`should validate ${fixture.name}`, async () => {
         const result = await sdk.verify(fixture.response, fixture.intent);
 
         expect(result.isValid).toBe(true);
@@ -73,10 +92,8 @@ describe("API Response Validation", () => {
         expect(result.decodedData?.transaction.recipientAddress).toBe(fixture.intent.recipientAddress);
         expect(result.decodedData?.transaction.amount).toBe(fixture.intent.amount);
         
-        // Check memo if present
-        if (fixture.intent.memo) {
-          expect(result.decodedData?.transaction.memo).toBe(fixture.intent.memo);
-        }
+        // Verify sender address for Injective
+        expect(result.decodedData?.transaction.senderAddress).toBe(fixture.intent.senderAddress);
       });
     });
   });

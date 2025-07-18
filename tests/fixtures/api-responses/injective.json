@@ -1,0 +1,58 @@
+[
+  {
+    "name": "Injective transfer with memo",
+    "intent": {
+      "mode": "transfer",
+      "senderAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+      "recipientAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+      "amount": "10000",
+      "memo": "adamik-test-memo"
+    },
+    "response": {
+      "chainId": "injective",
+      "transaction": {
+        "data": {
+          "memo": "adamik-test-memo",
+          "mode": "transfer",
+          "senderAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+          "recipientAddress": "inj1akxycslq8cjt0uffw4rjmfm3echchptu52a2dq",
+          "amount": "10000",
+          "useMaxAmount": false,
+          "fees": "101068800000000",
+          "gas": "144384",
+          "nonce": "86202117",
+          "senderPubKey": "AuCghumv/N4EYLDfm60KhVZ8z3p9FtP/jjJtbqihS+IB"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0a9b010a86010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412660a2a696e6a31616b787963736c7138636a74307566667734726a6d666d336563686368707475353261326471122a696e6a31616b787963736c7138636a74307566667734726a6d666d3365636863687074753532613264711a0c0a03696e6a1205313030303012106164616d696b2d746573742d6d656d6f1281010a610a540a2d2f696e6a6563746976652e63727970746f2e763162657461312e657468736563703235366b312e5075624b657912230a2102e0a086e9affcde0460b0df9bad0a85567ccf7a7d16d3ff8e326d6ea8a14be20112040a0208011885ae8d29121c0a160a03696e6a120f3130313036383830303030303030301080e8081a0b696e6a6563746976652d3120d127"
+            },
+            "hash": {
+              "format": "keccak256",
+              "value": "8bad28ac4c07641fd97810e5c722b8d0c93b17571e7385995336cd00dad5cf4a"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"CoYBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmYKKmluajFha3h5Y3NscThjanQwdWZmdzRyam1mbTNlY2hjaHB0dTUyYTJkcRIqaW5qMWFreHljc2xxOGNqdDB1ZmZ3NHJqbWZtM2VjaGNocHR1NTJhMmRxGgwKA2luahIFMTAwMDASEGFkYW1pay10ZXN0LW1lbW8=\",\"authInfoBytes\":\"CmEKVAotL2luamVjdGl2ZS5jcnlwdG8udjFiZXRhMS5ldGhzZWNwMjU2azEuUHViS2V5EiMKIQLgoIbpr/zeBGCw35utCoVWfM96fRbT/44ybW6ooUviARIECgIIARiFro0pEhwKFgoDaW5qEg8xMDEwNjg4MDAwMDAwMDAQgOgI\",\"chainId\":\"injective-1\",\"accountNumber\":\"5073\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Same sender and recipient address"
+          },
+          {
+            "message": "Network fees are above 10% of the amount"
+          }
+        ]
+      }
+    }
+  }
+]

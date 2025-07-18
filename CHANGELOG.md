@@ -8,21 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Real Cosmos Decoder Implementation** - Full protobuf parsing for Cosmos SDK chains
+  - Integrated `@cosmjs/proto-signing`, `@cosmjs/encoding`, and `@cosmjs/stargate` libraries
+  - Support for SignDoc (SIGNDOC_DIRECT) format parsing
+  - Decodes MsgSend transactions with sender, recipient, and amount extraction
+  - Basic Cosmos address validation (bech32 format)
+  - Support for Cosmos Hub, Celestia, Injective, and Babylon testnet
+- **Injective Test Support** - Added Injective-specific test cases
+  - Created `injective.json` fixture with real API response
+  - Added attack scenarios for Injective transactions
+  - Test count increased from 23 to 29
 - **Manual API Response Testing Structure** - New test framework for real API responses
   - Created `api-responses.test.ts` for validating real API responses
-  - Added JSON fixtures organized by blockchain (`ethereum.json`, `bitcoin.json`, `cosmos.json`)
+  - Added JSON fixtures organized by blockchain (`ethereum.json`, `bitcoin.json`, `cosmos.json`, `injective.json`)
   - Support for optional `status` field in `AdamikEncodeResponse` type
   - Status warnings can be strings or objects with `message` property
 
 ### Changed
 - **Bruno Test Removal** - Replaced Bruno-imported tests with manual fixtures
   - Removed `bruno-imported.test.ts` and all Bruno test fixtures per CTO feedback
-  - Reduced test count from 51 to 23 (focusing on quality over quantity)
   - Test fixtures now in `tests/fixtures/api-responses/` directory
   - Cleaner test organization with real-world API responses
-- **Cosmos Decoder Enhancement** - Improved format support
+- **Cosmos Decoder Enhancement** - From placeholder to full implementation
   - Updated decoder registry to support multiple Cosmos formats (SIGNDOC_DIRECT, SIGNDOC_DIRECT_JSON, etc.)
-  - Cosmos tests now properly skipped with clear explanation
+  - Cosmos tests now passing (previously skipped)
 
 ### Fixed
 

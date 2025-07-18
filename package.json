@@ -51,7 +51,11 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@cosmjs/encoding": "^0.34.0",
+    "@cosmjs/proto-signing": "^0.34.0",
+    "@cosmjs/stargate": "^0.34.0",
     "bitcoinjs-lib": "^6.1.7",
+    "cosmjs-types": "^0.9.0",
     "viem": "^2.32.0"
   }
 }

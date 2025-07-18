@@ -7,11 +7,12 @@
 A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
 
 **Latest Updates** (January 2025):
+- ✅ Real Cosmos protobuf decoder implementation using @cosmjs libraries
 - ✅ Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
 - ✅ EIP-55 checksum address support for enhanced security
-- ✅ Streamlined test suite with real API response data (23 tests)
+- ✅ Streamlined test suite with real API response data (29 tests)
 
-**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM and Bitcoin chains, and placeholder decoders for other chains. See [Security & Current Limitations](#️-security--current-limitations) below.
+**⚠️ Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM, Bitcoin, and Cosmos chains. Other chains use placeholder decoders. See [Security & Current Limitations](#️-security--current-limitations) below.
 
 ## Core Principle: Two-Variable Verification
 
@@ -74,17 +75,18 @@ const encodedMatches = decoded.amount === originalIntent.amount;
 - Verifies `transaction.data` fields match your intent
 - Catches API tampering with readable fields
 
-**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM & Bitcoin, Limited for Others**:
+**Step 2: Encoded Transaction Validation** ✅ **Implemented for EVM, Bitcoin & Cosmos, Limited for Others**:
 
 - ✅ **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
 - ✅ **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
+- ✅ **Cosmos**: Real protobuf decoding using `@cosmjs/proto-signing` library
 - ❌ **Other chains**: Using placeholder decoders with mock data
-- **For EVM & Bitcoin transactions**: Both steps provide real security protection
+- **For EVM, Bitcoin & Cosmos transactions**: Both steps provide real security protection
 - **For other chains**: Only Step 1 provides protection
 
 ### 🚨 Security Implications
 
-**For EVM & Bitcoin Chains** (Full Protection):
+**For EVM, Bitcoin & Cosmos Chains** (Full Protection):
 
 - ✅ API changing recipient address in `transaction.data` (Intent validation)
 - ✅ API modifying amount in `transaction.data` (Intent validation)
@@ -137,18 +139,18 @@ if (result.isValid) {
 ### ✅ Currently Implemented
 
 - **Intent Validation**: Compare readable `transaction.data` fields against your intent
-- **Multi-chain Support**: EVM, Bitcoin, and extensible architecture
+- **Multi-chain Support**: EVM, Bitcoin, Cosmos, and extensible architecture
 - **Pure Verification Focus**: Security-first design that validates any API response
 - **TypeScript Support**: Full type definitions and IDE support
 - **EIP-55 Address Support**: Proper checksum validation for Ethereum addresses
-- **Comprehensive Testing**: 23 tests with real API response data
+- **Comprehensive Testing**: 29 tests with real API response data
 - **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
 
 ### 🚧 In Development
 
-- **Encoded Transaction Validation**: Real decoding of `transaction.encoded` (placeholder for non-EVM)
-- **Production Decoders**: Integration with `ethers.js`, `bitcoinjs-lib`, etc.
+- **Encoded Transaction Validation**: Real decoding for remaining chains (Solana, Algorand, etc.)
 - **Hash Validation**: Cryptographic verification of encoded transactions
+- **Additional Chain Support**: Expanding decoder coverage beyond EVM, Bitcoin, and Cosmos
 
 ## Installation
 

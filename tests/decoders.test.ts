@@ -129,9 +129,9 @@ describe("Decoders", () => {
       decoder = new CosmosDecoder("cosmoshub");
     });
 
-    it("should decode Cosmos protobuf data (placeholder implementation)", async () => {
-      // Example Cosmos protobuf data (base64)
-      const protoData = "CpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKLWNvc21vczFxeXFzenFnaDZreTlmNGdmeXVkM3g5dHRtOTRleDQzNTBrNDZyEi1jb3Ntb3MxNmg5d3VqZzR0bHBoZzg0Y3UzNjZreGg2dDNxMHowZnJ5MW1oMhoQCgV1YXRvbRIHMTAwMDAwMA==";
+    it("should decode Cosmos protobuf data", async () => {
+      // Use actual SignDoc data from the cosmos.json fixture (in hex format)
+      const protoData = "0aa3010a8e010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e64126e0a2d636f736d6f73316738343933346a70753376356465357971756b6b6b68786d63767377337532616a787670646c122d636f736d6f73316738343933346a70753376356465357971756b6b6b68786d63767377337532616a787670646c1a0e0a057561746f6d1205313030303012106164616d696b2d746573742d6d656d6f12680a510a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a210388459b2653519948b12492f1a0b464720110c147a8155d23d423a5cc3c21d89a12040a02080118b40112130a0d0a057561746f6d1204323739311093e8061a0b636f736d6f736875622d3420f6f201";
       
       const decoded = await decoder.decode(protoData);
 
@@ -168,11 +168,11 @@ describe("Decoders", () => {
       const addresses = [
         "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
         "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
-        "osmo1234567890abcdef",
-        "juno1234567890abcdef",
-        "secret1234567890abcdef",
-        "inj1234567890abcdef",
-        "bbn1234567890abcdef",
+        "osmo1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        "juno1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        "secret1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        "inj1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
+        "bbn1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
       ];
 
       addresses.forEach(address => {
