@@ -13,7 +13,10 @@
     "dev": "ts-node src/index.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "import-bruno-tests": "ts-node scripts/import-bruno-tests.ts"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests --ext .ts",
+    "lint:fix": "eslint src tests --ext .ts --fix",
+    "prepublishOnly": "npm run build && npm run typecheck && npm test"
   },
   "keywords": [
     "adamik",
@@ -41,6 +44,10 @@
     "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "glob": "^11.0.3",
     "jest": "^30.0.4",
     "jest-html-reporter": "^4.3.0",

@@ -1,5 +1,5 @@
 import { ChainId, RawFormat } from "../types";
-import { BaseDecoder } from "./base";
+import { BaseDecoder, DecoderWithPlaceholder } from "./base";
 import { EVMDecoder } from "./evm";
 import { BitcoinDecoder } from "./bitcoin";
 import { CosmosDecoder } from "./cosmos";
@@ -58,9 +58,7 @@ export class DecoderRegistry {
     cosmosChains.forEach((chainId) => {
       // Register the same decoder for all Cosmos formats
       cosmosFormats.forEach((format) => {
-        const decoder = new CosmosDecoder(chainId);
-        // Override the format for registration
-        (decoder as any).format = format;
+        const decoder = new CosmosDecoder(chainId, format as any);
         this.registerDecoder(decoder);
       });
     });

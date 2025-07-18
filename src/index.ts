@@ -2,6 +2,7 @@ import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponse, TransactionData, TransactionIntent, VerificationResult } from "./types";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema, Schemas } from "./schemas";
 import { ErrorCollector, ErrorCode } from "./schemas/errors";
+import { DecoderWithPlaceholder } from "./decoders/base";
 import { z } from "zod";
 
 /**
@@ -103,7 +104,8 @@ export class AdamikSDK {
             decodedRaw = await decoder.decode(encoded[0].raw.value);
 
             // Skip encoded validation for placeholder decoders
-            if ((decoder as any).isPlaceholder) {
+            const decoderWithPlaceholder = decoder as DecoderWithPlaceholder;
+            if (decoderWithPlaceholder.isPlaceholder) {
               // For placeholder decoders, we only do intent validation (already done above)
               // Add a warning to indicate this is a placeholder
               errorCollector.addError(

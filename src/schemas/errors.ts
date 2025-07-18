@@ -42,6 +42,7 @@ export interface VerificationError {
   severity: ErrorSeverity;
   message: string;
   field?: string;
+  recoveryStrategy?: string;
   context?: {
     expected?: string;
     actual?: string;
@@ -71,6 +72,54 @@ export interface VerificationResult {
  */
 export class ErrorCollector {
   private errors: VerificationError[] = [];
+  private errorKeys = new Set<string>();
+  
+  /**
+   * Generate a unique key for error deduplication
+   */
+  private getErrorKey(error: VerificationError): string {
+    return `${error.code}:${error.field || ''}:${error.severity}:${error.context?.expected || ''}:${error.context?.actual || ''}`;
+  }
+  
+  /**
+   * Get recovery strategy for an error code
+   */
+  private getRecoveryStrategy(code: ErrorCode, severity: ErrorSeverity): string | undefined {
+    switch (code) {
+      case ErrorCode.MISSING_DECODER:
+        return 'This blockchain may not be fully supported yet. Consider implementing a custom decoder or checking if the chain ID and format are correct.';
+      
+      case ErrorCode.INVALID_API_RESPONSE:
+      case ErrorCode.INVALID_INTENT:
+        return 'Check that your data matches the expected format for this blockchain. Refer to the documentation for valid field values.';
+      
+      case ErrorCode.DECODE_FAILED:
+      case ErrorCode.INVALID_DECODED_STRUCTURE:
+        return 'The encoded transaction data may be corrupted or in an unexpected format. Verify the transaction was encoded correctly.';
+      
+      case ErrorCode.CRITICAL_RECIPIENT_MISMATCH:
+      case ErrorCode.CRITICAL_AMOUNT_MISMATCH:
+      case ErrorCode.CRITICAL_TOKEN_MISMATCH:
+      case ErrorCode.CRITICAL_VALIDATOR_MISMATCH:
+        return 'SECURITY ALERT: Do not sign this transaction! The encoded data does not match your intent. This could be a malicious API response.';
+      
+      case ErrorCode.MODE_MISMATCH:
+      case ErrorCode.SENDER_MISMATCH:
+      case ErrorCode.RECIPIENT_MISMATCH:
+      case ErrorCode.AMOUNT_MISMATCH:
+      case ErrorCode.TOKEN_MISMATCH:
+      case ErrorCode.VALIDATOR_MISMATCH:
+        return severity === 'critical' 
+          ? 'SECURITY ALERT: Do not sign this transaction! Critical field mismatch detected.'
+          : 'Some fields in the API response do not match your original intent. Review the differences and ensure they are acceptable.';
+      
+      case ErrorCode.DECODED_API_MISMATCH:
+        return 'The decoded transaction data does not match the API response. This could indicate data corruption or encoding issues.';
+      
+      default:
+        return undefined;
+    }
+  }
   
   addError(
     code: ErrorCode,
@@ -78,7 +127,21 @@ export class ErrorCollector {
     severity: ErrorSeverity = "error",
     context?: VerificationError["context"]
   ): void {
-    this.errors.push({ code, severity, message, context });
+    const recoveryStrategy = this.getRecoveryStrategy(code, severity);
+    const error: VerificationError = { 
+      code, 
+      severity, 
+      message, 
+      context,
+      ...(recoveryStrategy && { recoveryStrategy })
+    };
+    const key = this.getErrorKey(error);
+    
+    // Deduplicate errors
+    if (!this.errorKeys.has(key)) {
+      this.errorKeys.add(key);
+      this.errors.push(error);
+    }
   }
   
   addFieldMismatch(
@@ -89,13 +152,22 @@ export class ErrorCollector {
     severity: ErrorSeverity = "error"
   ): void {
     if (expected !== actual) {
-      this.errors.push({
+      const recoveryStrategy = this.getRecoveryStrategy(code, severity);
+      const error: VerificationError = {
         code,
         severity,
         field,
         message: `${field} mismatch: expected ${expected}, got ${actual}`,
         context: { expected, actual },
-      });
+        ...(recoveryStrategy && { recoveryStrategy })
+      };
+      const key = this.getErrorKey(error);
+      
+      // Deduplicate errors
+      if (!this.errorKeys.has(key)) {
+        this.errorKeys.add(key);
+        this.errors.push(error);
+      }
     }
   }
   
@@ -122,10 +194,40 @@ export class ErrorCollector {
     return this.errors.some((e) => e.severity === "critical");
   }
   
+  /**
+   * Group errors by field for better context
+   */
+  private groupErrorsByField(errors: VerificationError[]): Map<string, VerificationError[]> {
+    const grouped = new Map<string, VerificationError[]>();
+    
+    errors.forEach(error => {
+      const field = error.field || 'general';
+      if (!grouped.has(field)) {
+        grouped.set(field, []);
+      }
+      grouped.get(field)!.push(error);
+    });
+    
+    return grouped;
+  }
+  
   getResult(decodedData?: VerificationResult["decodedData"]): VerificationResult {
     const errors = this.errors.filter((e) => e.severity === "error");
     const warnings = this.errors.filter((e) => e.severity === "warning");
     const criticalErrors = this.errors.filter((e) => e.severity === "critical");
+    
+    // Add context aggregation for related errors
+    const errorsByField = this.groupErrorsByField(this.errors);
+    
+    // Add field grouping info to errors that have multiple issues
+    errorsByField.forEach((fieldErrors, _field) => {
+      if (fieldErrors.length > 1) {
+        fieldErrors.forEach(error => {
+          if (!error.context) error.context = {};
+          error.context.relatedErrors = fieldErrors.length - 1;
+        });
+      }
+    });
     
     return {
       isValid: errors.length === 0 && criticalErrors.length === 0,

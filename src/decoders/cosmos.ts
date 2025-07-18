@@ -1,10 +1,12 @@
 import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, TransactionMode } from "../types";
+import { ChainId, DecodedTransaction, TransactionMode, RawFormat } from "../types";
 import { decodeTxRaw } from "@cosmjs/proto-signing";
 import { fromHex } from "@cosmjs/encoding";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
 import { MsgDelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+
+type CosmosFormat = Extract<RawFormat, "COSMOS_PROTOBUF" | "SIGNDOC_DIRECT" | "SIGNDOC_DIRECT_JSON" | "SIGNDOC_AMINO" | "SIGNDOC_AMINO_JSON">;
 
 /**
  * Cosmos SDK chain decoder
@@ -17,8 +19,8 @@ import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
  * - And other Cosmos SDK chains
  */
 export class CosmosDecoder extends BaseDecoder {
-  constructor(chainId: ChainId) {
-    super(chainId, "COSMOS_PROTOBUF");
+  constructor(chainId: ChainId, format: CosmosFormat = "COSMOS_PROTOBUF") {
+    super(chainId, format);
   }
 
   /**
