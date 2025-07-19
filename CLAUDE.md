@@ -21,21 +21,26 @@
 2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM, Bitcoin & Cosmos, ⚠️ others placeholder)
 
 **Key Classes**:
-- `AdamikSDK.verify(apiResponse, originalIntent)` - Main verification method
+- `AdamikSDK` - Main SDK class with `verify()` and `decode()` methods
 - `DecoderRegistry` - Manages blockchain-specific decoders
 - `BaseDecoder` - Abstract class for chain-specific implementations
+- `TransactionVerifier` - Handles verification logic (in utils/)
+- `AddressNormalizer` - EVM address normalization with EIP-55 support (in utils/)
 
 ## Current Architecture
 
 ### Core Components
 ```
 src/
-├── index.ts              # Main AdamikSDK class with verify() method
+├── index.ts              # Main AdamikSDK class with verify() and decode() methods
 ├── types/index.ts        # TypeScript type definitions including DecodedTransaction
 ├── schemas/              # Zod schemas and error handling
 │   ├── index.ts         # Main schema exports
 │   ├── errors.ts        # Enhanced ErrorCollector with deduplication
 │   └── transaction.ts   # Transaction validation schemas
+├── utils/                # Utility classes
+│   ├── address-normalizer.ts    # EVM address normalization with EIP-55 support
+│   └── transaction-verifier.ts  # Transaction verification logic
 └── decoders/
     ├── base.ts           # Abstract BaseDecoder class + DecoderWithPlaceholder interface
     ├── registry.ts       # DecoderRegistry for managing decoders
@@ -249,6 +254,18 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Other decoders extract sender** - Bitcoin (from PSBT UTXO), Cosmos (from protobuf), Tron (from raw data)
 - **SDK provides full context** - Returns both API data (validated) and decoded data (raw)
 **Integration Note**: UI implementations (like adamik-link) should use API response sender for EVM chains when decoded is empty
+
+### ✅ Completed: Public Decode Method & Architecture Refactoring (July 2025)
+**What**: Added public decode() method and refactored SDK architecture
+**Impact**: Improved code maintainability and added new functionality
+**Changes**:
+- **Added public decode() method** - Direct access to decoding without verification
+- **Created utility classes** - AddressNormalizer and TransactionVerifier
+- **Extracted verification logic** - Moved from index.ts to TransactionVerifier class
+- **Simplified main SDK class** - Now focuses on orchestration rather than implementation
+- **Removed unused code** - Deleted compareTransactionData() method
+- **Test improvements** - Updated tests to use real transaction data from fixtures
+- Test count now at 69 tests (all passing)
 
 ## Key Security Features
 
@@ -470,14 +487,15 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: EVM sender address investigation and documentation
+**Session**: Public decode method implementation and architecture refactoring
 **Major Changes**: 
-- Analyzed why EVM decoder returns empty sender address (by design - unsigned transactions)
-- Removed outdated examples/verify-transaction.ts file
-- Documented SDK output structure showing API data vs decoded data
-- Added integration guidance for UI implementations handling EVM sender display
-- Clarified that sender validation works but cryptographic verification requires signed transactions
-**Previous Session**: Comprehensive code quality improvements (all recommendations implemented)
+- Added public `decode()` method for direct transaction decoding
+- Refactored SDK architecture with utility classes (AddressNormalizer, TransactionVerifier)
+- Moved TransactionVerifier from verifiers/ to utils/ folder
+- Removed unused `compareTransactionData()` method
+- Updated all tests to pass with new architecture (69 tests)
+- Updated documentation (README.md, CLAUDE.md, tests/README.md, scripts/README.md)
+**Previous Session**: EVM sender address investigation and documentation
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction

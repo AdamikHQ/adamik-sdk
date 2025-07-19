@@ -1,157 +1,76 @@
 # Adamik SDK
 
-[![CI](https://github.com/fabricedautriat/adamik-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/fabricedautriat/adamik-sdk/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/adamik-sdk.svg)](https://badge.fury.io/js/adamik-sdk)
 
-A TypeScript/Node.js SDK for verifying Adamik API responses. This **Pure Verification SDK** focuses solely on security validation - it verifies that transaction data returned by any source (Adamik API or otherwise) matches your original transaction intent before signing.
+A TypeScript/Node.js SDK with two powerful capabilities:
 
-**Latest Updates** (January 2025):
-- Real Cosmos protobuf decoder implementation using @cosmjs libraries
-- Real Bitcoin PSBT decoder implementation using bitcoinjs-lib
-- EIP-55 checksum address support for enhanced security
-- Streamlined test suite with real API response data (29 tests)
+1. **🔓 Multi-chain Transaction Decoder** - Decode raw unsigned transactions across multiple blockchains
+2. **🛡️ Security Verification** - Verify that API responses match your original transaction intent before signing
 
-**Note**: This SDK currently provides **intent validation** (readable data fields) with **real encoded transaction validation** for EVM, Bitcoin, and Cosmos chains. Other chains use placeholder decoders. See [Security & Current Limitations](#security--current-limitations) below.
+## Two Ways to Use This SDK
 
-## Core Principle: Two-Variable Verification
+### 1. As a Multi-chain Decoder
 
-The Adamik SDK follows a simple but crucial security pattern:
+Decode raw transaction data from any blockchain without needing blockchain-specific libraries:
 
 ```typescript
-// Security Pattern: Always verify API responses against original intent
+import AdamikSDK from "adamik-sdk";
 
-// Variable A: Your original intent (what you want to do)
-const originalIntent = {
-  mode: "transfer",
-  senderAddress: "0x...",
-  recipientAddress: "0x...",
-  amount: "1000000000000000000",
-};
-
-// Variable B: API response (intent + computed fields like fees)
-const apiResponse = await adamikAPI.encodeTransaction(chainId, originalIntent);
-
-// Verification: Does B match A?
-const result = await sdk.verify(apiResponse, originalIntent);
-```
-
-**Why this matters**: This prevents malicious APIs from changing recipient addresses, amounts, or transaction types without your knowledge.
-
-### What Gets Verified
-
-The SDK compares these critical fields between your intent and the API response:
-
-- **Transaction mode** (`transfer`, `stake`, `transferToken`, etc.)
-- **Sender address** (your wallet address)
-- **Recipient address** (where funds are going)
-- **Amount** (how much you want to send)
-- **Token ID** (which token for token transfers)
-- **Validator addresses** (for staking operations)
-
-**Note**: The API is allowed to add computed fields like `fees`, `gas`, `nonce` - these are expected and safe.
-
-## Security & Current Limitations
-
-### Two-Step Security Model
-
-Complete transaction verification requires **two steps of checking**:
-
-```typescript
-// STEP 1: Intent Validation (Fully Implemented)
-// Check: transaction.data vs your original intent
-const dataMatches = sdk.verify(apiResponse, originalIntent);
-
-// STEP 2: Encoded Transaction Validation (Implemented for EVM)
-// Check: Decode transaction.encoded and verify it matches your intent
-const decoded = decoder.decode(apiResponse.transaction.encoded[0].raw.value);
-const encodedMatches = decoded.amount === originalIntent.amount;
-```
-
-### Current Implementation Status
-
-**Step 1: Intent Validation** - **Fully Implemented**:
-
-- Verifies `transaction.data` fields match your intent
-- Catches API tampering with readable fields
-
-**Step 2: Encoded Transaction Validation** - **Implemented for EVM, Bitcoin & Cosmos, Limited for Others**:
-
-- **EVM**: Real RLP decoding using `viem` library with EIP-55 checksum addresses
-- **Bitcoin**: Real PSBT decoding using `bitcoinjs-lib` library
-- **Cosmos**: Real protobuf decoding using `@cosmjs/proto-signing` library
-- **Tron**: Placeholder decoder (protobuf parsing libraries needed)
-- **Other chains**: Using placeholder decoders with mock data
-- **For EVM, Bitcoin & Cosmos transactions**: Both steps provide real security protection
-- **For Tron and other chains**: Only Step 1 provides protection
-
-### Security Implications
-
-**For EVM, Bitcoin & Cosmos Chains** (Full Protection):
-
-- API changing recipient address in `transaction.data` (Intent validation)
-- API modifying amount in `transaction.data` (Intent validation)
-- API switching transaction mode in `transaction.data` (Intent validation)
-- Malicious API providing correct `transaction.data` but wrong `transaction.encoded` (Encoded validation)
-- Detection of encoded transaction tampering via RLP decoding (Encoded validation)
-
-**For Other Chains** (Intent Validation Only):
-
-- API changing recipient address in `transaction.data`
-- API modifying amount in `transaction.data`
-- API switching transaction mode in `transaction.data`
-- Malicious API providing correct `transaction.data` but wrong `transaction.encoded`
-- Bugs causing mismatch between readable data and encoded transaction
-
-### Production Recommendations
-
-For production use, you should:
-
-1. **Use the provided real decoders** or implement additional ones:
-   - EVM chains already use `viem` (included)
-   - Bitcoin already uses `bitcoinjs-lib` (included)
-   - Chain-specific libraries needed for other networks
-
-2. **Verify the decoded transaction** matches your original intent
-3. **Implement hash verification** of the encoded data
-4. **Consider using multiple verification methods**
-
-```typescript
-// Production-ready verification would look like:
 const sdk = new AdamikSDK();
-const result = await sdk.verify(apiResponse, originalIntent);
 
-if (result.isValid) {
-  // Additional verification with real decoder
-  const realDecoder = new RealEthereumDecoder();
-  const decoded = await realDecoder.decode(apiResponse.transaction.encoded[0].raw.value);
+// Decode an Ethereum transaction
+const ethResult = await sdk.decode({
+  chainId: "ethereum",
+  format: "RLP",
+  encodedData: "0xf86c0a8502540be400..."
+});
 
-  if (decoded.to !== originalIntent.recipientAddress) {
-    throw new Error("SECURITY ALERT: Encoded transaction doesn't match intent!");
-  }
+console.log(ethResult.decoded);
+// { recipientAddress: "0x...", amount: "1000000000000000000", ... }
 
-  // Now safe to sign
-  console.log("Both steps verified - safe to sign");
+// Decode a Bitcoin PSBT
+const btcResult = await sdk.decode({
+  chainId: "bitcoin", 
+  format: "PSBT",
+  encodedData: "cHNidP8BAH0CAAAAAf..."
+});
+
+// Decode a Cosmos transaction
+const cosmosResult = await sdk.decode({
+  chainId: "cosmoshub",
+  format: "COSMOS_PROTOBUF",
+  encodedData: "0a9f010a9c010a..."
+});
+```
+
+### 2. As a Security Verification Tool
+
+Verify that transaction data from any API matches your original intent:
+
+```typescript
+// Your intent
+const intent = { recipientAddress: "0x123...", amount: "1000" };
+
+// API response (from Adamik or any source)
+const apiResponse = await getTransactionFromAPI(intent);
+
+// Verify before signing!
+const result = await sdk.verify(apiResponse, intent);
+if (!result.isValid) {
+  throw new Error("Transaction doesn't match intent!");
 }
 ```
 
-## Features
+## Supported Blockchains
 
-### Currently Implemented
+**Real Decoders Available:**
+- **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base (using `viem`)
+- **Bitcoin**: Bitcoin mainnet and testnet (using `bitcoinjs-lib`)
+- **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon (using `@cosmjs/proto-signing`)
+- **Tron**: Tron mainnet with TRC20 support (using `tronweb`)
 
-- **Intent Validation**: Compare readable `transaction.data` fields against your intent
-- **Multi-chain Support**: EVM, Bitcoin, Cosmos, and extensible architecture
-- **Pure Verification Focus**: Security-first design that validates any API response
-- **TypeScript Support**: Full type definitions and IDE support
-- **EIP-55 Address Support**: Proper checksum validation for Ethereum addresses
-- **Comprehensive Testing**: 29 tests with real API response data
-- **Scenario-Based Testing**: Clear, maintainable test scenarios covering all use cases
-
-### In Development
-
-- **Encoded Transaction Validation**: Real decoding for remaining chains (Solana, Algorand, etc.)
-- **Hash Validation**: Cryptographic verification of encoded transactions
-- **Additional Chain Support**: Expanding decoder coverage beyond EVM, Bitcoin, and Cosmos
+**Placeholder Decoders** (verification only): Solana, Algorand, Aptos, and others
 
 ## Installation
 
@@ -159,147 +78,284 @@ if (result.isValid) {
 npm install adamik-sdk
 ```
 
-## Getting Started
+## Quick Start
 
-Since this is a pure verification SDK, you'll need:
-
-1. **An API key from Adamik** - Visit [Adamik](https://dashboard.adamik.io) to get your API key
-2. **Your own HTTP client** - fetch, axios, or any other method to call the Adamik API
-3. **This SDK** - To verify responses before signing transactions
-
-## Usage
-
-### Basic Usage with Mock Data
-
-The core pattern: **always compare your original intent with the API response**.
+### Decode Transactions
 
 ```typescript
 import AdamikSDK from "adamik-sdk";
 
 const sdk = new AdamikSDK();
 
-// VARIABLE A: Your original transaction intent (what you want to do)
-const intent = {
-  mode: "transfer",
-  senderAddress: "0x1234567890123456789012345678901234567890",
-  recipientAddress: "0x0987654321098765432109876543210987654321",
-  amount: "1000000000000000000", // 1 ETH in wei
-};
-
-// VARIABLE B: API response (simulated - in real usage, this comes from Adamik API)
-const apiResponse = {
+// Example: Decode an Ethereum transaction
+const result = await sdk.decode({
   chainId: "ethereum",
-  transaction: {
-    data: {
-      mode: "transfer",
-      senderAddress: "0x1234567890123456789012345678901234567890",
-      recipientAddress: "0x0987654321098765432109876543210987654321",
-      amount: "1000000000000000000",
-      fees: "21000000000000",
-      gas: "21000",
-      nonce: "5",
-    },
-    encoded: [
-      {
-        hash: {
-          format: "keccak256",
-          value: "0xabcdef...",
-        },
-        raw: {
-          format: "RLP",
-          value: "0xf869...",
-        },
-      },
-    ],
-  },
-};
+  format: "RLP",
+  encodedData: "0xf86c0a8502540be400..."
+});
 
-// SECURITY CHECK: Verify API response matches your original intent
-const result = await sdk.verify(apiResponse, intent);
-
-if (result.isValid) {
-  console.log("Transaction verified successfully");
-  console.log("Decoded data:", result.decodedData);
-} else {
-  console.error("Verification failed:", result.errors);
+if (result.decoded) {
+  console.log("To:", result.decoded.recipientAddress);
+  console.log("Amount:", result.decoded.amount);
+  console.log("Mode:", result.decoded.mode);
 }
 ```
 
-### Real-World Usage Pattern
+### Verify API Responses
 
-The SDK is designed for **pure verification** - it doesn't fetch data, it verifies data you already have:
+```typescript
+// Your transaction intent
+const intent = {
+  mode: "transfer",
+  recipientAddress: "0x123...",
+  amount: "1000000000000000000" // 1 ETH
+};
+
+// Get response from API
+const apiResponse = await fetch(...).then(r => r.json());
+
+// Verify before signing!
+const verification = await sdk.verify(apiResponse, intent);
+
+if (verification.isValid) {
+  // Safe to sign
+  await wallet.sign(apiResponse.transaction.encoded[0].raw.value);
+} else {
+  console.error("Transaction tampered:", verification.errors);
+}
+```
+
+## Transaction Decoding
+
+The SDK provides a unified interface for decoding transactions across multiple blockchains:
+
+### Supported Formats
+
+| Blockchain | Format | Status | Library Used |
+|------------|--------|--------|--------------|
+| Ethereum, Polygon, BSC, etc. | RLP | ✅ Real | `viem` |
+| Bitcoin | PSBT | ✅ Real | `bitcoinjs-lib` |
+| Cosmos Hub, Celestia, etc. | COSMOS_PROTOBUF | ✅ Real | `@cosmjs/proto-signing` |
+| Tron | RAW_TRANSACTION | ✅ Real | `tronweb` |
+| Solana, Algorand, Aptos | Various | ⚠️ Placeholder | - |
+
+### Decode Examples
+
+```typescript
+// Ethereum RLP
+const ethTx = await sdk.decode({
+  chainId: "ethereum",
+  format: "RLP",
+  encodedData: "0xf86c..." 
+});
+// Returns: { recipientAddress, amount, mode, senderAddress, ... }
+
+// Bitcoin PSBT
+const btcTx = await sdk.decode({
+  chainId: "bitcoin",
+  format: "PSBT",
+  encodedData: "cHNidP8..." 
+});
+// Returns: { recipientAddress, amount, mode, ... }
+
+// Check if placeholder decoder was used
+if (result.isPlaceholder) {
+  console.warn("Using placeholder decoder - data may be incomplete");
+}
+```
+
+### Handling Decode Errors
+
+```typescript
+const result = await sdk.decode(params);
+
+if (result.error) {
+  console.error("Decode failed:", result.error);
+} else if (result.warnings) {
+  console.warn("Decode warnings:", result.warnings);
+}
+
+// Safe to use decoded data
+const { recipientAddress, amount } = result.decoded;
+```
+
+## Security Verification
+
+When working with transaction APIs, the SDK provides crucial security verification:
+
+### The Two-Variable Problem
+
+```typescript
+// Variable A: Your original intent
+const intent = {
+  mode: "transfer",
+  recipientAddress: "0x123...",
+  amount: "1000"
+};
+
+// Variable B: API response (can be tampered!)
+const apiResponse = {
+  transaction: {
+    data: { /* looks correct */ },
+    encoded: [{ raw: { value: "0x..." } }] // but is it?
+  }
+};
+
+// Solution: Verify B matches A
+const result = await sdk.verify(apiResponse, intent);
+```
+
+### What Gets Verified
+
+The SDK performs two levels of verification:
+
+**1. Intent Validation** (all chains):
+- Transaction mode matches (transfer, stake, etc.)
+- Recipient address matches
+- Amount matches
+- Token ID matches (for token transfers)
+
+**2. Encoded Validation** (EVM, Bitcoin, Cosmos, Tron):
+- Decodes the actual transaction bytes
+- Verifies decoded data matches intent
+- Catches malicious encoded transactions
+
+### Security Example
+
+```typescript
+// Malicious API attack scenario
+const intent = { 
+  recipientAddress: "0xYourFriend...",
+  amount: "100"
+};
+
+const maliciousResponse = {
+  transaction: {
+    data: intent, // Shows correct data
+    encoded: [{
+      raw: { 
+        value: "0x..." // But sends to attacker!
+      }
+    }]
+  }
+};
+
+// SDK catches the attack
+const result = await sdk.verify(maliciousResponse, intent);
+console.log(result.isValid); // false
+console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
+```
+
+
+## Features
+
+- **🔓 Multi-chain Decoding**: Unified interface for decoding transactions across blockchains
+- **🛡️ Security Verification**: Two-step validation of API responses
+- **📦 TypeScript Support**: Full type definitions and IDE support
+- **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
+- **✅ Comprehensive Testing**: 69 tests across 7 test suites
+- **🏗️ Clean Architecture**: Modular design with utility classes
+- **⚡ Zero Dependencies**: Uses trusted blockchain libraries only
+
+## Usage Examples
+
+### Complete Example with Adamik API
 
 ```typescript
 import AdamikSDK from "adamik-sdk";
 
 const sdk = new AdamikSDK();
 
-// STEP 1: Get API response from ANY source
-// This could be from fetch(), axios, your backend, or any other method
-const apiResponse = await fetch('https://api.adamik.io/v1/ethereum/transaction/encode', {
-  method: 'POST',
+// 1. Define your transaction intent
+const intent = {
+  mode: "transfer",
+  senderAddress: "0x1234...",
+  recipientAddress: "0xABCD...",
+  amount: "1000000000000000000" // 1 ETH
+};
+
+// 2. Get encoded transaction from Adamik API
+const apiResponse = await fetch("https://api.adamik.io/v1/ethereum/transaction/encode", {
+  method: "POST",
   headers: {
-    'Authorization': 'your-api-key',
-    'Content-Type': 'application/json'
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
   },
   body: JSON.stringify({ transaction: { data: intent } })
 }).then(r => r.json());
 
-// STEP 2: Verify BEFORE signing
-const result = await sdk.verify(apiResponse, intent);
+// 3. Verify the response
+const verification = await sdk.verify(apiResponse, intent);
 
-if (result.isValid) {
-  // SAFE: The encoded transaction matches your intent
-  const encodedTx = apiResponse.transaction.encoded[0].raw.value;
-  // Now you can safely sign with your wallet
-  await wallet.signTransaction(encodedTx);
+if (verification.isValid) {
+  // 4. Optionally decode to inspect
+  const decoded = await sdk.decode({
+    chainId: apiResponse.chainId,
+    format: apiResponse.transaction.encoded[0].raw.format,
+    encodedData: apiResponse.transaction.encoded[0].raw.value
+  });
+  
+  console.log("Transaction details:", decoded.decoded);
+  
+  // 5. Safe to sign
+  const tx = apiResponse.transaction.encoded[0].raw.value;
+  await wallet.signTransaction(tx);
 } else {
-  // DANGER: DO NOT SIGN!
-  console.error("Security Alert:", result.errors);
-  // The API returned a transaction that doesn't match what you intended
+  console.error("DO NOT SIGN:", verification.errors);
 }
 ```
 
-### Why Pure Verification?
+### Decode-Only Usage
 
-This SDK follows the Unix philosophy of "do one thing well":
+For when you just need to decode transactions:
 
-- **You control the API integration** - Use fetch, axios, or any HTTP client
-- **You control error handling** - Retry logic, timeouts, etc.
-- **You control the workflow** - Backend proxy, direct calls, caching
-- **SDK focuses on security** - Just verification, nothing else
+```typescript
+// Decode various blockchain transactions
+const examples = [
+  {
+    name: "Ethereum Transfer",
+    chainId: "ethereum",
+    format: "RLP",
+    encodedData: "0xf86c0a85..."
+  },
+  {
+    name: "Bitcoin PSBT",
+    chainId: "bitcoin",
+    format: "PSBT", 
+    encodedData: "cHNidP8BAH..."
+  },
+  {
+    name: "Cosmos Send",
+    chainId: "cosmoshub",
+    format: "COSMOS_PROTOBUF",
+    encodedData: "0a9f010a9c..."
+  }
+];
 
-This separation of concerns means:
-- No hidden API calls or network dependencies
-- Works with any HTTP client or integration pattern
-- Can verify responses from any source (not just Adamik)
-- Easier to test and mock in your applications
+for (const tx of examples) {
+  const result = await sdk.decode(tx);
+  console.log(`${tx.name}:`, result.decoded);
+}
+```
 
 ## Architecture
 
 ### Core Components
 
-1. **AdamikSDK**: Main class providing the `verify` method
-2. **Transaction Types**: Comprehensive type definitions for all supported chains
-3. **DecoderRegistry**: Manages decoders for different blockchain formats
-4. **BaseDecoder**: Abstract base class for implementing decoders
-5. **Chain-specific decoders**: EVMDecoder, BitcoinDecoder, etc.
-
-### Supported Chains
-
-- **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base
-- **Bitcoin-like**: Bitcoin, Bitcoin Testnet
-- **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon
-- **Tron**: Tron mainnet (placeholder decoder - protobuf parsing coming soon)
-- More chains can be easily added by implementing new decoders
-
-### Transaction Formats
-
-- **RLP**: Used by EVM chains
-- **PSBT**: Used by Bitcoin
-- **COSMOS_PROTOBUF/SIGNDOC_***: Used by Cosmos SDK chains
-- **RAW_TRANSACTION**: Used by Tron
-- Additional formats can be supported by extending the decoder system
+```
+src/
+├── index.ts              # Main SDK class with verify() and decode()
+├── types/               # TypeScript type definitions
+├── schemas/             # Zod validation schemas
+├── decoders/           # Blockchain-specific decoders
+│   ├── evm.ts          # Ethereum/EVM decoder (viem)
+│   ├── bitcoin.ts      # Bitcoin PSBT decoder (bitcoinjs-lib)
+│   ├── cosmos.ts       # Cosmos protobuf decoder
+│   └── tron.ts         # Tron decoder (tronweb)
+└── utils/              # Utility classes
+    ├── address-normalizer.ts    # EIP-55 address handling
+    └── transaction-verifier.ts  # Verification logic
+```
 
 ## Development
 
@@ -327,11 +383,13 @@ The SDK includes a streamlined test suite with:
 
 ```bash
 # Core test files
-tests/sdk-validation.test.ts     # Complete validation tests (6 tests)
-tests/scenarios.test.ts          # Attack scenario tests (3 tests)
-tests/decoders.test.ts          # Decoder and registry tests (13 tests)
+tests/sdk-validation.test.ts     # Complete validation tests (12 tests)
+tests/attack-scenarios.test.ts   # Security attack tests (9 tests)
+tests/decoders.test.ts          # Decoder and registry tests (17 tests)
 tests/integration.test.ts       # End-to-end tests (1 test)
-tests/api-responses.test.ts     # API response validation tests (3 tests)
+tests/api-responses.test.ts     # API response validation tests (9 tests)
+tests/edge-cases.test.ts        # Boundary condition tests (11 tests)
+tests/error-handling.test.ts    # Error path tests (10 tests)
 
 # Fixtures
 tests/fixtures/api-responses/    # Real API response data per blockchain
@@ -381,34 +439,6 @@ export class MyChainDecoder extends BaseDecoder {
 this.registerDecoder(new MyChainDecoder("mychain"));
 ```
 
-## Future Enhancements
-
-### Planned Security Improvements
-
-1. **Real Decoder Implementation**:
-   - Replace placeholder decoders with production-grade libraries
-   - Full RLP decoding for EVM chains using `ethers.js` or `viem`
-   - PSBT parsing for Bitcoin using `bitcoinjs-lib`
-   - Support for additional chain formats
-
-2. **Enhanced Encoded Transaction Validation**:
-   - Cryptographic hash validation
-   - Signature verification capabilities
-   - Transaction replay protection
-   - Deep field-by-field comparison of decoded vs intent
-
-### Additional Features
-
-3. **Development Tools**:
-   - Transaction simulation and dry-run capabilities
-   - Gas estimation verification
-   - Multi-signature transaction support
-   - Debugging and analysis tools
-
-4. **Developer Experience**:
-   - More detailed error messages with recovery suggestions
-   - Retry mechanisms for network issues
-   - Better TypeScript inference and IDE support
 
 ## API Reference
 
@@ -427,6 +457,40 @@ Verifies that an Adamik API response matches the original transaction intent.
   - `isValid`: Boolean indicating if verification passed
   - `errors`: Array of error messages (if any)
   - `decodedData`: Decoded transaction data
+
+### `decode(params: DecodeParams): Promise<DecodeResult>`
+
+Decodes raw transaction data for a specific blockchain without running verification.
+
+**Parameters:**
+
+- `params`: Object containing:
+  - `chainId`: The blockchain identifier (e.g., "ethereum", "bitcoin")
+  - `format`: The encoding format (e.g., "RLP", "PSBT")
+  - `encodedData`: The encoded transaction data as a string
+
+**Returns:**
+
+- `DecodeResult` object containing:
+  - `decoded`: The decoded transaction data (null if decoding failed)
+  - `isPlaceholder`: Whether a placeholder decoder was used
+  - `warnings`: Any warnings generated during decoding
+  - `error`: Error message if decoding failed
+
+**Example:**
+
+```typescript
+const result = await sdk.decode({
+  chainId: "ethereum",
+  format: "RLP",
+  encodedData: "0xf86c0a8502540be400...",
+});
+
+if (result.decoded) {
+  console.log("Recipient:", result.decoded.recipientAddress);
+  console.log("Amount:", result.decoded.amount);
+}
+```
 
 ## Contributing
 

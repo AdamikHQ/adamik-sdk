@@ -4,19 +4,20 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**63 tests** across **7 test suites** providing complete coverage of:
+**69 tests** across **7 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM, PSBT for Bitcoin, and protobuf for Cosmos)
 - ✅ Security attack scenarios with comprehensive coverage
 - ✅ Edge cases and boundary conditions
 - ✅ Error handling paths and exception scenarios
 - ✅ Multi-chain support (Bitcoin, Ethereum, Cosmos, Injective, Tron, Celestia)
+- ✅ Direct decoding functionality via public decode() method
 
 ## Test Files
 
 ### Core Test Suites
 
-- **`sdk-validation.test.ts`** (6 tests) - Core SDK validation logic (happy path)
+- **`sdk-validation.test.ts`** (12 tests) - Core SDK validation logic (happy path) + decode() functionality
 - **`attack-scenarios.test.ts`** (9 tests) - Security attack detection and tampering scenarios
 - **`edge-cases.test.ts`** (11 tests) - Boundary conditions and special cases
 - **`error-handling.test.ts`** (10 tests) - Error paths and exception handling
@@ -171,6 +172,26 @@ it("should describe what it tests", async () => {
 });
 ```
 
+**Decode Test Pattern**:
+```typescript
+it("should decode transaction data", async () => {
+  // 1. Setup
+  const params = {
+    chainId: "ethereum",
+    format: "RLP",
+    encodedData: "0xf86c..."
+  };
+
+  // 2. Execute
+  const result = await sdk.decode(params);
+
+  // 3. Assert
+  expect(result.decoded).toBeDefined();
+  expect(result.decoded.recipientAddress).toBe("0x...");
+  expect(result.isPlaceholder).toBe(false);
+});
+```
+
 **Security Test Pattern**:
 ```typescript
 it("should detect [specific attack]", async () => {
@@ -288,3 +309,17 @@ This approach:
 **After**: Simple, focused tests with same coverage but dramatically reduced complexity
 
 This demonstrates **"less is more"** - maintaining comprehensive test coverage while dramatically improving maintainability and developer experience.
+
+## Recent Major Changes (July 2025)
+
+### ✅ Completed: Public Decode Method & Architecture Refactoring
+**What**: Added public decode() method and refactored for better separation of concerns
+**Impact**: Cleaner architecture, easier to use and maintain
+**Changes**:
+- **Added public decode() method** - Direct access to decoding without full verification
+- **Extracted TransactionVerifier** - All verification logic in `src/utils/transaction-verifier.ts`
+- **Extracted AddressNormalizer** - EVM address normalization in `src/utils/address-normalizer.ts`
+- **Simplified main SDK file** - Reduced `src/index.ts` from ~450 to ~270 lines
+- **Removed unused method** - Deleted private `compareTransactionData()` method
+- **Added 6 new tests** - Comprehensive decode() functionality testing
+- **Test count increased** - From 63 to 69 tests total

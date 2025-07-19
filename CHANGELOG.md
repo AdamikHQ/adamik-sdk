@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- **Public `decode()` Method** - Direct transaction decoding without verification
+  - Added public `decode()` method to `AdamikSDK` class for standalone decoding
+  - Supports direct decoding of raw transaction data for debugging and inspection
+  - Returns `DecodeResult` with decoded data, placeholder indicators, and warnings
+- **Real Tron Decoder Implementation** - Full transaction parsing for Tron blockchain
+  - Integrated `tronweb` library for authentic Tron transaction decoding
+  - Support for TRC20 token transfers and native TRX transactions
+  - Proper address validation and amount extraction for Tron format
+- **Refactored Architecture with Cleaner Separation of Concerns**
+  - Created utility classes: `AddressNormalizer` and `TransactionVerifier`
+  - Moved verification logic from main SDK class to dedicated `TransactionVerifier`
+  - Extracted address normalization logic to `AddressNormalizer` with EIP-55 support
+  - Simplified main `AdamikSDK` class to focus on orchestration
+- **Enhanced Error Handling with Deduplication and Recovery Strategies**
+  - Improved `ErrorCollector` class with deduplication capabilities
+  - Better error recovery and graceful degradation for failed operations
+  - Standardized error message format across entire codebase
+- **Comprehensive Test Suite with 69 Tests Across 7 Suites**
+  - Updated test count from 45+ to 69 tests across 7 organized test suites
+  - Enhanced test coverage with real transaction data from fixtures
+  - Improved test organization and maintainability
 - **Real Cosmos Decoder Implementation** - Full protobuf parsing for Cosmos SDK chains
   - Integrated `@cosmjs/proto-signing`, `@cosmjs/encoding`, and `@cosmjs/stargate` libraries
   - Support for SignDoc (SIGNDOC_DIRECT) format parsing
@@ -25,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Status warnings can be strings or objects with `message` property
 
 ### Changed
+
 - **Bruno Test Removal** - Replaced Bruno-imported tests with manual fixtures
   - Removed `bruno-imported.test.ts` and all Bruno test fixtures per CTO feedback
   - Test fixtures now in `tests/fixtures/api-responses/` directory
@@ -85,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Real encoded transaction verification** for EVM chains using cryptographic RLP decoding
 - **Security attack scenario testing** covering:
   - Encoded recipient mismatch attacks (CRITICAL)
-  - Encoded amount manipulation attacks (CRITICAL)  
+  - Encoded amount manipulation attacks (CRITICAL)
   - API data tampering detection
   - Mode confusion and validation
 - Detection of malicious APIs that provide correct readable data but tampered encoded transactions
