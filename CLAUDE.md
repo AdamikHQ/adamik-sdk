@@ -4,8 +4,8 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding, Tron with real transaction parsing
-- **Tests**: 63 tests across 7 suites (all passing)
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing
+- **Tests**: 72 tests across 7 suites (all passing)
 - **Recent**: Comprehensive code quality improvements with enhanced error handling and test coverage
 
 ## Project Overview
@@ -70,7 +70,7 @@ tests/
         └── celestia.json    # Celestia test cases
 ```
 
-**Total: 63 tests across 7 suites (all passing)**
+**Total: 72 tests across 7 suites (all passing)**
 
 ### Test Summary Table
 All test runs now display a comprehensive summary table showing:
@@ -89,7 +89,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
-- **Cosmos staking support** - Handles MsgDelegate with targetValidatorAddress field
+- **Cosmos staking operations** - Full support for stake (MsgDelegate), unstake (MsgUndelegate), and claim rewards (MsgWithdrawDelegatorReward)
 - **Real Tron decoder** using tronweb library (Tron mainnet with TRC20 token support)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
@@ -267,6 +267,17 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Test improvements** - Updated tests to use real transaction data from fixtures
 - Test count now at 69 tests (all passing)
 
+### ✅ Completed: Enhanced Cosmos Decoder with Full Staking Support (July 2025)
+**What**: Extended Cosmos decoder to support unstake and claim rewards operations
+**Impact**: Complete Cosmos staking workflow support
+**Changes**:
+- **Added MsgUndelegate support** - Proper decoding of unstake transactions
+- **Added MsgWithdrawDelegatorReward support** - Decoding of claim rewards transactions
+- **Fixed graceful failure handling** - Decoder now properly handles all Cosmos transaction types
+- **Added 3 new test cases** - cosmos_unstake, cosmos_claim_rewards, cosmos_claim_rewards_with_amount
+- **Improved error handling** - SDK no longer fails when encountering unsupported transaction types
+- Test count increased from 69 to 72 tests (all passing)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -290,7 +301,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - `sdk-validation.test.ts` (6 tests) - Core validation logic (happy path)
 - `decoders.test.ts` (17 tests) - Blockchain decoder functionality
 - `integration.test.ts` (1 test) - End-to-end workflow
-- `api-responses.test.ts` (9 tests) - Real API response validation (Ethereum, Bitcoin, Cosmos, Injective, Tron, Celestia)
+- `api-responses.test.ts` (12 tests) - Real API response validation (Ethereum, Bitcoin, Cosmos with stake/unstake/claim rewards, Injective, Tron, Celestia)
 
 ## Development Patterns
 
@@ -340,7 +351,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 63 tests
+pnpm test             # All 72 tests
 pnpm run test:watch   # Watch mode
 pnpm run typecheck    # TypeScript type checking
 pnpm run lint         # ESLint checking
@@ -385,7 +396,7 @@ pnpm test:decoders   # Run all decoder tests
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 63 tests across 7 suites
+- **Jest** (^30.0.4) - Testing framework, 72 tests across 7 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ESLint** (^9.1.1) - Linting with TypeScript support
 - **ts-node** (^10.9.2) - Development execution
@@ -487,15 +498,14 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: Public decode method implementation and architecture refactoring
+**Session**: Enhanced Cosmos decoder with full staking support
 **Major Changes**: 
-- Added public `decode()` method for direct transaction decoding
-- Refactored SDK architecture with utility classes (AddressNormalizer, TransactionVerifier)
-- Moved TransactionVerifier from verifiers/ to utils/ folder
-- Removed unused `compareTransactionData()` method
-- Updated all tests to pass with new architecture (69 tests)
-- Updated documentation (README.md, CLAUDE.md, tests/README.md, scripts/README.md)
-**Previous Session**: EVM sender address investigation and documentation
+- Extended Cosmos decoder to support MsgUndelegate (unstake) and MsgWithdrawDelegatorReward (claim rewards)
+- Added 3 new Cosmos test cases (unstake, claim rewards with/without amount)
+- Fixed graceful failure handling for unsupported transaction types
+- Integrated decode() method in adamik-link for improved transaction visibility
+- Test count increased from 69 to 72 tests (all passing)
+**Previous Session**: Public decode method implementation and architecture refactoring
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction

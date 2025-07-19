@@ -51,7 +51,7 @@ describe("API Response Validation", () => {
           if ('targetValidatorAddress' in intent) {
             expect(txData.targetValidatorAddress).toBe(intent.targetValidatorAddress);
           }
-          if ('amount' in intent && !intent.useMaxAmount) {
+          if ('amount' in intent && !intent.useMaxAmount && intent.mode !== 'claimRewards') {
             expect(txData.amount).toBe(intent.amount);
           }
           if ('tokenId' in intent) {

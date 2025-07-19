@@ -3,7 +3,8 @@ import { ChainId, DecodedTransaction, TransactionMode, RawFormat } from "../type
 import { decodeTxRaw } from "@cosmjs/proto-signing";
 import { fromHex } from "@cosmjs/encoding";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
-import { MsgDelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
+import { MsgDelegate, MsgUndelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
+import { MsgWithdrawDelegatorReward } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 type CosmosFormat = Extract<RawFormat, "COSMOS_PROTOBUF" | "SIGNDOC_DIRECT" | "SIGNDOC_DIRECT_JSON" | "SIGNDOC_AMINO" | "SIGNDOC_AMINO_JSON">;
@@ -86,6 +87,32 @@ export class CosmosDecoder extends BaseDecoder {
               amount: totalAmount,
               raw: rawData,
             };
+          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
+            const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
+            
+            // For unstaking, amount is in the undelegation
+            let totalAmount = "0";
+            if (msgUndelegate.amount) {
+              totalAmount = msgUndelegate.amount.amount;
+            }
+            
+            return {
+              mode: "unstake" as TransactionMode,
+              senderAddress: msgUndelegate.delegatorAddress,
+              validatorAddress: msgUndelegate.validatorAddress,
+              amount: totalAmount,
+              raw: rawData,
+            };
+          } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+            const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
+            
+            return {
+              mode: "claimRewards" as TransactionMode,
+              senderAddress: msgWithdrawReward.delegatorAddress,
+              validatorAddress: msgWithdrawReward.validatorAddress,
+              amount: "0", // Rewards amount is not known until claimed
+              raw: rawData,
+            };
           }
         }
         
@@ -134,6 +161,31 @@ export class CosmosDecoder extends BaseDecoder {
               senderAddress: msgDelegate.delegatorAddress,
               targetValidatorAddress: msgDelegate.validatorAddress,
               amount: totalAmount,
+              raw: rawData,
+            };
+          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
+            const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
+            
+            let totalAmount = "0";
+            if (msgUndelegate.amount) {
+              totalAmount = msgUndelegate.amount.amount;
+            }
+            
+            return {
+              mode: "unstake" as TransactionMode,
+              senderAddress: msgUndelegate.delegatorAddress,
+              validatorAddress: msgUndelegate.validatorAddress,
+              amount: totalAmount,
+              raw: rawData,
+            };
+          } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+            const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
+            
+            return {
+              mode: "claimRewards" as TransactionMode,
+              senderAddress: msgWithdrawReward.delegatorAddress,
+              validatorAddress: msgWithdrawReward.validatorAddress,
+              amount: "0", // Rewards amount is not known until claimed
               raw: rawData,
             };
           }

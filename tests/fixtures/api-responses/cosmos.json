@@ -114,5 +114,165 @@
         ]
       }
     }
+  },
+  "cosmos_unstake": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "unstake",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "amount": "1000",
+          "memo": "adamik-test-memo"
+        }
+      }
+    },
+    "response": {
+      "chainId": "cosmoshub",
+      "transaction": {
+        "data": {
+          "memo": "adamik-test-memo",
+          "mode": "unstake",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "amount": "1000",
+          "useMaxAmount": false,
+          "recipientAddress": "",
+          "fees": "18855",
+          "gas": "754172",
+          "nonce": "96",
+          "senderPubKey": "Az1ijJMPa7WgSUdKXouGdDJev5zo4bBoDQOAR1R5FZPf"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0ab2010a9d010a252f636f736d6f732e7374616b696e672e763162657461312e4d7367556e64656c656761746512740a2d636f736d6f733176366d6437747833336134726c7468386a726d61707a6b7172786d68347074766e756c6c30651234636f736d6f7376616c6f706572317136643364303839686735397836676378393275756d783730733579357761646b6c756538731a0d0a057561746f6d12043130303012106164616d696b2d746573742d6d656d6f12680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21033d628c930f6bb5a049474a5e8b8674325ebf9ce8e1b0680d03804754791593df12040a020801186012140a0e0a057561746f6d1205313838353510fc832e1a0b636f736d6f736875622d3420dad8c601"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "30b63003c28afae095f03e5626fbd4b8769f86ead0ea7a69ecbd0fcb402469aa"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"Cp0BCiUvY29zbW9zLnN0YWtpbmcudjFiZXRhMS5Nc2dVbmRlbGVnYXRlEnQKLWNvc21vczF2Nm1kN3R4MzNhNHJsdGg4anJtYXB6a3FyeG1oNHB0dm51bGwwZRI0Y29zbW9zdmFsb3BlcjFxNmQzZDA4OWhnNTl4NmdjeDkydXVteDcwczV5NXdhZGtsdWU4cxoNCgV1YXRvbRIEMTAwMBIQYWRhbWlrLXRlc3QtbWVtbw==\",\"authInfoBytes\":\"ClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDPWKMkw9rtaBJR0pei4Z0Ml6/nOjhsGgNA4BHVHkVk98SBAoCCAEYYBIUCg4KBXVhdG9tEgUxODg1NRD8gy4=\",\"chainId\":\"cosmoshub-4\",\"accountNumber\":\"3255386\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Network fees are above 10% of the amount"
+          }
+        ]
+      }
+    }
+  },
+  "cosmos_claim_rewards": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "claimRewards",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "memo": "adamik-test-memo"
+        }
+      }
+    },
+    "response": {
+      "chainId": "cosmoshub",
+      "transaction": {
+        "data": {
+          "memo": "adamik-test-memo",
+          "mode": "claimRewards",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "compound": false,
+          "recipientAddress": "",
+          "fees": "15611",
+          "gas": "624413",
+          "nonce": "96",
+          "senderPubKey": "Az1ijJMPa7WgSUdKXouGdDJev5zo4bBoDQOAR1R5FZPf"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0ab5010aa0010a372f636f736d6f732e646973747269627574696f6e2e763162657461312e4d7367576974686472617744656c656761746f7252657761726412650a2d636f736d6f733176366d6437747833336134726c7468386a726d61707a6b7172786d68347074766e756c6c30651234636f736d6f7376616c6f706572317136643364303839686735397836676378393275756d783730733579357761646b6c7565387312106164616d696b2d746573742d6d656d6f12680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21033d628c930f6bb5a049474a5e8b8674325ebf9ce8e1b0680d03804754791593df12040a020801186012140a0e0a057561746f6d12053135363131109d8e261a0b636f736d6f736875622d3420dad8c601"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "9ab8f089c922efba968c5777935903614b4171175407a590ca88908d3c778e6a"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"CqABCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmUKLWNvc21vczF2Nm1kN3R4MzNhNHJsdGg4anJtYXB6a3FyeG1oNHB0dm51bGwwZRI0Y29zbW9zdmFsb3BlcjFxNmQzZDA4OWhnNTl4NmdjeDkydXVteDcwczV5NXdhZGtsdWU4cxIQYWRhbWlrLXRlc3QtbWVtbw==\",\"authInfoBytes\":\"ClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDPWKMkw9rtaBJR0pei4Z0Ml6/nOjhsGgNA4BHVHkVk98SBAoCCAEYYBIUCg4KBXVhdG9tEgUxNTYxMRCdjiY=\",\"chainId\":\"cosmoshub-4\",\"accountNumber\":\"3255386\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  },
+  "cosmos_claim_rewards_with_amount": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "claimRewards",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "amount": "1000",
+          "memo": "adamik-test-memo"
+        }
+      }
+    },
+    "response": {
+      "chainId": "cosmoshub",
+      "transaction": {
+        "data": {
+          "memo": "adamik-test-memo",
+          "mode": "claimRewards",
+          "senderAddress": "cosmos1v6md7tx33a4rlth8jrmapzkqrxmh4ptvnull0e",
+          "validatorAddress": "cosmosvaloper1q6d3d089hg59x6gcx92uumx70s5y5wadklue8s",
+          "compound": false,
+          "recipientAddress": "",
+          "fees": "15611",
+          "gas": "624413",
+          "nonce": "96",
+          "senderPubKey": "Az1ijJMPa7WgSUdKXouGdDJev5zo4bBoDQOAR1R5FZPf"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT",
+              "value": "0ab5010aa0010a372f636f736d6f732e646973747269627574696f6e2e763162657461312e4d7367576974686472617744656c656761746f7252657761726412650a2d636f736d6f733176366d6437747833336134726c7468386a726d61707a6b7172786d68347074766e756c6c30651234636f736d6f7376616c6f706572317136643364303839686735397836676378393275756d783730733579357761646b6c7565387312106164616d696b2d746573742d6d656d6f12680a500a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21033d628c930f6bb5a049474a5e8b8674325ebf9ce8e1b0680d03804754791593df12040a020801186012140a0e0a057561746f6d12053135363131109d8e261a0b636f736d6f736875622d3420dad8c601"
+            },
+            "hash": {
+              "format": "sha256",
+              "value": "9ab8f089c922efba968c5777935903614b4171175407a590ca88908d3c778e6a"
+            }
+          },
+          {
+            "raw": {
+              "format": "SIGNDOC_DIRECT_JSON",
+              "value": "{\"bodyBytes\":\"CqABCjcvY29zbW9zLmRpc3RyaWJ1dGlvbi52MWJldGExLk1zZ1dpdGhkcmF3RGVsZWdhdG9yUmV3YXJkEmUKLWNvc21vczF2Nm1kN3R4MzNhNHJsdGg4anJtYXB6a3FyeG1oNHB0dm51bGwwZRI0Y29zbW9zdmFsb3BlcjFxNmQzZDA4OWhnNTl4NmdjeDkydXVteDcwczV5NXdhZGtsdWU4cxIQYWRhbWlrLXRlc3QtbWVtbw==\",\"authInfoBytes\":\"ClAKRgofL2Nvc21vcy5jcnlwdG8uc2VjcDI1NmsxLlB1YktleRIjCiEDPWKMkw9rtaBJR0pei4Z0Ml6/nOjhsGgNA4BHVHkVk98SBAoCCAEYYBIUCg4KBXVhdG9tEgUxNTYxMRCdjiY=\",\"chainId\":\"cosmoshub-4\",\"accountNumber\":\"3255386\"}"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
   }
 }
