@@ -422,25 +422,6 @@ export class AdamikSDK {
     }
   }
 
-  /**
-   * Compares two transaction data objects for equality
-   * @param data1 First transaction data
-   * @param data2 Second transaction data
-   * @returns true if they match, false otherwise
-   */
-  compareTransactionData(data1: TransactionData, data2: TransactionData): boolean {
-    const keysToCompare = [
-      "mode",
-      "senderAddress",
-      "recipientAddress",
-      "amount",
-      "tokenId",
-      "validatorAddress",
-      "targetValidatorAddress",
-    ] as const;
-
-    return keysToCompare.every((key) => data1[key] === data2[key]);
-  }
 }
 
 // Export main functions and types

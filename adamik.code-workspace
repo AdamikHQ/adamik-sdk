@@ -12,6 +12,10 @@
       "name": "adamik-link",
       "path": "../adamik-link",
     },
+    {
+      "name": "minitel",
+      "path": "../minitel",
+    },
   ],
   "settings": {},
 }

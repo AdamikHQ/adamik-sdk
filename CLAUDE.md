@@ -240,6 +240,16 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **EVM Address Normalization**: Implemented case-insensitive address comparison for EVM chains
 - Test count increased from 38 to 63 tests (all passing)
 
+### ✅ Completed: EVM Sender Address Analysis (July 2025)
+**What**: Investigated why EVM decoder returns empty sender address
+**Impact**: Clarified design decision and improved integration documentation
+**Key Findings**:
+- **EVM unsigned transactions don't contain sender address** - Must be recovered from signature
+- **Design is intentional** - EVM decoder returns empty string with comment "Will be filled by verification logic"
+- **Other decoders extract sender** - Bitcoin (from PSBT UTXO), Cosmos (from protobuf), Tron (from raw data)
+- **SDK provides full context** - Returns both API data (validated) and decoded data (raw)
+**Integration Note**: UI implementations (like adamik-link) should use API response sender for EVM chains when decoded is empty
+
 ## Key Security Features
 
 ### Attack Detection
@@ -460,18 +470,14 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: Comprehensive code quality improvements
+**Session**: EVM sender address investigation and documentation
 **Major Changes**: 
-- Implemented all recommendations from senior architect review
-- Created DecoderWithPlaceholder interface for type-safe decoder checking
-- Enhanced error handling with deduplication, context aggregation, and recovery strategies
-- Added development scripts: typecheck, lint, lint:fix, prepublishOnly
-- Configured ESLint with comprehensive TypeScript rules
-- Added 30 new tests: attack-scenarios (9), edge-cases (11), error-handling (10)
-- Implemented EVM address normalization for case-insensitive comparison
-- Fixed all test failures with proper RLP data and expectations
-- All 63 tests passing (increased from 38)
-**Previous Session**: Cosmos staking support implementation
+- Analyzed why EVM decoder returns empty sender address (by design - unsigned transactions)
+- Removed outdated examples/verify-transaction.ts file
+- Documented SDK output structure showing API data vs decoded data
+- Added integration guidance for UI implementations handling EVM sender display
+- Clarified that sender validation works but cryptographic verification requires signed transactions
+**Previous Session**: Comprehensive code quality improvements (all recommendations implemented)
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction
