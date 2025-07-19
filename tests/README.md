@@ -4,7 +4,7 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**69 tests** across **7 test suites** providing complete coverage of:
+**72 tests** across **7 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM, PSBT for Bitcoin, and protobuf for Cosmos)
 - ✅ Security attack scenarios with comprehensive coverage
@@ -23,14 +23,14 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 - **`error-handling.test.ts`** (10 tests) - Error paths and exception handling
 - **`decoders.test.ts`** (17 tests) - Decoder functionality and registry
 - **`integration.test.ts`** (1 test) - End-to-end workflow testing
-- **`api-responses.test.ts`** (9 tests) - Real API response validation
+- **`api-responses.test.ts`** (12 tests) - Real API response validation
 
 ### Fixtures
 
 - **`fixtures/api-responses/`** - Real API response data organized by blockchain family:
   - `ethereum.json` - Ethereum mainnet transactions
   - `bitcoin.json` - Bitcoin mainnet transactions
-  - `cosmos.json` - Cosmos Hub transactions
+  - `cosmos.json` - Cosmos Hub transactions (transfer, stake, unstake, claim rewards)
   - `injective.json` - Injective transactions
   - `tron.json` - Tron transactions
   - `celestia.json` - Celestia transactions
@@ -322,4 +322,4 @@ This demonstrates **"less is more"** - maintaining comprehensive test coverage w
 - **Simplified main SDK file** - Reduced `src/index.ts` from ~450 to ~270 lines
 - **Removed unused method** - Deleted private `compareTransactionData()` method
 - **Added 6 new tests** - Comprehensive decode() functionality testing
-- **Test count increased** - From 63 to 69 tests total
+- **Test count increased** - From 63 to 72 tests total (added Cosmos unstake and claim rewards)

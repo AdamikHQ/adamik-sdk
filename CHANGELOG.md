@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Enhanced Cosmos Decoder with Full Staking Support** - Complete staking workflow
+  - Added `MsgUndelegate` support for unstake transactions
+  - Added `MsgWithdrawDelegatorReward` support for claim rewards transactions
+  - Cosmos decoder now properly handles all common transaction types
+  - Added 3 new test cases: `cosmos_unstake`, `cosmos_claim_rewards`, `cosmos_claim_rewards_with_amount`
+  - Test count increased from 69 to 72 tests
+
 - **Public `decode()` Method** - Direct transaction decoding without verification
   - Added public `decode()` method to `AdamikSDK` class for standalone decoding
   - Supports direct decoding of raw transaction data for debugging and inspection
@@ -26,8 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved `ErrorCollector` class with deduplication capabilities
   - Better error recovery and graceful degradation for failed operations
   - Standardized error message format across entire codebase
-- **Comprehensive Test Suite with 69 Tests Across 7 Suites**
-  - Updated test count from 45+ to 69 tests across 7 organized test suites
+- **Comprehensive Test Suite with 72 Tests Across 7 Suites**
+  - Updated test count from 45+ to 72 tests across 7 organized test suites
   - Enhanced test coverage with real transaction data from fixtures
   - Improved test organization and maintainability
 - **Real Cosmos Decoder Implementation** - Full protobuf parsing for Cosmos SDK chains
