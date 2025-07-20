@@ -278,6 +278,24 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Improved error handling** - SDK no longer fails when encountering unsupported transaction types
 - Test count increased from 69 to 72 tests (all passing)
 
+### ✅ Completed: SDK Dogfooding - verify() now uses decode() internally (July 2025)
+**What**: Refactored verify() to use the public decode() method internally
+**Impact**: Eliminated code duplication and ensured consistency between verify and decode results
+**Changes**:
+- **Refactored internal method** - Renamed `decodeAndVerify()` to `processEncodedTransaction()` for clarity
+- **Now calls public decode()** - Method delegates decoding to the public decode() method
+- **Fixed type imports** - Added ChainId and RawFormat imports to properly type parameters
+- **Preserved behavior** - Maintained backward compatibility for missing decoder warnings
+- **Error mapping** - Properly maps DecodeResult errors/warnings to ErrorCollector entries
+- **Code consistency** - Both verify() and decode() now share exact same decoding path
+- **Improved documentation** - Added clear comments explaining what the method does and doesn't do
+**Benefits**:
+- No more risk of divergence between decode() and verify() behaviors
+- Single source of truth for decoding logic
+- Clearer method naming that reflects actual responsibility
+- Easier maintenance and future enhancements
+- All 72 tests continue to pass
+
 ## Key Security Features
 
 ### Attack Detection
@@ -498,14 +516,15 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: Enhanced Cosmos decoder with full staking support
+**Session**: SDK Dogfooding - verify() now uses decode() internally
 **Major Changes**: 
-- Extended Cosmos decoder to support MsgUndelegate (unstake) and MsgWithdrawDelegatorReward (claim rewards)
-- Added 3 new Cosmos test cases (unstake, claim rewards with/without amount)
-- Fixed graceful failure handling for unsupported transaction types
-- Integrated decode() method in adamik-link for improved transaction visibility
-- Test count increased from 69 to 72 tests (all passing)
-**Previous Session**: Public decode method implementation and architecture refactoring
+- Renamed internal method from `decodeAndVerify()` to `processEncodedTransaction()` for clarity
+- Refactored to use public `decode()` method, eliminating code duplication
+- Ensured consistency between verify() and decode() results
+- Fixed type imports for ChainId and RawFormat
+- Maintained backward compatibility with proper error/warning mapping
+- All 72 tests continue to pass
+**Previous Session**: Enhanced Cosmos decoder with full staking support (MsgUndelegate, MsgWithdrawDelegatorReward)
 **Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
 
 ## Future Product Direction

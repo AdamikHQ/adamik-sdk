@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **SDK Dogfooding - verify() now uses decode() internally** - Eliminated code duplication
+  - Renamed internal method from `decodeAndVerify()` to `processEncodedTransaction()` for better clarity
+  - Refactored to use the public `decode()` method internally instead of duplicating logic
+  - Ensures consistency between `verify()` and `decode()` results
+  - Single source of truth for decoding logic
+  - Properly maps DecodeResult errors/warnings to ErrorCollector entries
+  - Fixed type imports for ChainId and RawFormat to ensure type safety
+  - Maintained backward compatibility for missing decoder warnings
+  - Improved method documentation to clarify responsibilities
+  - All 72 tests continue to pass
+
 - **Enhanced Cosmos Decoder with Full Staking Support** - Complete staking workflow
   - Added `MsgUndelegate` support for unstake transactions
   - Added `MsgWithdrawDelegatorReward` support for claim rewards transactions

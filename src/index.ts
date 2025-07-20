@@ -3,9 +3,11 @@ import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./schemas";
 import { ErrorCode, ErrorCollector } from "./schemas/errors";
 import {
+  ChainId,
   DecodeParams,
   DecodeResult,
   DecodedTransaction,
+  RawFormat,
   TransactionData,
   TransactionIntent,
   VerificationResult,
@@ -167,7 +169,7 @@ export class AdamikSDK {
       // Step 3: Decode and verify encoded transaction
       let decodedRaw: unknown;
       if (encoded && encoded.length > 0 && encoded[0].raw) {
-        decodedRaw = await this.decodeAndVerify(
+        decodedRaw = await this.processEncodedTransaction(
           chainId,
           encoded[0].raw,
           validatedIntent,
@@ -191,69 +193,108 @@ export class AdamikSDK {
   }
 
   /**
-   * Decodes and verifies the encoded transaction
-   * @private
+   * Processes the encoded transaction by decoding it and verifying against intent and API data
+   * 
+   * This method:
+   * 1. Delegates decoding to the public decode() method
+   * 2. Maps any decode errors/warnings to the ErrorCollector
+   * 3. Performs two-step verification if decoding succeeds:
+   *    - Verifies decoded data matches the original user intent
+   *    - Cross-verifies decoded data matches the API response
+   * 
+   * @param chainId - The blockchain identifier
+   * @param raw - The raw encoded transaction data (format and value)
+   * @param originalIntent - The user's original transaction intent
+   * @param apiData - The transaction data from the API response
+   * @param errorCollector - Collector for errors and warnings
+   * @returns The decoded transaction data if successful, undefined otherwise
    */
-  private async decodeAndVerify(
+  private async processEncodedTransaction(
     chainId: string,
     raw: { format: string; value: string },
     originalIntent: TransactionIntent,
     apiData: TransactionData,
     errorCollector: ErrorCollector
   ): Promise<unknown> {
-    try {
-      const decoder = this.decoderRegistry.getDecoder(chainId as any, raw.format as any);
-      if (!decoder) {
+    // Decode using the public method
+    const decodeResult = await this.decode({
+      chainId: chainId as ChainId,
+      format: raw.format as RawFormat,
+      encodedData: raw.value
+    });
+
+    // Handle decode errors
+    if (decodeResult.error) {
+      if (decodeResult.error.includes("No decoder available")) {
         errorCollector.addError(
           ErrorCode.MISSING_DECODER,
-          `No decoder available for ${chainId} with format ${raw.format}`,
+          decodeResult.error,
           "warning",
           { chainId, format: raw.format }
         );
-        return undefined;
-      }
-
-      const decodedRaw = await decoder.decode(raw.value);
-
-      // Check if this is a placeholder decoder
-      const decoderWithPlaceholder = decoder as DecoderWithPlaceholder;
-      if (decoderWithPlaceholder.isPlaceholder) {
+      } else {
         errorCollector.addError(
-          ErrorCode.MISSING_DECODER,
-          `Using placeholder decoder for ${chainId} - encoded validation skipped`,
-          "warning"
+          ErrorCode.DECODE_FAILED,
+          decodeResult.error,
+          "error",
+          { chainId, format: raw.format }
         );
-        return decodedRaw;
       }
+      return undefined;
+    }
 
-      // Verify decoded transaction
-      if (!decodedRaw || typeof decodedRaw !== "object") {
-        errorCollector.addError(
-          ErrorCode.INVALID_DECODED_STRUCTURE,
-          "Decoded transaction has invalid structure",
-          "error"
-        );
-        return decodedRaw;
-      }
+    // Map warnings
+    if (decodeResult.warnings) {
+      decodeResult.warnings.forEach(warning => {
+        const code = warning.code === "PLACEHOLDER_DECODER" 
+          ? ErrorCode.MISSING_DECODER 
+          : ErrorCode.DECODE_FAILED;
+        errorCollector.addError(code, warning.message, "warning");
+      });
+    }
 
-      const decoded = decodedRaw as Record<string, unknown>;
-
-      // Verify decoded against intent
-      TransactionVerifier.verifyDecodedAgainstIntent(decoded, originalIntent, errorCollector, chainId);
-
-      // Cross-verify decoded against API
-      TransactionVerifier.verifyDecodedAgainstAPI(decoded, apiData, errorCollector, chainId);
-
-      return decodedRaw;
-    } catch (decodeError) {
+    // Ensure we have decoded data
+    if (!decodeResult.decoded) {
       errorCollector.addError(
-        ErrorCode.DECODE_FAILED,
-        `Failed to decode transaction: ${decodeError}`,
-        "error",
-        { error: String(decodeError) }
+        ErrorCode.INVALID_DECODED_STRUCTURE,
+        "Decoded transaction is null",
+        "error"
       );
       return undefined;
     }
+
+    // Skip verification for placeholder decoders
+    if (decodeResult.isPlaceholder) {
+      return decodeResult.decoded;
+    }
+
+    // Validate decoded structure
+    const decoded = decodeResult.decoded;
+    if (!decoded || typeof decoded !== "object") {
+      errorCollector.addError(
+        ErrorCode.INVALID_DECODED_STRUCTURE,
+        "Decoded transaction has invalid structure",
+        "error"
+      );
+      return decoded;
+    }
+
+    // Perform two-step verification
+    TransactionVerifier.verifyDecodedAgainstIntent(
+      decoded as Record<string, unknown>, 
+      originalIntent, 
+      errorCollector, 
+      chainId
+    );
+
+    TransactionVerifier.verifyDecodedAgainstAPI(
+      decoded as Record<string, unknown>, 
+      apiData, 
+      errorCollector, 
+      chainId
+    );
+
+    return decoded;
   }
 }
 
