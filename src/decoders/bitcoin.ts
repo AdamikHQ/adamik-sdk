@@ -42,9 +42,13 @@ export class BitcoinDecoder extends BaseDecoder {
       // Get outputs and calculate total amount
       let recipientAddress = "";
       let totalAmount = BigInt(0);
+      let totalOutputValue = BigInt(0);
       
       // For each output, decode the address
       txOutputs.forEach((output: {script: Buffer; value: number}, index: number) => {
+        // Add to total output value for fee calculation
+        totalOutputValue += BigInt(output.value);
+        
         try {
           // Try to decode the address from the script
           const address = bitcoin.address.fromOutputScript(
@@ -63,23 +67,38 @@ export class BitcoinDecoder extends BaseDecoder {
         }
       });
       
-      // Get sender information from inputs
+      // Get sender information from inputs and calculate total input value
       let senderAddress = "";
-      if (psbt.data.inputs.length > 0) {
-        const firstInput = psbt.data.inputs[0];
+      let totalInputValue = BigInt(0);
+      
+      psbt.data.inputs.forEach((input, index) => {
+        // Calculate total input value for fee calculation
+        if (input.witnessUtxo) {
+          totalInputValue += BigInt(input.witnessUtxo.value);
+        } else if (input.nonWitnessUtxo) {
+          // For non-witness inputs, we need to parse the previous transaction
+          const prevTx = bitcoin.Transaction.fromBuffer(input.nonWitnessUtxo);
+          const vout = psbt.txInputs[index].index;
+          if (prevTx.outs[vout]) {
+            totalInputValue += BigInt(prevTx.outs[vout].value);
+          }
+        }
         
-        // Try to extract sender address from witness UTXO
-        if (firstInput.witnessUtxo) {
+        // Extract sender address from first input only
+        if (index === 0 && input.witnessUtxo) {
           try {
             senderAddress = bitcoin.address.fromOutputScript(
-              firstInput.witnessUtxo.script,
+              input.witnessUtxo.script,
               this.chainId === "bitcoin" ? bitcoin.networks.bitcoin : bitcoin.networks.testnet
             );
           } catch (e) {
             console.warn("Could not decode sender address from witness UTXO");
           }
         }
-      }
+      });
+      
+      // Calculate fee (inputs - outputs)
+      const fee = totalInputValue - totalOutputValue;
       
       return {
         mode: "transfer",
@@ -90,6 +109,9 @@ export class BitcoinDecoder extends BaseDecoder {
           psbt: psbt.toBase64(),
           inputs: psbt.data.inputs.length,
           outputs: txOutputs.length,
+          fee: fee.toString(),
+          totalInputValue: totalInputValue.toString(),
+          totalOutputValue: totalOutputValue.toString(),
         },
       };
     } catch (error) {
