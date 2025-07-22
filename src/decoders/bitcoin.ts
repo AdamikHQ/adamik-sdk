@@ -105,11 +105,11 @@ export class BitcoinDecoder extends BaseDecoder {
         recipientAddress,
         amount: totalAmount.toString(),
         senderAddress,
+        fee: fee.toString(),
         raw: {
           psbt: psbt.toBase64(),
           inputs: psbt.data.inputs.length,
           outputs: txOutputs.length,
-          fee: fee.toString(),
           totalInputValue: totalInputValue.toString(),
           totalOutputValue: totalOutputValue.toString(),
         },

@@ -34,9 +34,9 @@ export class EVMDecoder extends BaseDecoder {
         senderAddress: "", // Will be filled by verification logic from API response
         recipientAddress,
         amount: amount.toString(), // Convert bigint to string
+        fee: this.calculateFees(parsed).toString(),
         tokenId,
         raw: {
-          fees: this.calculateFees(parsed).toString(),
           gas: parsed.gas?.toString(),
           nonce: parsed.nonce ? BigInt(parsed.nonce).toString() : undefined,
           data: parsed.data,

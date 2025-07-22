@@ -33,14 +33,11 @@ export interface EncodedTransaction {
 
 export interface DecodedTransaction {
   chainId?: string;
-  from?: string;
-  to?: string;
-  value?: string;
-  data?: string;
   mode?: TransactionMode;
+  senderAddress?: string;
   recipientAddress?: string;
   amount?: string;
-  senderAddress?: string;
+  fee?: string;
   tokenId?: string;
   validatorAddress?: string;
   targetValidatorAddress?: string;

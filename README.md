@@ -489,6 +489,26 @@ const result = await sdk.decode({
 if (result.decoded) {
   console.log("Recipient:", result.decoded.recipientAddress);
   console.log("Amount:", result.decoded.amount);
+  console.log("Fee:", result.decoded.fee);
+}
+```
+
+### DecodedTransaction Structure
+
+The decoded transaction object contains:
+
+```typescript
+interface DecodedTransaction {
+  chainId?: string;          // Blockchain identifier
+  mode?: TransactionMode;    // "transfer", "transferToken", "stake", etc.
+  senderAddress?: string;    // Transaction sender
+  recipientAddress?: string; // Transaction recipient
+  amount?: string;          // Transaction amount in smallest unit
+  fee?: string;             // Transaction fee in native currency
+  tokenId?: string;         // Token contract address (for token transfers)
+  validatorAddress?: string; // Validator address (for staking operations)
+  targetValidatorAddress?: string; // Target validator (for re-delegation)
+  raw?: unknown;            // Chain-specific additional data
 }
 ```
 

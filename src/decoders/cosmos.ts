@@ -35,6 +35,8 @@ export class CosmosDecoder extends BaseDecoder {
       // Remove 0x prefix if present
       const cleanData = rawData.startsWith("0x") ? rawData.slice(2) : rawData;
       
+      let decodedTx: any;
+      
       // Try to parse as SignDoc first (SIGNDOC_DIRECT format)
       try {
         const signDocBytes = fromHex(cleanData);
@@ -47,157 +49,99 @@ export class CosmosDecoder extends BaseDecoder {
           signatures: [] // SignDoc doesn't contain signatures
         }).finish();
         
-        const decodedTx = decodeTxRaw(txRaw);
-        
-        // Process the first message
-        if (decodedTx.body.messages.length > 0) {
-          const firstMsg = decodedTx.body.messages[0];
-          
-          if (firstMsg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
-            const msgSend = MsgSend.decode(firstMsg.value);
-            
-            // Calculate total amount from all denominations
-            let totalAmount = "0";
-            if (msgSend.amount.length > 0) {
-              // For simplicity, we'll use the first denomination
-              // In production, you might want to handle multiple denoms
-              totalAmount = msgSend.amount[0].amount;
-            }
-            
-            return {
-              mode: "transfer" as TransactionMode,
-              senderAddress: msgSend.fromAddress,
-              recipientAddress: msgSend.toAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
-            const msgDelegate = MsgDelegate.decode(firstMsg.value);
-            
-            // For staking, amount is in the delegation
-            let totalAmount = "0";
-            if (msgDelegate.amount) {
-              totalAmount = msgDelegate.amount.amount;
-            }
-            
-            return {
-              mode: "stake" as TransactionMode,
-              senderAddress: msgDelegate.delegatorAddress,
-              targetValidatorAddress: msgDelegate.validatorAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
-            const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
-            
-            // For unstaking, amount is in the undelegation
-            let totalAmount = "0";
-            if (msgUndelegate.amount) {
-              totalAmount = msgUndelegate.amount.amount;
-            }
-            
-            return {
-              mode: "unstake" as TransactionMode,
-              senderAddress: msgUndelegate.delegatorAddress,
-              validatorAddress: msgUndelegate.validatorAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
-            const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
-            
-            return {
-              mode: "claimRewards" as TransactionMode,
-              senderAddress: msgWithdrawReward.delegatorAddress,
-              validatorAddress: msgWithdrawReward.validatorAddress,
-              amount: "0", // Rewards amount is not known until claimed
-              raw: rawData,
-            };
-          }
-        }
-        
-        // Fallback for non-transfer messages
-        return {
-          mode: "transfer" as TransactionMode,
-          recipientAddress: "cosmos1unknown",
-          amount: "0",
-          raw: rawData,
-        };
-        
+        decodedTx = decodeTxRaw(txRaw);
       } catch (signDocError) {
         // If not a SignDoc, try as raw transaction
         const txBytes = fromHex(cleanData);
-        const decodedTx = decodeTxRaw(txBytes);
-        
-        // Process the first message
-        if (decodedTx.body.messages.length > 0) {
-          const firstMsg = decodedTx.body.messages[0];
-          
-          if (firstMsg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
-            const msgSend = MsgSend.decode(firstMsg.value);
-            
-            let totalAmount = "0";
-            if (msgSend.amount.length > 0) {
-              totalAmount = msgSend.amount[0].amount;
-            }
-            
-            return {
-              mode: "transfer" as TransactionMode,
-              senderAddress: msgSend.fromAddress,
-              recipientAddress: msgSend.toAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
-            const msgDelegate = MsgDelegate.decode(firstMsg.value);
-            
-            let totalAmount = "0";
-            if (msgDelegate.amount) {
-              totalAmount = msgDelegate.amount.amount;
-            }
-            
-            return {
-              mode: "stake" as TransactionMode,
-              senderAddress: msgDelegate.delegatorAddress,
-              targetValidatorAddress: msgDelegate.validatorAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
-            const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
-            
-            let totalAmount = "0";
-            if (msgUndelegate.amount) {
-              totalAmount = msgUndelegate.amount.amount;
-            }
-            
-            return {
-              mode: "unstake" as TransactionMode,
-              senderAddress: msgUndelegate.delegatorAddress,
-              validatorAddress: msgUndelegate.validatorAddress,
-              amount: totalAmount,
-              raw: rawData,
-            };
-          } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
-            const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
-            
-            return {
-              mode: "claimRewards" as TransactionMode,
-              senderAddress: msgWithdrawReward.delegatorAddress,
-              validatorAddress: msgWithdrawReward.validatorAddress,
-              amount: "0", // Rewards amount is not known until claimed
-              raw: rawData,
-            };
-          }
-        }
-        
-        return {
-          mode: "transfer" as TransactionMode,
-          recipientAddress: "cosmos1unknown",
-          amount: "0",
-          raw: rawData,
-        };
+        decodedTx = decodeTxRaw(txBytes);
       }
+      
+      // Extract fee information from authInfo
+      let fee = "0";
+      if (decodedTx.authInfo && decodedTx.authInfo.fee && decodedTx.authInfo.fee.amount.length > 0) {
+        // Use the first denomination for the fee (typically uatom, uosmo, etc.)
+        fee = decodedTx.authInfo.fee.amount[0].amount;
+      }
+      
+      // Process the first message
+      if (decodedTx.body.messages.length > 0) {
+        const firstMsg = decodedTx.body.messages[0];
+        
+        if (firstMsg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
+          const msgSend = MsgSend.decode(firstMsg.value);
+          
+          // Calculate total amount from all denominations
+          let totalAmount = "0";
+          if (msgSend.amount.length > 0) {
+            // For simplicity, we'll use the first denomination
+            // In production, you might want to handle multiple denoms
+            totalAmount = msgSend.amount[0].amount;
+          }
+          
+          return {
+            mode: "transfer" as TransactionMode,
+            senderAddress: msgSend.fromAddress,
+            recipientAddress: msgSend.toAddress,
+            amount: totalAmount,
+            fee,
+            raw: rawData,
+          };
+        } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
+          const msgDelegate = MsgDelegate.decode(firstMsg.value);
+          
+          // For staking, amount is in the delegation
+          let totalAmount = "0";
+          if (msgDelegate.amount) {
+            totalAmount = msgDelegate.amount.amount;
+          }
+          
+          return {
+            mode: "stake" as TransactionMode,
+            senderAddress: msgDelegate.delegatorAddress,
+            targetValidatorAddress: msgDelegate.validatorAddress,
+            amount: totalAmount,
+            fee,
+            raw: rawData,
+          };
+        } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
+          const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
+          
+          // For unstaking, amount is in the undelegation
+          let totalAmount = "0";
+          if (msgUndelegate.amount) {
+            totalAmount = msgUndelegate.amount.amount;
+          }
+          
+          return {
+            mode: "unstake" as TransactionMode,
+            senderAddress: msgUndelegate.delegatorAddress,
+            validatorAddress: msgUndelegate.validatorAddress,
+            amount: totalAmount,
+            fee,
+            raw: rawData,
+          };
+        } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+          const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
+          
+          return {
+            mode: "claimRewards" as TransactionMode,
+            senderAddress: msgWithdrawReward.delegatorAddress,
+            validatorAddress: msgWithdrawReward.validatorAddress,
+            amount: "0", // Rewards amount is not known until claimed
+            fee,
+            raw: rawData,
+          };
+        }
+      }
+      
+      // Fallback for non-transfer messages
+      return {
+        mode: "transfer" as TransactionMode,
+        recipientAddress: "cosmos1unknown",
+        amount: "0",
+        fee,
+        raw: rawData,
+      };
       
     } catch (error) {
       throw new Error(`Failed to decode Cosmos transaction: ${error}`);

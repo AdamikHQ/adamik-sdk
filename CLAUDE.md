@@ -296,6 +296,23 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Easier maintenance and future enhancements
 - All 72 tests continue to pass
 
+### ✅ Completed: Improved DecodedTransaction Structure (July 2025)
+**What**: Refactored DecodedTransaction interface for better API consistency
+**Impact**: Breaking changes that improve API clarity and consistency
+**Changes**:
+- **Moved fee to top level** - `fee` field now at same level as amount, not buried in `raw`
+- **Removed redundant fields** - Eliminated `from`, `to`, `value`, `data` duplicates
+- **Standardized naming** - Consistent use of `senderAddress` and `recipientAddress`
+- **Bitcoin fee calculation** - Added proper fee calculation as (inputs - outputs)
+- **All decoders updated** - EVM, Bitcoin, and Cosmos now return fees at top level
+- **Documentation updated** - README and CHANGELOG reflect new structure
+**Benefits**:
+- Cleaner, more intuitive API structure
+- Fees are easily accessible for all blockchains
+- No more confusion between `from` vs `senderAddress`
+- Better consistency across different blockchain decoders
+- All 80 tests pass (8 new tests added)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -516,16 +533,17 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: SDK Dogfooding - verify() now uses decode() internally
+**Session**: Improved DecodedTransaction Structure
 **Major Changes**: 
-- Renamed internal method from `decodeAndVerify()` to `processEncodedTransaction()` for clarity
-- Refactored to use public `decode()` method, eliminating code duplication
-- Ensured consistency between verify() and decode() results
-- Fixed type imports for ChainId and RawFormat
-- Maintained backward compatibility with proper error/warning mapping
-- All 72 tests continue to pass
-**Previous Session**: Enhanced Cosmos decoder with full staking support (MsgUndelegate, MsgWithdrawDelegatorReward)
-**Next Session Should**: Implement hash validation or add more blockchain decoders (Solana, Algorand, etc.)
+- Moved `fee` field from `raw` to top level of `DecodedTransaction` interface
+- Removed redundant fields (`from`, `to`, `value`, `data`) to avoid confusion
+- Standardized on `senderAddress` and `recipientAddress` naming
+- Added fee calculation to Bitcoin decoder (inputs - outputs)
+- Updated all decoders (EVM, Bitcoin, Cosmos) to return fees at top level
+- Updated documentation (README, CHANGELOG) to reflect new structure
+- All 80 tests pass (added 8 new tests)
+**Previous Session**: SDK Dogfooding - verify() now uses decode() internally
+**Next Session Should**: Consider renaming `raw` to `chainSpecificParams` for clarity, or implement hash validation
 
 ## Future Product Direction
 

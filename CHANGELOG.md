@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Bitcoin Fee Calculation** - Added transaction fee extraction to Bitcoin decoder
+  - Calculate fee as (total inputs - total outputs)
+  - Added `totalInputValue` and `totalOutputValue` to raw output
+  - Support both witness and non-witness UTXO inputs
+  - Verified fee calculation matches expected values in test cases
+
+### Changed
+
+- **Improved DecodedTransaction Structure** - Breaking changes for better API consistency
+  - Moved `fee` field from `raw` to top level of `DecodedTransaction`
+  - Removed redundant `from`, `to`, `value`, and `data` fields
+  - Standardized on `senderAddress` and `recipientAddress` naming
+  - All decoders now return fees at the top level when available
+  - Updated documentation to reflect new structure
+
 - **SDK Dogfooding - verify() now uses decode() internally** - Eliminated code duplication
   - Renamed internal method from `decodeAndVerify()` to `processEncodedTransaction()` for better clarity
   - Refactored to use the public `decode()` method internally instead of duplicating logic
