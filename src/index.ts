@@ -232,6 +232,18 @@ export class AdamikSDK {
           "warning",
           { chainId, format: raw.format }
         );
+      } else if (decodeResult.error.includes("Chain ID mismatch")) {
+        // Chain ID mismatches are critical security errors
+        errorCollector.addError(
+          ErrorCode.DECODE_FAILED,
+          decodeResult.error,
+          "critical",
+          { 
+            chainId, 
+            format: raw.format,
+            recoveryStrategy: "SECURITY ALERT: Do not sign this transaction! The transaction is for a different blockchain network than expected."
+          }
+        );
       } else {
         errorCollector.addError(
           ErrorCode.DECODE_FAILED,

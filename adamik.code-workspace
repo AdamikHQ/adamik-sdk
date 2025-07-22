@@ -9,12 +9,11 @@
       "path": ".",
     },
     {
-      "name": "minitel",
-      "path": "../minitel",
-    },
-    {
       "name": "adamik-link",
       "path": "../adamik-link",
+    },
+    {
+      "path": "../adamik-sdk-showcase",
     },
   ],
   "settings": {},

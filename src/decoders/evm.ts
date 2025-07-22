@@ -1,6 +1,7 @@
 import { BaseDecoder } from "./base";
 import { ChainId, TransactionMode, DecodedTransaction } from "../types";
 import { isAddress, isHex, parseTransaction, getAddress } from "viem";
+import { validateChainId } from "../constants/evm-chains";
 
 export class EVMDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
@@ -18,6 +19,12 @@ export class EVMDecoder extends BaseDecoder {
 
       // Parse RLP-encoded transaction using viem
       const parsed = parseTransaction(hexData);
+
+      // Validate chain ID to prevent replay attacks
+      const chainIdValidation = validateChainId(this.chainId, parsed.chainId ? Number(parsed.chainId) : undefined);
+      if (!chainIdValidation.valid) {
+        throw new Error(chainIdValidation.error);
+      }
 
       // Determine transaction mode and extract relevant data
       const { mode, tokenId, recipientAddress, amount } = this.analyzeTransaction(parsed);
