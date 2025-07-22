@@ -460,6 +460,8 @@ This prevents permission prompts during the development session and ensures smoo
 - **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
 - **Other chain decoders** - Implement decoders for Solana, Algorand, Aptos, etc.
+- **Add fee calculation to Tron decoder** - Extract fee information from Tron transactions
+- **Remove isPlaceholder from DecodeResult** - This field confuses end users and provides no value. It's an implementation detail that should be internal only.
 
 ### 📋 Medium Priority
 - **Gas estimation verification** - Ensure API doesn't overcharge fees

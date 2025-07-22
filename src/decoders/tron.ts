@@ -97,6 +97,8 @@ export class TronDecoder extends BaseDecoder {
       recipientAddress: recipientHex ? this.tronWeb.address.fromHex(recipientHex) : "",
       amount: BigInt("0x" + amountHex).toString(),
       tokenId: contractHex ? this.tronWeb.address.fromHex(contractHex) : undefined,
+      // TODO: Add fee calculation for Tron transactions
+      // fee: "0", // Need to extract fee from transaction data
       raw: rawData,
     };
   }
@@ -129,6 +131,8 @@ export class TronDecoder extends BaseDecoder {
       senderAddress: ownerHex ? this.tronWeb.address.fromHex(ownerHex) : "",
       recipientAddress: toHex ? this.tronWeb.address.fromHex(toHex) : "",
       amount: amount,
+      // TODO: Add fee calculation for Tron transactions
+      // fee: "0", // Need to extract fee from transaction data
       raw: rawData,
     };
   }
