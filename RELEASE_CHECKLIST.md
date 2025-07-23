@@ -67,7 +67,6 @@ ROADMAP.md
 # dist/
 # LICENSE
 # README.md
-# CHANGELOG.md
 # package.json
 ```
 
@@ -90,7 +89,7 @@ ROADMAP.md
 
 1. Complete all checklist items above
 2. Update version in package.json
-3. Update CHANGELOG.md with release notes
+3. Create GitHub release with detailed release notes
 4. Run `pnpm run build` to ensure clean build
 5. Run `pnpm test` to ensure all tests pass
 6. Create git tag: `git tag -a v1.0.0 -m "Release v1.0.0"`

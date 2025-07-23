@@ -642,7 +642,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [NPM Package](https://www.npmjs.com/package/adamik-sdk)
 - [Report Issues](https://github.com/adamik/adamik-sdk/issues)
 - [Adamik API Documentation](https://docs.adamik.io)
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.

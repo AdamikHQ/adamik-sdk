@@ -145,7 +145,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 
 - Removed redundant `TEST.md` (root)
 - Enhanced `tests/README.md` as single source of test documentation
-- Updated `README.md` and `CHANGELOG.md` to reflect simplifications
+- Updated `README.md` to reflect simplifications
 
 ### ✅ Completed: EIP-55 Checksum Implementation (July 2025)
 
@@ -369,7 +369,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Standardized naming** - Consistent use of `senderAddress` and `recipientAddress`
 - **Bitcoin fee calculation** - Added proper fee calculation as (inputs - outputs)
 - **All decoders updated** - EVM, Bitcoin, and Cosmos now return fees at top level
-- **Documentation updated** - README and CHANGELOG reflect new structure
+- **Documentation updated** - README reflects new structure
   **Benefits**:
 - Cleaner, more intuitive API structure
 - Fees are easily accessible for all blockchains
