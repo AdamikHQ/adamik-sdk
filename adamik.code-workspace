@@ -1,20 +1,7 @@
 {
   "folders": [
     {
-      "name": "adamik-api",
-      "path": "../adamik-api",
-    },
-    {
-      "name": "adamik-sdk",
       "path": ".",
     },
-    {
-      "name": "adamik-link",
-      "path": "../adamik-link",
-    },
-    {
-      "path": "../adamik-sdk-showcase",
-    },
   ],
-  "settings": {},
 }

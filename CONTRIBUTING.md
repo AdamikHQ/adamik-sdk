@@ -12,17 +12,17 @@ Thank you for your interest in contributing to the Adamik SDK! This document pro
 
 2. **Install Dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Run Tests**
    ```bash
-   npm test
+   pnpm test
    ```
 
 4. **Build Project**
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 ## Development Workflow
@@ -37,14 +37,15 @@ Thank you for your interest in contributing to the Adamik SDK! This document pro
    - Add tests for new functionality
    - Update documentation as needed
 
-3. **Format Code**
+3. **Lint and Format Code**
    ```bash
-   npm run format
+   pnpm run lint:fix
+   pnpm run format
    ```
 
 4. **Run Tests**
    ```bash
-   npm test
+   pnpm test
    ```
 
 5. **Commit Changes**
@@ -110,7 +111,7 @@ To add support for a new blockchain:
 ## Testing
 
 - Write unit tests for all new functionality
-- Ensure tests pass: `npm test`
+- Ensure tests pass: `pnpm test`
 - Aim for high test coverage
 - Use descriptive test names and organize tests logically
 
@@ -131,6 +132,10 @@ Use conventional commits:
 - `test:` for test-related changes
 - `refactor:` for code refactoring
 - `chore:` for maintenance tasks
+
+## Security Issues
+
+If you discover a security vulnerability, please email security@adamik.io instead of opening a public issue.
 
 ## Questions?
 

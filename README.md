@@ -2,6 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/adamik-sdk.svg)](https://badge.fury.io/js/adamik-sdk)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green)](https://nodejs.org/)
 
 A TypeScript/Node.js SDK with two powerful capabilities:
 
@@ -75,10 +77,19 @@ if (!result.isValid) {
 
 Use `sdk.getSupportedChains()` to get the complete list of supported chains at runtime.
 
+## Prerequisites
+
+- Node.js >= 18.0.0
+- TypeScript >= 5.0 (for development)
+
 ## Installation
 
 ```bash
 npm install adamik-sdk
+# or
+yarn add adamik-sdk
+# or
+pnpm add adamik-sdk
 ```
 
 ## Quick Start
@@ -140,7 +151,8 @@ The SDK provides a unified interface for decoding transactions across multiple b
 | Bitcoin | PSBT | ✅ Real | `bitcoinjs-lib` |
 | Cosmos Hub, Celestia, etc. | COSMOS_PROTOBUF | ✅ Real | `@cosmjs/proto-signing` |
 | Tron | RAW_TRANSACTION | ✅ Real | `tronweb` |
-| Solana, Algorand, Aptos | Various | ⚠️ Placeholder | - |
+| Solana | BORSH | ✅ Real | `@solana/web3.js` |
+| Algorand, Aptos, TON | Various | ⚠️ Placeholder | - |
 
 ### Decode Examples
 
@@ -260,7 +272,7 @@ console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 - **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
 - **✅ Comprehensive Testing**: 92 tests across 9 test suites
 - **🏗️ Clean Architecture**: Modular design with utility classes
-- **⚡ Zero Dependencies**: Uses trusted blockchain libraries only
+- **⚡ Minimal Dependencies**: Only trusted blockchain libraries
 - **🔍 Chain Discovery**: Runtime methods to discover supported chains and formats
 
 ## Usage Examples
@@ -604,15 +616,32 @@ interface DecodedTransaction {
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon).
 
 ## Security
 
-Security considerations and current limitations are covered in the [Security & Current Limitations](#security--current-limitations) section above.
+If you discover a security vulnerability, please email security@adamik.io instead of using the issue tracker.
+
+For security considerations and current limitations, see the security examples in this README.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Links
+
+- [GitHub Repository](https://github.com/adamik/adamik-sdk)
+- [NPM Package](https://www.npmjs.com/package/adamik-sdk)
+- [Report Issues](https://github.com/adamik/adamik-sdk/issues)
+- [Adamik API Documentation](https://docs.adamik.io)
 
 ## Changelog
 

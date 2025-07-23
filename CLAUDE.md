@@ -533,21 +533,9 @@ pnpm run test:watch   # Watch mode
 pnpm run typecheck    # TypeScript type checking
 pnpm run lint         # ESLint checking
 pnpm run lint:fix     # ESLint auto-fix
-
-# Specific test suites (use exact names)
-pnpm test -- --testNamePattern="SDK Validation"     # Core validation tests
-pnpm test -- --testNamePattern="Attack Scenarios"   # Security attack tests
-pnpm test -- --testNamePattern="Edge Cases"         # Boundary condition tests
-pnpm test -- --testNamePattern="Error Handling"     # Error path tests
-pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
-pnpm test -- --testNamePattern="Integration"        # End-to-end tests
-pnpm test -- --testNamePattern="API Response"       # API response validation tests
-
-# Blockchain-specific tests
-pnpm test:bitcoin    # Run only Bitcoin-related tests
-pnpm test:evm        # Run only EVM-related tests
-pnpm test:decoders   # Run all decoder tests
 ```
+
+For detailed test commands and test suite organization, see [tests/README.md](tests/README.md).
 
 ## Technical Stack
 
@@ -605,56 +593,13 @@ claude --dangerously-skip-permissions
 
 This prevents permission prompts during the development session and ensures smooth workflow when Claude needs to read, write, or execute files.
 
-## 🚨 CRITICAL: Pre-Release Requirements
+## 🚨 Pre-Release Requirements
 
-### Must Fix Before Public Release (Top Priority)
+See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for detailed pre-release requirements and tasks.
 
-1. **Fix All 189 ESLint Errors** 🔴
-   - Run `pnpm run lint:fix` to auto-fix what's possible
-   - Manually fix remaining type safety issues
-   - Main issues: unsafe `any` usage, missing `await` statements, unused variables
-   - Tests not included in TypeScript configuration
+## Future Enhancements
 
-2. **Add GitHub Actions CI/CD** 🔴
-   - Create `.github/workflows/test.yml` for automated testing
-   - Add workflow for npm publishing on releases
-   - Include code coverage reporting
-   - Essential for professional open-source standards
-
-3. **Create .npmignore File** 🔴
-   - Without this, test files and dev configs will be published to npm
-   - Include only: `dist/`, `LICENSE`, `README.md`, `package.json`
-   - Significantly reduces package size
-
-### Additional Pre-Release Tasks
-
-- Remove VS Code workspace file (`adamik.code-workspace`)
-- Resolve TODO comments in `src/decoders/tron.ts`
-- Update repository URLs if moving from personal to organization account
-- Consider adding SECURITY.md and issue templates
-
-## Future Enhancements (After Release)
-
-### 🔥 High Priority (Next Features)
-
-- **TON decoder** - Complex but valuable, good test of architecture flexibility
-- **Solana staking operations** - Add support for stake, unstake, and withdrawal
-- **Complete decoder coverage** - Implement decoders for all chain families in chains.json (Algorand, Aptos, Starknet)
-- **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-- **Add fee calculation to Tron decoder** - Extract fee information from Tron transactions
-
-### 📋 Medium Priority
-
-- **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
-- **Gas estimation verification** - Ensure API doesn't overcharge fees
-- **Substrate support** - Advanced feature, requires WebSocket management
-- **Protocol registry pattern** - Consistent chain metadata management
-
-### 💡 Nice to Have
-
-- **Multi-signature support** - Transaction signing workflows
-- **Transaction simulation** - Dry-run capabilities
-- **Browser compatibility** - Currently Node.js only
+See [ROADMAP.md](ROADMAP.md) for detailed future development priorities and implementation guidelines.
 
 ## Working with Claude
 
@@ -709,11 +654,10 @@ This prevents permission prompts during the development session and ensures smoo
 
 ### 🎯 Current Priorities
 
-1. **Fix ESLint errors (189)** - BLOCKING RELEASE - Must be fixed before going public
-2. **Add GitHub Actions CI/CD** - BLOCKING RELEASE - Essential for open-source quality
-3. **Create .npmignore** - BLOCKING RELEASE - Prevents publishing unnecessary files
-4. **TON decoder** - Complex but valuable, good test of architecture flexibility
-5. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
+1. **Add GitHub Actions CI/CD** - BLOCKING RELEASE - Essential for open-source quality
+2. **Create .npmignore** - BLOCKING RELEASE - Prevents publishing unnecessary files
+3. **TON decoder** - Next major feature, complex but valuable
+4. **Complete decoder coverage** - Algorand, Aptos, Starknet implementations
 
 ### 🚫 Avoid These Patterns
 
