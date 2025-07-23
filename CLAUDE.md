@@ -3,10 +3,11 @@
 > **Purpose**: This file provides essential context for Claude when working on the Adamik SDK project. Read this first in any new session to understand the current state, architecture, and development patterns.
 
 ## Quick Context Summary
+
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing, Solana with BORSH decoding
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support and Chain ID validation, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing, Solana with BORSH decoding
 - **Tests**: 83 tests across 8 suites (all passing)
-- **Recent**: Added Solana decoder with support for SOL transfers and SPL token transfers
+- **Recent**: EVM decoder already includes Chain ID validation to prevent replay attacks
 
 ## Project Overview
 
@@ -17,10 +18,12 @@
 **Core Security Problem**: Malicious APIs can show correct readable data but provide tampered encoded transactions.
 
 **Solution - Two-Step Verification**:
+
 1. **Intent Validation** - Compare API response data vs user intent (✅ Implemented)
 2. **Encoded Transaction Validation** - Decode and verify actual transaction bytes (✅ EVM, Bitcoin & Cosmos, ⚠️ others placeholder)
 
 **Key Classes**:
+
 - `AdamikSDK` - Main SDK class with `verify()` and `decode()` methods
 - `DecoderRegistry` - Manages blockchain-specific decoders
 - `BaseDecoder` - Abstract class for chain-specific implementations
@@ -30,6 +33,7 @@
 ## Current Architecture
 
 ### Core Components
+
 ```
 src/
 ├── index.ts              # Main AdamikSDK class with verify() and decode() methods
@@ -51,9 +55,10 @@ src/
 ```
 
 ### Test Structure
+
 ```
 tests/
-├── decoders.test.ts         # Decoder tests (17 tests) 
+├── decoders.test.ts         # Decoder tests (17 tests)
 ├── sdk-validation.test.ts   # Core SDK tests (12 tests)
 ├── integration.test.ts      # End-to-end tests (1 test)
 ├── attack-scenarios.test.ts # Security attack tests (9 tests)
@@ -64,7 +69,7 @@ tests/
 └── fixtures/
     └── api-responses/       # Real API response data by blockchain (object format)
         ├── ethereum.json    # Ethereum test cases
-        ├── bitcoin.json     # Bitcoin test cases  
+        ├── bitcoin.json     # Bitcoin test cases
         ├── cosmos.json      # Cosmos test cases
         ├── injective.json   # Injective test cases
         ├── tron.json        # Tron test cases
@@ -74,9 +79,11 @@ tests/
 **Total: 80 tests across 8 suites (all passing)**
 
 ### Test Summary Table
+
 All test runs now display a comprehensive summary table showing:
+
 - Overall test results with pass rates
-- Per-suite breakdown with timing information  
+- Per-suite breakdown with timing information
 - Blockchain-specific test counts (Bitcoin, EVM, Other)
 - List of all executed tests with duration
 - Failed test details (if any)
@@ -86,8 +93,10 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ## Current Implementation Status
 
 ### ✅ Fully Implemented
+
 - **Intent validation** for all transaction types
 - **Real EVM RLP decoding** using viem library (Ethereum, Polygon, BSC, etc.)
+- **EVM Chain ID validation** - Prevents replay attacks by validating transaction chain ID matches expected network
 - **Real Bitcoin PSBT decoding** using bitcoinjs-lib (Bitcoin mainnet and testnet)
 - **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
 - **Cosmos staking operations** - Full support for stake (MsgDelegate), unstake (MsgUndelegate), and claim rewards (MsgWithdrawDelegatorReward)
@@ -101,21 +110,25 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Development tooling** - ESLint, type checking, prepublish scripts
 
 ### ⚠️ Placeholder/Limited
+
 - **Other chain decoders** - Only EVM, Bitcoin, Cosmos, Tron, and Solana have real implementations (Algorand, Aptos, TON, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - July 2025)
 
 ### ✅ Completed: Code Quality Improvements
+
 **What**: Complete codebase review and cleanup
 **Impact**: Significantly improved maintainability
 **Changes**:
+
 - **Extracted shared validation logic** from `src/index.ts` - eliminated duplication in field verification
 - **Added named constants** - `DEFAULT_TIMEOUT_MS = 30000` in `src/client.ts`
 - **Standardized error messages** - consistent format, removed emoji inconsistencies
 - **Fixed import ordering** - local imports first, external libraries second
 - **Removed unused code** - deleted `bufferToHex()` method from `src/decoders/base.ts`
 
-### ✅ Completed: Test Suite Simplification  
+### ✅ Completed: Test Suite Simplification
+
 **What**: Replaced complex testing infrastructure with simple scenario-based tests
 **Impact**: Same coverage, dramatically reduced complexity
 **Before**: 1,200+ lines of configuration-driven testing (ScenarioRunner, PatternRunner, etc.)
@@ -124,25 +137,31 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 **Files added**: `tests/scenarios.test.ts` - 8 simple, clear test scenarios
 
 ### ✅ Completed: Documentation Cleanup
+
 **What**: Streamlined documentation structure
 **Changes**:
+
 - Removed redundant `TEST.md` (root)
 - Enhanced `tests/README.md` as single source of test documentation
 - Updated `README.md` and `CHANGELOG.md` to reflect simplifications
 
 ### ✅ Completed: EIP-55 Checksum Implementation (July 2025)
+
 **What**: Added proper EIP-55 address checksumming to EVM decoder
 **Impact**: Enhanced security and standards compliance
 **Changes**:
+
 - Updated `src/decoders/evm.ts` to use viem's `getAddress` for EIP-55 checksumming
 - All decoded EVM addresses now returned in proper checksum format
 - Ensures address integrity throughout transaction verification flow
 - Example: `0x8bc6922eb94e4858efaf9f433c35bc241f69e8a6` → `0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6`
 
 ### ✅ Completed: Bruno Test Data Migration (July 2025)
+
 **What**: Migrated from legacy test fixtures to Bruno imported data
 **Impact**: Better real-world test coverage with actual API responses
 **Changes**:
+
 - Added `tests/fixtures/bruno-imported/` with 16 chain-specific test files
 - Updated all decoder tests to use Bruno data instead of `real-transactions.json`
 - Added new `bruno-imported.test.ts` with 29 tests covering all imported chains
@@ -150,9 +169,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Better coverage of edge cases and real API response formats
 
 ### ✅ Completed: Real Bitcoin Decoder Implementation (July 2025)
+
 **What**: Replaced placeholder Bitcoin decoder with real PSBT parsing
 **Impact**: Bitcoin transactions now have full validation capabilities
 **Changes**:
+
 - Integrated `bitcoinjs-lib` for PSBT parsing
 - Implemented real address extraction from PSBT data
 - Added proper amount calculation from transaction outputs
@@ -160,18 +181,22 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Supports both mainnet and testnet Bitcoin networks
 
 ### ✅ Completed: Test Suite Consolidation (July 2025)
+
 **What**: Removed redundancies and reorganized test files
 **Impact**: Reduced from 58 to 51 tests while maintaining full coverage
 **Changes**:
+
 - Removed duplicate basic validation tests from scenarios.test.ts
 - Consolidated all attack detection tests into scenarios.test.ts
 - Removed redundant Bruno data test from sdk-validation.test.ts
 - Clear separation: sdk-validation for happy path, scenarios for attacks
 
 ### ✅ Completed: Cosmos Decoder Addition (July 2025)
+
 **What**: Added Cosmos SDK chain decoder support
 **Impact**: Architecture ready for Cosmos chains (cosmoshub, celestia, injective, babylon-testnet)
 **Changes**:
+
 - Created CosmosDecoder class (placeholder implementation)
 - Added COSMOS_PROTOBUF to RawFormat type
 - Registered 4 Cosmos chains in decoder registry
@@ -179,9 +204,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Note: Real implementation requires protobuf parsing libraries
 
 ### ✅ Completed: Bruno Test Removal and Manual API Response Tests (July 2025)
+
 **What**: Replaced Bruno-imported tests with manual API response fixtures
 **Impact**: Cleaner test structure with real API responses organized by blockchain
 **Changes**:
+
 - Removed bruno-imported.test.ts and all bruno-imported fixtures per CTO feedback
 - Created api-responses.test.ts with JSON fixtures per blockchain family
 - Now have ethereum.json, bitcoin.json, cosmos.json with real API responses
@@ -190,9 +217,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Updated Cosmos decoder registration to support multiple formats (SIGNDOC_DIRECT, etc.)
 
 ### ✅ Completed: Real Cosmos Decoder Implementation (July 2025)
+
 **What**: Replaced placeholder Cosmos decoder with real protobuf parsing
 **Impact**: Cosmos chains now have full transaction validation capabilities
 **Changes**:
+
 - Integrated @cosmjs/proto-signing, @cosmjs/encoding, and @cosmjs/stargate for protobuf parsing
 - Implemented SignDoc parsing for SIGNDOC_DIRECT format
 - Added support for MsgSend transaction type decoding
@@ -201,9 +230,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - All 23 tests now passing (previously 1 was skipped)
 
 ### ✅ Completed: Test Fixture Standardization (July 2025)
+
 **What**: Standardized all test fixtures to object format and implemented DRY test helper
 **Impact**: Improved test maintainability and consistency
 **Changes**:
+
 - Converted all API response fixtures from array format to object format
   - Before: `[{name: "test1", ...}, {name: "test2", ...}]`
   - After: `{"test1": {...}, "test2": {...}}`
@@ -213,9 +244,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Test count increased to 29 tests (added Celestia and more scenarios)
 
 ### ✅ Completed: Zod Validation & Enhanced Error Management (July 2025)
+
 **What**: Integrated Zod for runtime validation matching Adamik API patterns
 **Impact**: Type-safe validation with rich error reporting
 **Changes**:
+
 - Added Zod v3 as dependency for schema validation
 - Created schema definitions matching API's discriminated unions
 - Implemented enhanced error structure with severity levels
@@ -225,9 +258,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Improved autocomplete through Zod type inference
 
 ### ✅ Completed: Real Tron Decoder Implementation (July 2025)
+
 **What**: Replaced placeholder Tron decoder with real transaction parsing
 **Impact**: Tron transactions now have full validation capabilities
 **Changes**:
+
 - Integrated TronWeb library (v6.0.3) for transaction parsing and address conversion
 - Implemented hex pattern matching for TransferContract and TriggerSmartContract types
 - Added proper hex to base58 address conversion (41... to T... format)
@@ -236,9 +271,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Test count increased from 29 to 37 tests (added Tron-specific tests)
 
 ### ✅ Completed: Comprehensive Code Quality Improvements (July 2025)
+
 **What**: Implemented all recommendations from senior architect review
 **Impact**: Significantly improved type safety, error handling, and test coverage
 **Changes**:
+
 - **Type Safety**: Created DecoderWithPlaceholder interface to replace unsafe `as any` casting
 - **Error Handling**: Implemented error deduplication, context aggregation, and recovery strategies
 - **Development Scripts**: Added typecheck, lint, lint:fix, prepublishOnly npm scripts
@@ -248,30 +285,36 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Test count increased from 38 to 63 tests (later increased to 80 with additional tests)
 
 ### ✅ Completed: EVM Chain ID Security Fix (July 2025)
+
 **What**: Implemented comprehensive chain ID validation for EVM transactions
 **Impact**: Prevents replay attacks across different EVM networks
 **Changes**:
+
 - **Chain ID extraction** - EVM decoder extracts chainId from transactions
 - **Chain ID validation** - Decoder validates transaction chainId matches expected network
 - **Security error handling** - Chain ID mismatches throw critical errors with clear messages
 - **Integration with verify()** - Main SDK treats chain ID mismatches as critical security errors
 - **Comprehensive tests** - Added evm-chainid-real-data.test.ts with 8 tests covering replay attack scenarios
-**Security benefit**: Transactions can only be executed on their intended network, preventing cross-chain replay attacks
+  **Security benefit**: Transactions can only be executed on their intended network, preventing cross-chain replay attacks
 
 ### ✅ Completed: EVM Sender Address Analysis (July 2025)
+
 **What**: Investigated why EVM decoder returns empty sender address
 **Impact**: Clarified design decision and improved integration documentation
 **Key Findings**:
+
 - **EVM unsigned transactions don't contain sender address** - Must be recovered from signature
 - **Design is intentional** - EVM decoder returns empty string with comment "Will be filled by verification logic"
 - **Other decoders extract sender** - Bitcoin (from PSBT UTXO), Cosmos (from protobuf), Tron (from raw data)
 - **SDK provides full context** - Returns both API data (validated) and decoded data (raw)
-**Integration Note**: UI implementations (like adamik-link) should use API response sender for EVM chains when decoded is empty
+  **Integration Note**: UI implementations (like adamik-link) should use API response sender for EVM chains when decoded is empty
 
 ### ✅ Completed: Public Decode Method & Architecture Refactoring (July 2025)
+
 **What**: Added public decode() method and refactored SDK architecture
 **Impact**: Improved code maintainability and added new functionality
 **Changes**:
+
 - **Added public decode() method** - Direct access to decoding without verification
 - **Created utility classes** - AddressNormalizer and TransactionVerifier
 - **Extracted verification logic** - Moved from index.ts to TransactionVerifier class
@@ -281,9 +324,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Test count now at 69 tests (all passing)
 
 ### ✅ Completed: Enhanced Cosmos Decoder with Full Staking Support (July 2025)
+
 **What**: Extended Cosmos decoder to support unstake and claim rewards operations
 **Impact**: Complete Cosmos staking workflow support
 **Changes**:
+
 - **Added MsgUndelegate support** - Proper decoding of unstake transactions
 - **Added MsgWithdrawDelegatorReward support** - Decoding of claim rewards transactions
 - **Fixed graceful failure handling** - Decoder now properly handles all Cosmos transaction types
@@ -292,9 +337,11 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - Test count increased from 69 to 72 tests (all passing)
 
 ### ✅ Completed: SDK Dogfooding - verify() now uses decode() internally (July 2025)
+
 **What**: Refactored verify() to use the public decode() method internally
 **Impact**: Eliminated code duplication and ensured consistency between verify and decode results
 **Changes**:
+
 - **Refactored internal method** - Renamed `decodeAndVerify()` to `processEncodedTransaction()` for clarity
 - **Now calls public decode()** - Method delegates decoding to the public decode() method
 - **Fixed type imports** - Added ChainId and RawFormat imports to properly type parameters
@@ -302,7 +349,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Error mapping** - Properly maps DecodeResult errors/warnings to ErrorCollector entries
 - **Code consistency** - Both verify() and decode() now share exact same decoding path
 - **Improved documentation** - Added clear comments explaining what the method does and doesn't do
-**Benefits**:
+  **Benefits**:
 - No more risk of divergence between decode() and verify() behaviors
 - Single source of truth for decoding logic
 - Clearer method naming that reflects actual responsibility
@@ -310,16 +357,18 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - All 72 tests continue to pass
 
 ### ✅ Completed: Improved DecodedTransaction Structure (July 2025)
+
 **What**: Refactored DecodedTransaction interface for better API consistency
 **Impact**: Breaking changes that improve API clarity and consistency
 **Changes**:
+
 - **Moved fee to top level** - `fee` field now at same level as amount, not buried in `raw`
 - **Removed redundant fields** - Eliminated `from`, `to`, `value`, `data` duplicates
 - **Standardized naming** - Consistent use of `senderAddress` and `recipientAddress`
 - **Bitcoin fee calculation** - Added proper fee calculation as (inputs - outputs)
 - **All decoders updated** - EVM, Bitcoin, and Cosmos now return fees at top level
 - **Documentation updated** - README and CHANGELOG reflect new structure
-**Benefits**:
+  **Benefits**:
 - Cleaner, more intuitive API structure
 - Fees are easily accessible for all blockchains
 - No more confusion between `from` vs `senderAddress`
@@ -327,42 +376,50 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - All 80 tests pass (8 new tests added)
 
 ### ✅ Completed: Chain Types and Utilities (July 2025)
+
 **What**: Added comprehensive Chain type system based on Adamik API chains.json
 **Impact**: Better type safety and chain metadata access
 **Changes**:
+
 - **Created Chain types** - Comprehensive interfaces for chain metadata
 - **Added chain utilities** - Helper functions for accessing chain information
 - **Updated EVM constants** - Now uses chains.json as single source of truth
 - **Removed redundant files** - Deleted hardcoded evm-chains.ts
 
 ### ✅ Completed: Enhanced DecodedTransaction Fields (July 2025)
+
 **What**: Renamed raw field and added memo support
 **Impact**: Clearer API and standard memo field support
 **Changes**:
+
 - **Renamed raw to chainSpecificData** - More descriptive field name
 - **Added memo field** - Standard field for transaction memos
 - **Updated all decoders** - Cosmos decoder extracts memo from transactions
 - **Updated all tests** - Fixed references to use new field names
 
 ### ✅ Completed: Removed isPlaceholder from DecodeResult (July 2025)
+
 **What**: Removed the isPlaceholder field from DecodeResult interface
 **Impact**: Cleaner API without confusing implementation details
 **Changes**:
+
 - **Removed isPlaceholder field** - This was an internal implementation detail that confused users
 - **Internal handling only** - Placeholder decoder detection is now handled internally
 - **Maintained warnings** - Placeholder decoders still generate appropriate warnings
 - **No breaking changes** - Users weren't supposed to rely on this field anyway
 
 ### ✅ Completed: Solana Decoder Implementation (July 2025)
+
 **What**: Added real Solana decoder with BORSH format support
 **Impact**: Solana transactions now have full validation capabilities
 **Changes**:
+
 - **Integrated @solana/web3.js** - For address validation and PublicKey handling
 - **BORSH format parsing** - Handles Adamik's custom BORSH encoding for Solana
 - **SOL transfers** - Extracts sender, recipient, and amount from native transfers
 - **SPL token transfers** - Supports token transfers with amount extraction
 - **Address extraction** - Properly identifies sender and recipient addresses
-- **Limitations**: 
+- **Limitations**:
   - Token ID is currently hardcoded for USDC - proper implementation would need to parse token mint address from instruction data
   - Recipient address for SPL token transfers is simplified - in reality, SPL tokens are sent to Associated Token Accounts (ATAs), not wallet addresses directly
   - The decoder cannot determine the actual recipient wallet from ATA addresses without additional data
@@ -372,12 +429,14 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ## Key Security Features
 
 ### Attack Detection
+
 - **Malicious encoded transactions** - API shows correct data but sends to different recipient/amount
 - **Data tampering** - Mode, recipient, amount mismatches
 - **Real RLP verification** - Cryptographic validation for EVM chains
 - **Real PSBT verification** - Authentic Bitcoin transaction parsing
 
 ### Critical Security Tests
+
 - ✅ **Malicious API detection** - API shows correct data but encoded transaction sends elsewhere
 - ✅ **Recipient tampering** - `Critical: Decoded transaction recipient mismatch`
 - ✅ **Amount manipulation** - `Critical: Decoded transaction amount mismatch`
@@ -386,6 +445,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - ✅ **Real PSBT decoding** - Uses `bitcoinjs-lib` for authentic Bitcoin validation
 
 ### Test File Breakdown
+
 - `attack-scenarios.test.ts` (9 tests) - Security attack detection (EVM, Bitcoin, tokens, Cosmos)
 - `edge-cases.test.ts` (11 tests) - Boundary conditions and special cases
 - `error-handling.test.ts` (10 tests) - Error path coverage and exception handling
@@ -397,6 +457,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 ## Development Patterns
 
 ### Adding New Features
+
 1. **Types first** - Update `src/types/index.ts` with new interfaces
 2. **Implementation** - Update `src/index.ts` verify method logic
 3. **Tests** - Add to appropriate test file (see test file breakdown above)
@@ -404,14 +465,19 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 5. **Documentation** - Update README if user-facing
 
 ### Adding New Chain Support (Follow EVM Pattern)
+
 ```typescript
 // 1. Create decoder extending BaseDecoder
 export class NewChainDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
     super(chainId, "NEW_FORMAT");
   }
-  async decode(rawData: string): Promise<DecodedTransaction> { /* impl */ }
-  validate(decodedData: unknown): boolean { /* impl */ }
+  async decode(rawData: string): Promise<DecodedTransaction> {
+    /* impl */
+  }
+  validate(decodedData: unknown): boolean {
+    /* impl */
+  }
 }
 
 // 2. Register in DecoderRegistry.registerDefaultDecoders()
@@ -423,6 +489,7 @@ this.registerDecoder(new NewChainDecoder("newchain"));
 ```
 
 ### Code Quality Standards (Enforced)
+
 - **No code duplication** - Extract to private methods (see `verifyTransactionFields`, `verifyDecodedFields`)
 - **Named constants** - No magic numbers (e.g., `DEFAULT_TIMEOUT_MS = 30000`)
 - **Consistent imports** - Local first, external second (see `src/decoders/evm.ts:1-3`)
@@ -441,7 +508,7 @@ pnpm run dev          # Run with ts-node
 pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
-# Testing  
+# Testing
 pnpm test             # All 80 tests
 pnpm run test:watch   # Watch mode
 pnpm run typecheck    # TypeScript type checking
@@ -450,7 +517,7 @@ pnpm run lint:fix     # ESLint auto-fix
 
 # Specific test suites (use exact names)
 pnpm test -- --testNamePattern="SDK Validation"     # Core validation tests
-pnpm test -- --testNamePattern="Attack Scenarios"   # Security attack tests  
+pnpm test -- --testNamePattern="Attack Scenarios"   # Security attack tests
 pnpm test -- --testNamePattern="Edge Cases"         # Boundary condition tests
 pnpm test -- --testNamePattern="Error Handling"     # Error path tests
 pnpm test -- --testNamePattern="Decoders"           # Decoder functionality
@@ -466,6 +533,7 @@ pnpm test:decoders   # Run all decoder tests
 ## Technical Stack
 
 ### Production Dependencies
+
 - **viem** (^2.32.0) - Real EVM RLP decoding (parseTransaction, isAddress, isHex, getAddress)
   - Used in `src/decoders/evm.ts` for authentic blockchain transaction parsing
   - Provides EIP-55 checksum address formatting via getAddress
@@ -492,6 +560,7 @@ pnpm test:decoders   # Run all decoder tests
   - Provides TOKEN_PROGRAM_ID constant for identifying token transfers
 
 ### Development Stack
+
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
 - **Jest** (^30.0.4) - Testing framework, 83 tests across 8 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
@@ -501,6 +570,7 @@ pnpm test:decoders   # Run all decoder tests
 - **Zod** (^3.24.1) - Runtime validation with type inference
 
 ### Key Libraries NOT Used (Potential Additions)
+
 - **ethers.js** - Alternative to viem for EVM
 - **algosdk** - Future Algorand support
 - **@aptos-labs/ts-sdk** - Future Aptos support
@@ -519,6 +589,7 @@ This prevents permission prompts during the development session and ensures smoo
 ## Future Enhancements (Planned)
 
 ### 🔥 High Priority (Next Features)
+
 - **TON decoder** - Complex but valuable, good test of architecture flexibility
 - **Solana staking operations** - Add support for stake, unstake, and withdrawal
 - **Complete decoder coverage** - Implement decoders for all chain families in chains.json (Algorand, Aptos, Starknet)
@@ -526,12 +597,14 @@ This prevents permission prompts during the development session and ensures smoo
 - **Add fee calculation to Tron decoder** - Extract fee information from Tron transactions
 
 ### 📋 Medium Priority
+
 - **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Gas estimation verification** - Ensure API doesn't overcharge fees
 - **Substrate support** - Advanced feature, requires WebSocket management
 - **Protocol registry pattern** - Consistent chain metadata management
 
 ### 💡 Nice to Have
+
 - **Multi-signature support** - Transaction signing workflows
 - **Transaction simulation** - Dry-run capabilities
 - **Browser compatibility** - Currently Node.js only
@@ -539,24 +612,28 @@ This prevents permission prompts during the development session and ensures smoo
 ## Working with Claude
 
 ### Session Start Checklist
+
 1. **Read this file completely** - Understand current state
 2. **Check recent changes section** - What was done and why
 3. **Review development patterns** - How to add features consistently
 4. **Note current limitations** - What's placeholder vs fully implemented
 
 ### Important Development Guidelines
+
 - **Always use pnpm** - Never use npm for any commands
 - **Always challenge assumptions** - Verify data formats and API responses before implementation
 - **Propose alternatives** - When something seems suboptimal, suggest better approaches
 - **Use Claude CLI with --dangerously-skip-permissions** - When using Claude for development, always include this flag to avoid permission prompts
 
 ### Effective Communication
+
 - **Reference specific locations**: `src/index.ts:45-60`, `tests/scenarios.test.ts:125`
 - **Include context**: "When adding EVM support" vs "When adding features"
 - **Specify test requirements**: "Add to scenarios.test.ts with attack scenario"
 - **Mention constraints**: "Following the BaseDecoder pattern"
 
 ### Update This File When
+
 - **Major architectural changes** (new core classes, significant refactoring)
 - **New development patterns** (different way of adding features)
 - **Completing planned enhancements** (move from planned to implemented)
@@ -564,6 +641,7 @@ This prevents permission prompts during the development session and ensures smoo
 - **API changes** (breaking changes to public methods)
 
 ### Don't Update For
+
 - Minor bug fixes
 - Small refactors within existing patterns
 - Documentation-only changes
@@ -572,16 +650,18 @@ This prevents permission prompts during the development session and ensures smoo
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
+
 - **EVM, Bitcoin, Cosmos, Tron, and Solana** have real encoded validation - Other chains still need decoders
 - **Test with real data** - Use `fixtures/api-responses/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
 - **EIP-55 compliance** - All EVM addresses must use proper checksumming
-- **EVM Chain ID validation** - Already implemented to prevent replay attacks
+- **EVM Chain ID validation** - ✅ Already implemented to prevent replay attacks
 - **Solana uses Adamik's custom BORSH encoding** - Not standard Solana transaction format
 - **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
+
 1. **TON decoder** - Complex but valuable, good test of architecture flexibility
 2. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
 3. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
@@ -589,39 +669,42 @@ This prevents permission prompts during the development session and ensures smoo
 5. **Solana staking operations** - Add support for stake, unstake, and withdrawal
 
 ### 🚫 Avoid These Patterns
+
 - Complex configuration-driven testing (was removed for good reason)
 - Magic numbers in code (use named constants)
 - Code duplication (extract to shared methods)
 - Inconsistent error message formats
 
 ## Git Configuration
+
 - Do not include Claude co-author line in commits
 - Use standard commit format without attribution
 
 ---
 
 ## Last Updated
+
 **Date**: July 2025  
-**Session**: Solana Decoder Implementation
-**Major Changes**: 
-- Added real Solana decoder with BORSH format support
-- Integrated @solana/web3.js and @solana/spl-token dependencies
-- Implemented SOL transfer and SPL token transfer decoding
-- Handles Adamik's custom BORSH encoding format
-- Added 3 Solana tests (transfer_max, transfer_amount, token_transfer)
-- All 83 tests pass
-**Previous Session**: Enhanced DecodedTransaction Fields & Chain Types
-**Next Session Should**: Implement TON decoder or add Solana staking operations
+**Session**: EVM Chain ID Validation Documentation Update
+**Major Changes**:
+
+- Updated documentation to reflect existing security feature (chain id mismatch)
+- EVM decoder validates transaction chain ID matches expected network to prevent replay attacks
+- Throws clear error messages when chain ID mismatches are detected
+  **Previous Session**: Solana Decoder Implementation
+  **Next Session Should**: Implement TON decoder or add Solana staking operations
 
 ## Future Product Direction
 
 ### Current: Pure Verification SDK
+
 - **Focus**: Security validation only
 - **User provides**: API responses from any source
 - **SDK provides**: Verification that response matches intent
 - **Benefits**: Clean separation of concerns, no network dependencies
 
 ### Potential Future: Full Integration SDK
+
 - **Would include**: Built-in API client + verification
 - **User provides**: Just the transaction intent
 - **SDK provides**: API calls + automatic verification
