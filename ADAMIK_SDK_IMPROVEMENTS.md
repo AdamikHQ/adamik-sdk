@@ -2,13 +2,13 @@
 
 This document provides specific, actionable recommendations for improving Adamik SDK by integrating proven patterns and implementations from Minitel.
 
-## 1. Add Solana Decoder
+## 1. Add Solana Decoder ✅ IMPLEMENTED
 
-### Current Gap
+### Current Status
 
-Adamik SDK lacks Solana support. Minitel has a working implementation.
+Solana decoder has been implemented with support for SOL transfers and SPL token transfers.
 
-### Implementation Steps
+### Implementation Details
 
 1. **Install Solana Web3.js dependency**
 
@@ -153,10 +153,29 @@ this.registerDecoder(new SolanaDecoder("solana-devnet"));
 }
 ```
 
-### Reference Files
+### Implementation Notes
 
-- Minitel implementation: `/Users/fabricedautriat/Documents/GitHub/minitel/src/lib/parseSolTx.ts`
-- Example transaction: `/Users/fabricedautriat/Documents/GitHub/minitel/src/lib/examples.ts` (line 5)
+**Key Findings:**
+- Adamik uses a custom BORSH encoding format, not standard Solana transaction format
+- Transaction structure has addresses at specific byte offsets (4 and 36)
+- SPL token transfers use Associated Token Accounts (ATAs)
+- Token ID cannot be reliably extracted from the custom format and is currently hardcoded for USDC
+
+### Known Limitations
+
+1. **Custom BORSH Format**: The decoder handles Adamik's custom BORSH encoding, not standard Solana transactions
+2. **Token ID Hardcoding**: SPL token mint addresses cannot be extracted from the transaction data and must be hardcoded
+3. **ATA Handling**: Token transfers to same wallet show sender address for both sender and recipient
+4. **Limited Operations**: Only supports basic transfers and SPL token transfers (no staking operations yet)
+5. **Amount Extraction**: Relies on specific byte patterns that may vary with different transaction types
+
+### Files Created/Modified
+
+- Created: `src/decoders/solana.ts` - Solana decoder implementation
+- Modified: `src/decoders/registry.ts` - Added Solana decoder registration
+- Created: `tests/fixtures/api-responses/solana.json` - Test fixtures
+- Modified: `tests/api-responses.test.ts` - Added Solana tests
+- Modified: `package.json` - Added @solana/web3.js and @solana/spl-token dependencies
 
 ---
 
@@ -416,7 +435,7 @@ Based on chains.json, the SDK supports these families:
 - ✅ **bitcoin** - Fully implemented 
 - ✅ **cosmos** - Fully implemented
 - ✅ **tron** - Fully implemented
-- ⚠️ **solana** - Needs implementation
+- ✅ **solana** - Implemented (basic transfers and SPL tokens only)
 - ⚠️ **algorand** - Needs implementation
 - ⚠️ **aptos** - Needs implementation
 - ⚠️ **starknet** - Needs implementation
@@ -466,7 +485,7 @@ For each new decoder:
 
 ## Priority Order
 
-1. **Solana decoder** - Most requested, straightforward implementation
+1. ~~**Solana decoder**~~ - ✅ Implemented with basic transfer and SPL token support
 2. **TON decoder** - Complex but valuable, good test of architecture flexibility
 3. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
 4. **Substrate support** - Advanced feature, requires WebSocket management

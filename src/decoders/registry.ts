@@ -4,6 +4,8 @@ import { EVMDecoder } from "./evm";
 import { BitcoinDecoder } from "./bitcoin";
 import { CosmosDecoder } from "./cosmos";
 import { TronDecoder } from "./tron";
+import { SolanaDecoder } from "./solana";
+import { getChainsByFamily } from "../utils/chain-utils";
 
 export class DecoderRegistry {
   private decoders: Map<string, BaseDecoder> = new Map();
@@ -16,35 +18,20 @@ export class DecoderRegistry {
    * Registers default decoders for supported chains
    */
   private registerDefaultDecoders(): void {
-    // EVM chains
-    const evmChains: ChainId[] = [
-      "ethereum",
-      "sepolia",
-      "polygon",
-      "bsc",
-      "avalanche",
-      "arbitrum",
-      "optimism",
-      "base",
-    ];
-
-    evmChains.forEach((chainId) => {
-      this.registerDecoder(new EVMDecoder(chainId));
+    // EVM chains - get all chains from the EVM family
+    const evmChains = getChainsByFamily("evm");
+    evmChains.forEach((chain) => {
+      this.registerDecoder(new EVMDecoder(chain.id as ChainId));
     });
 
-    // Bitcoin-like chains
-    const bitcoinChains: ChainId[] = ["bitcoin", "bitcoin-testnet", "bitcoin-signet"];
-    bitcoinChains.forEach((chainId) => {
-      this.registerDecoder(new BitcoinDecoder(chainId));
+    // Bitcoin family chains
+    const bitcoinChains = getChainsByFamily("bitcoin");
+    bitcoinChains.forEach((chain) => {
+      this.registerDecoder(new BitcoinDecoder(chain.id as ChainId));
     });
 
     // Cosmos SDK chains
-    const cosmosChains: ChainId[] = [
-      "cosmoshub",
-      "celestia",
-      "injective",
-      "babylon-testnet"
-    ];
+    const cosmosChains = getChainsByFamily("cosmos");
     
     // Cosmos chains can use multiple formats
     const cosmosFormats: RawFormat[] = [
@@ -55,18 +42,29 @@ export class DecoderRegistry {
       "SIGNDOC_AMINO_JSON"
     ];
     
-    cosmosChains.forEach((chainId) => {
+    cosmosChains.forEach((chain) => {
       // Register the same decoder for all Cosmos formats
       cosmosFormats.forEach((format) => {
-        const decoder = new CosmosDecoder(chainId, format as any);
+        const decoder = new CosmosDecoder(chain.id as ChainId, format as any);
         this.registerDecoder(decoder);
       });
     });
 
-    // Tron
-    this.registerDecoder(new TronDecoder("tron"));
+    // Tron family chains
+    const tronChains = getChainsByFamily("tron");
+    tronChains.forEach((chain) => {
+      this.registerDecoder(new TronDecoder(chain.id as ChainId));
+    });
+
+    // Solana family chains
+    const solanaChains = getChainsByFamily("solana");
+    solanaChains.forEach((chain) => {
+      this.registerDecoder(new SolanaDecoder(chain.id as ChainId));
+    });
 
     // Additional decoders can be added here as they are implemented
+    // For families without decoders yet (algorand, aptos, starknet, ton), 
+    // we could register placeholder decoders or leave them unregistered
   }
 
   /**

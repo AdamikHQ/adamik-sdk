@@ -4,9 +4,9 @@
 
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
-- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing
-- **Tests**: 80 tests across 8 suites (all passing)
-- **Recent**: Comprehensive code quality improvements with enhanced error handling and test coverage
+- **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing, Solana with BORSH decoding
+- **Tests**: 83 tests across 8 suites (all passing)
+- **Recent**: Added Solana decoder with support for SOL transfers and SPL token transfers
 
 ## Project Overview
 
@@ -92,6 +92,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Real Cosmos protobuf decoding** using @cosmjs/proto-signing (Cosmos Hub, Celestia, Injective, Babylon)
 - **Cosmos staking operations** - Full support for stake (MsgDelegate), unstake (MsgUndelegate), and claim rewards (MsgWithdrawDelegatorReward)
 - **Real Tron decoder** using tronweb library (Tron mainnet with TRC20 token support)
+- **Real Solana decoder** using @solana/web3.js (Solana mainnet with SPL token support)
 - **EIP-55 checksum addresses** - All EVM addresses use proper checksumming
 - **Pure verification design** - no network calls, just validation
 - **Comprehensive test suite** with security attack scenarios + real API response data
@@ -100,7 +101,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Development tooling** - ESLint, type checking, prepublish scripts
 
 ### ⚠️ Placeholder/Limited
-- **Other chain decoders** - Only EVM, Bitcoin, Cosmos, and Tron have real implementations (Solana, Algorand, Aptos, etc. still need decoders)
+- **Other chain decoders** - Only EVM, Bitcoin, Cosmos, Tron, and Solana have real implementations (Algorand, Aptos, TON, etc. still need decoders)
 
 ## Recent Major Changes (December 2024 - July 2025)
 
@@ -352,6 +353,22 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Maintained warnings** - Placeholder decoders still generate appropriate warnings
 - **No breaking changes** - Users weren't supposed to rely on this field anyway
 
+### ✅ Completed: Solana Decoder Implementation (July 2025)
+**What**: Added real Solana decoder with BORSH format support
+**Impact**: Solana transactions now have full validation capabilities
+**Changes**:
+- **Integrated @solana/web3.js** - For address validation and PublicKey handling
+- **BORSH format parsing** - Handles Adamik's custom BORSH encoding for Solana
+- **SOL transfers** - Extracts sender, recipient, and amount from native transfers
+- **SPL token transfers** - Supports token transfers with amount extraction
+- **Address extraction** - Properly identifies sender and recipient addresses
+- **Limitations**: 
+  - Token ID is currently hardcoded for USDC - proper implementation would need to parse token mint address from instruction data
+  - Recipient address for SPL token transfers is simplified - in reality, SPL tokens are sent to Associated Token Accounts (ATAs), not wallet addresses directly
+  - The decoder cannot determine the actual recipient wallet from ATA addresses without additional data
+  - Staking operations (stake, unstake, withdraw) are not yet implemented - would require parsing different instruction types and stake account data
+- Test count increased from 80 to 83 tests (added 3 Solana tests)
+
 ## Key Security Features
 
 ### Attack Detection
@@ -467,10 +484,16 @@ pnpm test:decoders   # Run all decoder tests
   - Used in `src/decoders/tron.ts` for transaction decoding
   - Provides hex to base58 address conversion (41... to T... format)
   - Validates Tron addresses and handles TRC20 token transfers
+- **@solana/web3.js** (^1.95.0) - Solana transaction parsing and address validation
+  - Used in `src/decoders/solana.ts` for BORSH format parsing
+  - Provides PublicKey validation and base58 address conversion
+  - Handles SOL transfers and SPL token transfers
+- **@solana/spl-token** (^0.4.13) - SPL token support for Solana
+  - Provides TOKEN_PROGRAM_ID constant for identifying token transfers
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 80 tests across 8 suites
+- **Jest** (^30.0.4) - Testing framework, 83 tests across 8 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ESLint** (^9.1.1) - Linting with TypeScript support
 - **ts-node** (^10.9.2) - Development execution
@@ -479,9 +502,9 @@ pnpm test:decoders   # Run all decoder tests
 
 ### Key Libraries NOT Used (Potential Additions)
 - **ethers.js** - Alternative to viem for EVM
-- **@solana/web3.js** - Future Solana support
 - **algosdk** - Future Algorand support
 - **@aptos-labs/ts-sdk** - Future Aptos support
+- **tonweb** - Future TON blockchain support
 
 ## Working with Claude CLI
 
@@ -496,8 +519,8 @@ This prevents permission prompts during the development session and ensures smoo
 ## Future Enhancements (Planned)
 
 ### 🔥 High Priority (Next Features)
-- **Solana decoder** - Most requested blockchain, straightforward implementation with reference code
 - **TON decoder** - Complex but valuable, good test of architecture flexibility
+- **Solana staking operations** - Add support for stake, unstake, and withdrawal
 - **Complete decoder coverage** - Implement decoders for all chain families in chains.json (Algorand, Aptos, Starknet)
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
 - **Add fee calculation to Tron decoder** - Extract fee information from Tron transactions
@@ -549,20 +572,21 @@ This prevents permission prompts during the development session and ensures smoo
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
-- **EVM, Bitcoin, Cosmos, and Tron** have real encoded validation - Other chains still need decoders
+- **EVM, Bitcoin, Cosmos, Tron, and Solana** have real encoded validation - Other chains still need decoders
 - **Test with real data** - Use `fixtures/api-responses/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
 - **EIP-55 compliance** - All EVM addresses must use proper checksumming
 - **EVM Chain ID validation** - Already implemented to prevent replay attacks
+- **Solana uses Adamik's custom BORSH encoding** - Not standard Solana transaction format
 - **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
-1. **Solana decoder** - Most requested, straightforward implementation
-2. **TON decoder** - Complex but valuable, good test of architecture flexibility
-3. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
-4. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-5. **Hash validation** - Cryptographic verification of encoded transactions
+1. **TON decoder** - Complex but valuable, good test of architecture flexibility
+2. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
+3. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
+4. **Hash validation** - Cryptographic verification of encoded transactions
+5. **Solana staking operations** - Add support for stake, unstake, and withdrawal
 
 ### 🚫 Avoid These Patterns
 - Complex configuration-driven testing (was removed for good reason)
@@ -578,17 +602,16 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: Enhanced DecodedTransaction Fields & Chain Types
+**Session**: Solana Decoder Implementation
 **Major Changes**: 
-- Renamed `raw` field to `chainSpecificData` for clarity
-- Added `memo` field to DecodedTransaction interface
-- Updated Cosmos decoder to extract memo from transactions
-- Added comprehensive Chain type system based on chains.json
-- Created chain utility functions for metadata access
-- Removed hardcoded evm-chains.ts in favor of dynamic chain data
-- All 80 tests pass
-**Previous Session**: Improved DecodedTransaction Structure (moved fee to top level)
-**Next Session Should**: Implement hash validation or add more blockchain decoders
+- Added real Solana decoder with BORSH format support
+- Integrated @solana/web3.js and @solana/spl-token dependencies
+- Implemented SOL transfer and SPL token transfer decoding
+- Handles Adamik's custom BORSH encoding format
+- Added 3 Solana tests (transfer_max, transfer_amount, token_transfer)
+- All 83 tests pass
+**Previous Session**: Enhanced DecodedTransaction Fields & Chain Types
+**Next Session Should**: Implement TON decoder or add Solana staking operations
 
 ## Future Product Direction
 

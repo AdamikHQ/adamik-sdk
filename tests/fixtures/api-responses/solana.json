@@ -1,0 +1,123 @@
+{
+  "solana_transfer_max": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
+          "useMaxAmount": true
+        }
+      }
+    },
+    "response": {
+      "chainId": "solana",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
+          "useMaxAmount": true,
+          "amount": "153178784",
+          "fees": "5000"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "BORSH",
+              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871b4a409e52f8c6a1c009699af2dbbdb9eb7dcdaf3ef2eafe87b3499d38e29362600000000000000000000000000000000000000000000000000000000000000005c3fdbb45865314d1495bef7e2e09e94a81873ec7a81f21a5aa28ca3d52a6fbf01020200010c02000000a052210900000000"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  },
+  "solana_transfer_amount": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
+          "amount": "123456"
+        }
+      }
+    },
+    "response": {
+      "chainId": "solana",
+      "transaction": {
+        "data": {
+          "mode": "transfer",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
+          "amount": "123456",
+          "useMaxAmount": false,
+          "fees": "5000"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "BORSH",
+              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871b4a409e52f8c6a1c009699af2dbbdb9eb7dcdaf3ef2eafe87b3499d38e2936260000000000000000000000000000000000000000000000000000000000000000acbd683f1765c0da8d458c9bd3050b4f2627fbcd7a58b32285aa588c2c38457e01020200010c0200000040e2010000000000"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
+      }
+    }
+  },
+  "solana_token_transfer": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transferToken",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "amount": "11211"
+        }
+      }
+    },
+    "response": {
+      "chainId": "solana",
+      "transaction": {
+        "data": {
+          "mode": "transferToken",
+          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "senderPubKey": "0b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871",
+          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "amount": "11211",
+          "useMaxAmount": false,
+          "fees": "5000"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "BORSH",
+              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a92877dad6a0f54e2b124a9c4a62833e2a5afbf2a1cbd53c0dd07caa977da9b2f90102030101000903cb2b000000000000"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Same sender and recipient address"
+          },
+          {
+            "message": "Network fees are above 10% of the amount"
+          }
+        ]
+      }
+    }
+  }
+}

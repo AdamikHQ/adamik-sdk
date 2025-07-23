@@ -5,6 +5,7 @@ import cosmosFixtures from "./fixtures/api-responses/cosmos.json";
 import injectiveFixtures from "./fixtures/api-responses/injective.json";
 import tronFixtures from "./fixtures/api-responses/tron.json";
 import celestiaFixtures from "./fixtures/api-responses/celestia.json";
+import solanaFixtures from "./fixtures/api-responses/solana.json";
 
 /**
  * API Response Test Suite
@@ -89,4 +90,5 @@ describe("API Response Validation", () => {
   runBlockchainTests("Injective", injectiveFixtures);
   runBlockchainTests("Tron", tronFixtures);
   runBlockchainTests("Celestia", celestiaFixtures);
+  runBlockchainTests("Solana", solanaFixtures);
 });
