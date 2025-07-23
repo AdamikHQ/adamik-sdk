@@ -605,7 +605,35 @@ claude --dangerously-skip-permissions
 
 This prevents permission prompts during the development session and ensures smooth workflow when Claude needs to read, write, or execute files.
 
-## Future Enhancements (Planned)
+## 🚨 CRITICAL: Pre-Release Requirements
+
+### Must Fix Before Public Release (Top Priority)
+
+1. **Fix All 189 ESLint Errors** 🔴
+   - Run `pnpm run lint:fix` to auto-fix what's possible
+   - Manually fix remaining type safety issues
+   - Main issues: unsafe `any` usage, missing `await` statements, unused variables
+   - Tests not included in TypeScript configuration
+
+2. **Add GitHub Actions CI/CD** 🔴
+   - Create `.github/workflows/test.yml` for automated testing
+   - Add workflow for npm publishing on releases
+   - Include code coverage reporting
+   - Essential for professional open-source standards
+
+3. **Create .npmignore File** 🔴
+   - Without this, test files and dev configs will be published to npm
+   - Include only: `dist/`, `LICENSE`, `README.md`, `package.json`
+   - Significantly reduces package size
+
+### Additional Pre-Release Tasks
+
+- Remove VS Code workspace file (`adamik.code-workspace`)
+- Resolve TODO comments in `src/decoders/tron.ts`
+- Update repository URLs if moving from personal to organization account
+- Consider adding SECURITY.md and issue templates
+
+## Future Enhancements (After Release)
 
 ### 🔥 High Priority (Next Features)
 
