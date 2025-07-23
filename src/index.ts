@@ -5,9 +5,9 @@ import { ErrorCode, ErrorCollector } from "./schemas/errors";
 import {
   ChainFamily,
   ChainId,
+  DecodedTransaction,
   DecodeParams,
   DecodeResult,
-  DecodedTransaction,
   RawFormat,
   TransactionData,
   TransactionIntent,
@@ -76,7 +76,10 @@ export class AdamikSDK {
       if (!chainFormats.has(chainId)) {
         chainFormats.set(chainId, new Set());
       }
-      chainFormats.get(chainId)!.add(format);
+      const set = chainFormats.get(chainId);
+      if (set) {
+        set.add(format);
+      }
     });
     
     // Build result with chain metadata
@@ -84,7 +87,7 @@ export class AdamikSDK {
       const chain = getChainById(chainId);
       if (chain) {
         result[chainId] = {
-          family: chain.family as ChainFamily,
+          family: chain.family,
           formats: Array.from(formats) as RawFormat[],
           hasDecoder: true
         };
@@ -210,7 +213,7 @@ export class AdamikSDK {
     } catch (error) {
       return {
         decoded: null,
-        error: `Failed to decode transaction: ${error}`,
+        error: `Failed to decode transaction: ${error instanceof Error ? error.message : String(error)}`,
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     }
@@ -276,7 +279,7 @@ export class AdamikSDK {
         chainSpecificData: decodedRaw,
       });
     } catch (error) {
-      errorCollector.addError(ErrorCode.INVALID_API_RESPONSE, `Verification error: ${error}`, "error", {
+      errorCollector.addError(ErrorCode.INVALID_API_RESPONSE, `Verification error: ${error instanceof Error ? error.message : String(error)}`, "error", {
         error: String(error),
       });
       return errorCollector.getResult();

@@ -709,11 +709,11 @@ This prevents permission prompts during the development session and ensures smoo
 
 ### 🎯 Current Priorities
 
-1. **TON decoder** - Complex but valuable, good test of architecture flexibility
-2. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
-3. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-4. **Hash validation** - Cryptographic verification of encoded transactions
-5. **Solana staking operations** - Add support for stake, unstake, and withdrawal
+1. **Fix ESLint errors (189)** - BLOCKING RELEASE - Must be fixed before going public
+2. **Add GitHub Actions CI/CD** - BLOCKING RELEASE - Essential for open-source quality
+3. **Create .npmignore** - BLOCKING RELEASE - Prevents publishing unnecessary files
+4. **TON decoder** - Complex but valuable, good test of architecture flexibility
+5. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
 
 ### 🚫 Avoid These Patterns
 

@@ -13,8 +13,7 @@ export { ChainIdSchema, TransactionModeSchema, HashFormatSchema, RawFormatSchema
 export { ErrorCode, ErrorCollector } from "./errors";
 
 // Export type utilities
-import { z } from "zod";
-import { TransactionIntentSchema, AdamikEncodeResponseSchema } from "./transaction";
+import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./transaction";
 
 /**
  * Exported schemas for users who want to validate data themselves

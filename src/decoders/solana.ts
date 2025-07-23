@@ -1,5 +1,5 @@
 import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, TransactionMode } from "../types";
+import { ChainId, DecodedTransaction } from "../types";
 import { PublicKey } from "@solana/web3.js";
 
 /**
@@ -12,7 +12,7 @@ export class SolanaDecoder extends BaseDecoder {
     super(chainId, "BORSH");
   }
 
-  async decode(rawData: string): Promise<DecodedTransaction> {
+  decode(rawData: string): DecodedTransaction {
     try {
       // Convert hex string to Buffer
       const buffer = this.hexToBuffer(rawData);
@@ -99,9 +99,10 @@ export class SolanaDecoder extends BaseDecoder {
         
         // For SPL token transfers, pubkey2 often contains token program or mint info
         // The USDC token mint address is known
-        const knownTokenMints: Record<string, string> = {
-          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC" // Solana USDC
-        };
+        // Known token mints for reference (not used in current implementation)
+        // const knownTokenMints: Record<string, string> = {
+        //   "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v": "USDC" // Solana USDC
+        // };
         
         // Set tokenId to the known USDC mint for now
         // In a full implementation, this would be parsed from the instruction data
@@ -116,7 +117,7 @@ export class SolanaDecoder extends BaseDecoder {
       return decodedTx;
       
     } catch (error) {
-      throw new Error(`Failed to decode Solana transaction: ${error instanceof Error ? error.message : error}`);
+      throw new Error(`Failed to decode Solana transaction: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   

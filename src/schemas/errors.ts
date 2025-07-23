@@ -205,7 +205,10 @@ export class ErrorCollector {
       if (!grouped.has(field)) {
         grouped.set(field, []);
       }
-      grouped.get(field)!.push(error);
+      const group = grouped.get(field);
+      if (group) {
+        group.push(error);
+      }
     });
     
     return grouped;

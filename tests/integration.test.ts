@@ -1,5 +1,5 @@
 import AdamikSDK from "../src";
-import { TransactionIntent, AdamikEncodeResponse } from "../src/types";
+import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
 
 describe("Integration Tests", () => {
   let sdk: AdamikSDK;

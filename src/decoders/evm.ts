@@ -1,6 +1,7 @@
 import { BaseDecoder } from "./base";
-import { ChainId, TransactionMode, DecodedTransaction } from "../types";
-import { isAddress, isHex, parseTransaction, getAddress } from "viem";
+import { ChainId, DecodedTransaction, TransactionMode } from "../types";
+import { getAddress, isAddress, isHex, parseTransaction } from "viem";
+import type { TransactionSerializable } from "viem";
 import { getEvmNetworkId } from "../utils/chain-utils";
 
 export class EVMDecoder extends BaseDecoder {
@@ -8,7 +9,7 @@ export class EVMDecoder extends BaseDecoder {
     super(chainId, "RLP");
   }
 
-  async decode(rawData: string): Promise<DecodedTransaction> {
+  decode(rawData: string): DecodedTransaction {
     try {
       // Ensure hex format
       const hexData = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
@@ -55,19 +56,19 @@ export class EVMDecoder extends BaseDecoder {
         },
       };
     } catch (error) {
-      throw new Error(`Failed to decode EVM transaction: ${error instanceof Error ? error.message : error}`);
+      throw new Error(`Failed to decode EVM transaction: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
-  private analyzeTransaction(parsed: any): {
+  private analyzeTransaction(parsed: TransactionSerializable): {
     mode: TransactionMode;
     tokenId?: string;
     recipientAddress: string;
     amount: bigint;
   } {
-    const to = parsed.to;
+    const to = parsed.to as string | undefined;
     const value = parsed.value || 0n;
-    const data = parsed.data;
+    const data = parsed.data as string | undefined;
 
     // Check if this is a token transfer (ERC-20)
     if (data && data.length >= 10 && data.startsWith("0xa9059cbb")) {
@@ -101,14 +102,14 @@ export class EVMDecoder extends BaseDecoder {
     return BigInt(`0x${amountHex}`);
   }
 
-  private calculateFees(parsed: any): bigint {
+  private calculateFees(parsed: TransactionSerializable): bigint {
     // Calculate total fees based on transaction type
-    const gasLimit = parsed.gas || 0n;
+    const gasLimit = 'gas' in parsed && parsed.gas ? parsed.gas : 0n;
 
-    if (parsed.maxFeePerGas) {
+    if ('maxFeePerGas' in parsed && parsed.maxFeePerGas) {
       // EIP-1559 transaction
       return BigInt(gasLimit) * BigInt(parsed.maxFeePerGas);
-    } else if (parsed.gasPrice) {
+    } else if ('gasPrice' in parsed && parsed.gasPrice) {
       // Legacy transaction
       return BigInt(gasLimit) * BigInt(parsed.gasPrice);
     }

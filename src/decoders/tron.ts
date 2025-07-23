@@ -8,7 +8,7 @@ import { TronWeb } from "tronweb";
  * Uses TronWeb library for transaction parsing and address conversion
  */
 export class TronDecoder extends BaseDecoder {
-  private tronWeb: any;
+  private tronWeb: TronWeb;
   
   constructor(chainId: ChainId) {
     super(chainId, "RAW_TRANSACTION");
@@ -18,7 +18,7 @@ export class TronDecoder extends BaseDecoder {
     });
   }
 
-  async decode(rawData: string): Promise<DecodedTransaction> {
+  decode(rawData: string): DecodedTransaction {
     try {
       // Parse the hex-encoded raw transaction
       const txData = this.parseRawTransaction(rawData);
@@ -34,14 +34,14 @@ export class TronDecoder extends BaseDecoder {
       
       throw new Error(`Unsupported contract type: ${contractType}`);
     } catch (error) {
-      throw new Error(`Failed to decode Tron transaction: ${error instanceof Error ? error.message : error}`);
+      throw new Error(`Failed to decode Tron transaction: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
-  private parseRawTransaction(rawData: string): any {
+  private parseRawTransaction(rawData: string): { contractType?: string; contracts: unknown[] } {
     // Basic parsing of the raw transaction structure
     // Tron transactions contain contract data in a specific format
-    const data: any = {
+    const data: { contractType?: string; contracts: unknown[] } = {
       contracts: [],
     };
     
@@ -65,7 +65,7 @@ export class TronDecoder extends BaseDecoder {
     return "Unknown";
   }
 
-  private decodeTokenTransfer(txData: any, rawData: string): DecodedTransaction {
+  private decodeTokenTransfer(_txData: { contractType?: string; contracts: unknown[] }, rawData: string): DecodedTransaction {
     // Extract data from TriggerSmartContract
     // The data field contains the ERC20-like transfer method call
     
@@ -103,7 +103,7 @@ export class TronDecoder extends BaseDecoder {
     };
   }
 
-  private decodeNativeTransfer(txData: any, rawData: string): DecodedTransaction {
+  private decodeNativeTransfer(_txData: { contractType?: string; contracts: unknown[] }, rawData: string): DecodedTransaction {
     // Extract data from TransferContract
     // Format: owner_address, to_address, amount
     
@@ -130,7 +130,7 @@ export class TronDecoder extends BaseDecoder {
       mode: "transfer" as TransactionMode,
       senderAddress: ownerHex ? this.tronWeb.address.fromHex(ownerHex) : "",
       recipientAddress: toHex ? this.tronWeb.address.fromHex(toHex) : "",
-      amount: amount,
+      amount,
       // TODO: Add fee calculation for Tron transactions
       // fee: "0", // Need to extract fee from transaction data
       chainSpecificData: rawData,

@@ -11,7 +11,7 @@ export abstract class BaseDecoder {
    * @param rawData The encoded transaction data as a hex string
    * @returns The decoded transaction object
    */
-  abstract decode(rawData: string): Promise<unknown>;
+  abstract decode(rawData: string): unknown;
 
   /**
    * Validates the decoded data matches expected structure

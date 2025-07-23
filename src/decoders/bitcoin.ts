@@ -2,30 +2,14 @@ import { BaseDecoder } from "./base";
 import { ChainId, DecodedTransaction } from "../types";
 import * as bitcoin from "bitcoinjs-lib";
 
-interface BitcoinDecodedData {
-  version: number;
-  inputs: Array<{
-    txid: string;
-    vout: number;
-    witnessUtxo?: {
-      script: Buffer;
-      value: number;
-    };
-    nonWitnessUtxo?: Buffer;
-  }>;
-  outputs: Array<{
-    script: Buffer;
-    value: number;
-  }>;
-  globalMap: Map<Buffer, Buffer>;
-}
+// Bitcoin-specific decoded data interface - currently unused but may be needed for future enhancements
 
 export class BitcoinDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
     super(chainId, "PSBT");
   }
 
-  async decode(rawData: string): Promise<DecodedTransaction> {
+  decode(rawData: string): DecodedTransaction {
     try {
       // Convert hex string to buffer
       const buffer = Buffer.from(rawData, 'hex');
@@ -61,7 +45,7 @@ export class BitcoinDecoder extends BaseDecoder {
             recipientAddress = address;
             totalAmount = BigInt(output.value);
           }
-        } catch (e) {
+        } catch {
           // Some outputs might not have standard addresses (e.g., OP_RETURN)
           console.warn(`Could not decode address for output ${index}`);
         }
@@ -91,7 +75,7 @@ export class BitcoinDecoder extends BaseDecoder {
               input.witnessUtxo.script,
               this.chainId === "bitcoin" ? bitcoin.networks.bitcoin : bitcoin.networks.testnet
             );
-          } catch (e) {
+          } catch {
             console.warn("Could not decode sender address from witness UTXO");
           }
         }

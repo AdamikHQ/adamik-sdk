@@ -1,5 +1,5 @@
-import { TransactionData, TransactionIntent, DecodedTransaction } from "../types";
-import { ErrorCollector, ErrorCode } from "../schemas/errors";
+import { TransactionData, TransactionIntent } from "../types";
+import { ErrorCode, ErrorCollector } from "../schemas/errors";
 import { AddressNormalizer } from "../utils/address-normalizer";
 
 /**
@@ -67,50 +67,52 @@ export class TransactionVerifier {
     errorCollector: ErrorCollector,
     chainId: string
   ): void {
-    const intent = originalIntent as any;
-    const data = apiData as any;
+    // Use type guards to check for specific fields
     
     // Recipient address (for transfers)
-    if ('recipientAddress' in intent && intent.recipientAddress !== undefined) {
-      const normalizedIntentRecipient = AddressNormalizer.normalize(intent.recipientAddress, chainId);
-      const normalizedDataRecipient = AddressNormalizer.normalize(data.recipientAddress || '', chainId);
+    if ('recipientAddress' in originalIntent && originalIntent.recipientAddress !== undefined && 'recipientAddress' in apiData) {
+      const normalizedIntentRecipient = AddressNormalizer.normalize(originalIntent.recipientAddress, chainId);
+      const normalizedDataRecipient = AddressNormalizer.normalize(apiData.recipientAddress || '', chainId);
       
       if (normalizedDataRecipient !== normalizedIntentRecipient) {
         errorCollector.addFieldMismatch(
           ErrorCode.RECIPIENT_MISMATCH,
           "recipientAddress",
-          intent.recipientAddress,
-          data.recipientAddress
+          originalIntent.recipientAddress,
+          apiData.recipientAddress
         );
       }
     }
     
     // Validator addresses (for staking)
-    if ('validatorAddress' in intent && intent.validatorAddress !== undefined && data.validatorAddress !== intent.validatorAddress) {
+    if ('validatorAddress' in originalIntent && originalIntent.validatorAddress !== undefined && 
+        'validatorAddress' in apiData && apiData.validatorAddress !== originalIntent.validatorAddress) {
       errorCollector.addFieldMismatch(
         ErrorCode.VALIDATOR_MISMATCH,
         "validatorAddress",
-        intent.validatorAddress,
-        data.validatorAddress
+        originalIntent.validatorAddress,
+        apiData.validatorAddress
       );
     }
     
-    if ('targetValidatorAddress' in intent && intent.targetValidatorAddress !== undefined && data.targetValidatorAddress !== intent.targetValidatorAddress) {
+    if ('targetValidatorAddress' in originalIntent && originalIntent.targetValidatorAddress !== undefined && 
+        'targetValidatorAddress' in apiData && apiData.targetValidatorAddress !== originalIntent.targetValidatorAddress) {
       errorCollector.addFieldMismatch(
         ErrorCode.VALIDATOR_MISMATCH,
         "targetValidatorAddress",
-        intent.targetValidatorAddress,
-        data.targetValidatorAddress
+        originalIntent.targetValidatorAddress,
+        apiData.targetValidatorAddress
       );
     }
     
     // Token ID (for token transfers)
-    if ('tokenId' in intent && intent.tokenId !== undefined && data.tokenId !== intent.tokenId) {
+    if ('tokenId' in originalIntent && originalIntent.tokenId !== undefined && 
+        'tokenId' in apiData && apiData.tokenId !== originalIntent.tokenId) {
       errorCollector.addFieldMismatch(
         ErrorCode.TOKEN_MISMATCH,
         "tokenId",
-        intent.tokenId,
-        data.tokenId
+        originalIntent.tokenId,
+        apiData.tokenId
       );
     }
   }
@@ -134,45 +136,50 @@ export class TransactionVerifier {
       );
     }
 
-    const intent = originalIntent as any;
+    // Type guards for optional fields
 
     // Verify recipient address
-    if ('recipientAddress' in intent && intent.recipientAddress !== undefined) {
-      const normalizedIntentRecipient = AddressNormalizer.normalize(intent.recipientAddress, chainId);
-      const normalizedDecodedRecipient = AddressNormalizer.normalize(String(decoded.recipientAddress || ''), chainId);
+    if ('recipientAddress' in originalIntent && originalIntent.recipientAddress !== undefined) {
+      const normalizedIntentRecipient = AddressNormalizer.normalize(originalIntent.recipientAddress, chainId);
+      const decodedRecipient = decoded.recipientAddress;
+      const recipientStr = typeof decodedRecipient === 'string' ? decodedRecipient : '';
+      const normalizedDecodedRecipient = AddressNormalizer.normalize(recipientStr, chainId);
       
       if (normalizedDecodedRecipient !== normalizedIntentRecipient) {
         errorCollector.addError(
           ErrorCode.CRITICAL_RECIPIENT_MISMATCH,
-          `Critical: Decoded transaction recipient mismatch: expected ${intent.recipientAddress}, got ${decoded.recipientAddress}`,
+          `Critical: Decoded transaction recipient mismatch: expected ${originalIntent.recipientAddress}, got ${String(decoded.recipientAddress)}`,
           "critical",
-          { expected: intent.recipientAddress, actual: String(decoded.recipientAddress) }
+          { expected: originalIntent.recipientAddress, actual: String(decoded.recipientAddress) }
         );
       }
     }
     
     // Verify validator addresses
-    if ('validatorAddress' in intent && decoded.validatorAddress !== intent.validatorAddress) {
+    if ('validatorAddress' in originalIntent && originalIntent.validatorAddress !== undefined && 
+        decoded.validatorAddress !== originalIntent.validatorAddress) {
       errorCollector.addError(
         ErrorCode.CRITICAL_VALIDATOR_MISMATCH,
-        `Critical: Decoded transaction validator mismatch: expected ${intent.validatorAddress}, got ${decoded.validatorAddress}`,
+        `Critical: Decoded transaction validator mismatch: expected ${originalIntent.validatorAddress}, got ${String(decoded.validatorAddress)}`,
         "critical",
-        { expected: intent.validatorAddress, actual: String(decoded.validatorAddress) }
+        { expected: originalIntent.validatorAddress, actual: String(decoded.validatorAddress) }
       );
     }
     
-    if ('targetValidatorAddress' in intent && decoded.targetValidatorAddress !== intent.targetValidatorAddress) {
+    if ('targetValidatorAddress' in originalIntent && originalIntent.targetValidatorAddress !== undefined && 
+        decoded.targetValidatorAddress !== originalIntent.targetValidatorAddress) {
       errorCollector.addError(
         ErrorCode.CRITICAL_VALIDATOR_MISMATCH,
-        `Critical: Decoded transaction target validator mismatch: expected ${intent.targetValidatorAddress}, got ${decoded.targetValidatorAddress}`,
+        `Critical: Decoded transaction target validator mismatch: expected ${originalIntent.targetValidatorAddress}, got ${String(decoded.targetValidatorAddress)}`,
         "critical",
-        { expected: intent.targetValidatorAddress, actual: String(decoded.targetValidatorAddress) }
+        { expected: originalIntent.targetValidatorAddress, actual: String(decoded.targetValidatorAddress) }
       );
     }
 
     // Verify amount
-    if ('amount' in intent && intent.amount && !('useMaxAmount' in intent && intent.useMaxAmount)) {
-      const expectedAmount = BigInt(intent.amount);
+    if ('amount' in originalIntent && originalIntent.amount && 
+        !('useMaxAmount' in originalIntent && originalIntent.useMaxAmount)) {
+      const expectedAmount = BigInt(originalIntent.amount);
       const decodedAmount = this.parseAmount(decoded.amount);
 
       if (decodedAmount !== expectedAmount) {
@@ -186,12 +193,13 @@ export class TransactionVerifier {
     }
 
     // Verify token ID
-    if ('tokenId' in intent && intent.tokenId && decoded.tokenId !== intent.tokenId) {
+    if ('tokenId' in originalIntent && originalIntent.tokenId && 
+        decoded.tokenId !== originalIntent.tokenId) {
       errorCollector.addError(
         ErrorCode.CRITICAL_TOKEN_MISMATCH,
-        `Critical: Decoded transaction token mismatch: expected ${intent.tokenId}, got ${decoded.tokenId}`,
+        `Critical: Decoded transaction token mismatch: expected ${originalIntent.tokenId}, got ${String(decoded.tokenId)}`,
         "critical",
-        { expected: intent.tokenId, actual: String(decoded.tokenId) }
+        { expected: originalIntent.tokenId, actual: String(decoded.tokenId) }
       );
     }
   }
@@ -207,13 +215,15 @@ export class TransactionVerifier {
   ): void {
     // For non-staking transactions, verify recipient address
     if (apiData.mode !== 'stake' && apiData.mode !== 'unstake' && apiData.mode !== 'claimRewards') {
-      const normalizedDecodedRecipient = AddressNormalizer.normalize(String(decoded.recipientAddress || ''), chainId);
+      const decodedRecipient = decoded.recipientAddress;
+      const recipientStr = typeof decodedRecipient === 'string' ? decodedRecipient : '';
+      const normalizedDecodedRecipient = AddressNormalizer.normalize(recipientStr, chainId);
       const normalizedApiRecipient = AddressNormalizer.normalize(apiData.recipientAddress || '', chainId);
       
       if (normalizedDecodedRecipient !== normalizedApiRecipient) {
         errorCollector.addError(
           ErrorCode.DECODED_API_MISMATCH,
-          `Warning: Decoded recipient (${decoded.recipientAddress}) doesn't match API data (${apiData.recipientAddress})`,
+          `Warning: Decoded recipient (${String(decoded.recipientAddress)}) doesn't match API data (${apiData.recipientAddress})`,
           "warning",
           { decoded: decoded.recipientAddress, apiData: apiData.recipientAddress }
         );
@@ -227,7 +237,7 @@ export class TransactionVerifier {
       if (decodedValidator !== apiValidator) {
         errorCollector.addError(
           ErrorCode.DECODED_API_MISMATCH,
-          `Warning: Decoded validator (${decodedValidator}) doesn't match API data (${apiValidator})`,
+          `Warning: Decoded validator (${String(decodedValidator)}) doesn't match API data (${String(apiValidator)})`,
           "warning",
           { decoded: decodedValidator, apiData: apiValidator }
         );
@@ -238,7 +248,7 @@ export class TransactionVerifier {
     if (decoded.mode !== apiData.mode) {
       errorCollector.addError(
         ErrorCode.DECODED_API_MISMATCH,
-        `Warning: Decoded mode (${decoded.mode}) doesn't match API data (${apiData.mode})`,
+        `Warning: Decoded mode (${String(decoded.mode)}) doesn't match API data (${apiData.mode})`,
         "warning",
         { decoded: decoded.mode, apiData: apiData.mode }
       );

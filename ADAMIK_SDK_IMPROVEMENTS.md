@@ -1,6 +1,87 @@
-# Adamik SDK Improvement Guide: Integrating Minitel Patterns
+# Adamik SDK Improvement Guide
 
-This document provides specific, actionable recommendations for improving Adamik SDK by integrating proven patterns and implementations from Minitel.
+## 🚨 CRITICAL: Pre-Release Requirements (TOP PRIORITY)
+
+### Must Fix Before Public Release
+
+#### 1. Fix All 189 ESLint Errors 🔴 BLOCKING
+**Impact**: Code quality and potential bugs
+**Action Steps**:
+```bash
+# First, try auto-fix
+pnpm run lint:fix
+
+# Then manually fix remaining issues:
+# - Unsafe `any` usage throughout the code
+# - Missing `await` in async functions  
+# - Unused variables
+# - Type safety violations
+# - Test files not included in TypeScript project config
+```
+
+#### 2. Add GitHub Actions CI/CD 🔴 BLOCKING
+**Impact**: No automated testing or publishing
+**Create**: `.github/workflows/test.yml`
+```yaml
+name: Test
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install -g pnpm
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm test
+```
+
+**Create**: `.github/workflows/publish.yml` for npm releases
+
+#### 3. Create .npmignore File 🔴 BLOCKING
+**Impact**: Publishing 3x larger package with unnecessary files
+**Create**: `.npmignore`
+```
+# Source files (only dist/ should be published)
+src/
+tests/
+scripts/
+
+# Config files
+.eslintrc.js
+.prettierrc
+jest.config.js
+tsconfig.json
+*.code-workspace
+
+# Documentation
+CLAUDE.md
+CONTRIBUTING.md
+ADAMIK_SDK_IMPROVEMENTS.md
+
+# Keep only:
+# dist/
+# LICENSE
+# README.md
+# CHANGELOG.md
+# package.json
+```
+
+### Additional Pre-Release Tasks
+- Remove `adamik.code-workspace` file
+- Resolve TODO comments in `src/decoders/tron.ts`
+- Update repository URLs from personal to organization (if applicable)
+- Add SECURITY.md and issue templates
+
+---
+
+## Feature Improvements: Integrating Minitel Patterns
+
+This section provides specific recommendations for improving Adamik SDK by integrating proven patterns from Minitel.
 
 ## 1. Add Solana Decoder ✅ IMPLEMENTED
 

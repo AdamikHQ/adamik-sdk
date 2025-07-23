@@ -1,6 +1,6 @@
 import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, TransactionMode, RawFormat } from "../types";
-import { decodeTxRaw } from "@cosmjs/proto-signing";
+import { ChainId, DecodedTransaction, RawFormat, TransactionMode } from "../types";
+import { DecodedTxRaw, decodeTxRaw } from "@cosmjs/proto-signing";
 import { fromHex } from "@cosmjs/encoding";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
 import { MsgDelegate, MsgUndelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
@@ -30,12 +30,12 @@ export class CosmosDecoder extends BaseDecoder {
    * @param rawData - Hex-encoded protobuf transaction data or SignDoc
    * @returns Decoded transaction information
    */
-  async decode(rawData: string): Promise<DecodedTransaction> {
+  decode(rawData: string): DecodedTransaction {
     try {
       // Remove 0x prefix if present
       const cleanData = rawData.startsWith("0x") ? rawData.slice(2) : rawData;
       
-      let decodedTx: any;
+      let decodedTx: DecodedTxRaw;
       
       // Try to parse as SignDoc first (SIGNDOC_DIRECT format)
       try {
@@ -50,7 +50,7 @@ export class CosmosDecoder extends BaseDecoder {
         }).finish();
         
         decodedTx = decodeTxRaw(txRaw);
-      } catch (signDocError) {
+      } catch {
         // If not a SignDoc, try as raw transaction
         const txBytes = fromHex(cleanData);
         decodedTx = decodeTxRaw(txBytes);
@@ -58,17 +58,25 @@ export class CosmosDecoder extends BaseDecoder {
       
       // Extract fee information from authInfo
       let fee = "0";
-      if (decodedTx.authInfo && decodedTx.authInfo.fee && decodedTx.authInfo.fee.amount.length > 0) {
+      const authInfo = decodedTx.authInfo;
+      if (authInfo && authInfo.fee && authInfo.fee.amount && authInfo.fee.amount.length > 0) {
         // Use the first denomination for the fee (typically uatom, uosmo, etc.)
-        fee = decodedTx.authInfo.fee.amount[0].amount;
+        const feeAmount = authInfo.fee.amount[0];
+        if (feeAmount && feeAmount.amount) {
+          fee = feeAmount.amount;
+        }
       }
       
       // Extract memo from body
-      const memo = decodedTx.body.memo || undefined;
+      const body = decodedTx.body;
+      const memo = body.memo || undefined;
       
       // Process the first message
-      if (decodedTx.body.messages.length > 0) {
-        const firstMsg = decodedTx.body.messages[0];
+      if (body.messages && body.messages.length > 0) {
+        const firstMsg = body.messages[0];
+        if (!firstMsg) {
+          throw new Error("No messages found in transaction");
+        }
         
         if (firstMsg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
           const msgSend = MsgSend.decode(firstMsg.value);
@@ -157,7 +165,7 @@ export class CosmosDecoder extends BaseDecoder {
       };
       
     } catch (error) {
-      throw new Error(`Failed to decode Cosmos transaction: ${error}`);
+      throw new Error(`Failed to decode Cosmos transaction: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

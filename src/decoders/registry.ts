@@ -1,11 +1,13 @@
 import { ChainId, RawFormat } from "../types";
-import { BaseDecoder, DecoderWithPlaceholder } from "./base";
+import { BaseDecoder } from "./base";
 import { EVMDecoder } from "./evm";
 import { BitcoinDecoder } from "./bitcoin";
 import { CosmosDecoder } from "./cosmos";
 import { TronDecoder } from "./tron";
 import { SolanaDecoder } from "./solana";
 import { getChainsByFamily } from "../utils/chain-utils";
+
+type CosmosFormat = Extract<RawFormat, "COSMOS_PROTOBUF" | "SIGNDOC_DIRECT" | "SIGNDOC_DIRECT_JSON" | "SIGNDOC_AMINO" | "SIGNDOC_AMINO_JSON">;
 
 export class DecoderRegistry {
   private decoders: Map<string, BaseDecoder> = new Map();
@@ -45,7 +47,7 @@ export class DecoderRegistry {
     cosmosChains.forEach((chain) => {
       // Register the same decoder for all Cosmos formats
       cosmosFormats.forEach((format) => {
-        const decoder = new CosmosDecoder(chain.id as ChainId, format as any);
+        const decoder = new CosmosDecoder(chain.id as ChainId, format as CosmosFormat);
         this.registerDecoder(decoder);
       });
     });
