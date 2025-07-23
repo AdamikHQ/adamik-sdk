@@ -179,7 +179,33 @@ this.registerDecoder(new SolanaDecoder("solana-devnet"));
 
 ---
 
-## 2. Implement TON Decoder
+## 2. Chain Discovery Methods ✅ IMPLEMENTED
+
+### Implementation Summary
+
+Added three public methods to enable runtime discovery of supported blockchains:
+
+1. **`getSupportedChains()`** - Returns detailed information about all 86 supported chains
+2. **`isChainSupported(chainId)`** - Quick boolean check for chain support
+3. **`getSupportedFormats(chainId)`** - Returns supported encoding formats for a chain
+
+### Key Benefits
+
+- **Dynamic UI Building** - Applications can programmatically discover supported chains
+- **Format Discovery** - Know which encoding formats each chain supports (important for Cosmos)
+- **Type Safety** - Full TypeScript support with proper types
+- **No Breaking Changes** - Purely additive feature
+
+### Files Modified
+
+- Modified: `src/index.ts` - Added three public methods
+- Created: `tests/chain-discovery.test.ts` - 9 comprehensive tests
+- Modified: `README.md` - Added API reference documentation
+- Modified: `CHANGELOG.md` - Documented the new feature
+
+---
+
+## 3. Implement TON Decoder
 
 ### Current Gap
 
@@ -422,7 +448,7 @@ abstract generateHash?(rawData: string): Promise<string>;
 
 ---
 
-## 5. Complete Decoder Coverage for All Chain Families
+## 6. Complete Decoder Coverage for All Chain Families
 
 ### Current Gap
 
@@ -447,7 +473,7 @@ Focus on implementing decoders for all chains in chains.json to ensure complete 
 
 ---
 
-## 7. Protocol Registry Pattern
+## 8. Protocol Registry Pattern
 
 ### Current Gap
 
@@ -486,10 +512,11 @@ For each new decoder:
 ## Priority Order
 
 1. ~~**Solana decoder**~~ - ✅ Implemented with basic transfer and SPL token support
-2. **TON decoder** - Complex but valuable, good test of architecture flexibility
-3. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
-4. **Substrate support** - Advanced feature, requires WebSocket management
-5. **Hash validation** - Security feature to verify transaction integrity
+2. ~~**Chain discovery methods**~~ - ✅ Implemented getSupportedChains(), isChainSupported(), getSupportedFormats()
+3. **TON decoder** - Complex but valuable, good test of architecture flexibility
+4. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
+5. **Substrate support** - Advanced feature, requires WebSocket management
+6. **Hash validation** - Security feature to verify transaction integrity
 
 ## Key Success Factors
 

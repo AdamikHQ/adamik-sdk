@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Chain Discovery Methods** - New public methods for discovering supported blockchains
+  - Added `getSupportedChains()` - Returns all chains with decoder support and their formats
+  - Added `isChainSupported(chainId)` - Check if a specific chain has decoder support
+  - Added `getSupportedFormats(chainId)` - Get supported encoding formats for a chain
+  - Returns information for 86 supported chains across 5 blockchain families
+  - Added comprehensive test suite with 9 new tests
+  - Updated documentation with examples and API reference
+
 - **Bitcoin Fee Calculation** - Added transaction fee extraction to Bitcoin decoder
   - Calculate fee as (total inputs - total outputs)
   - Added `totalInputValue` and `totalOutputValue` to raw output

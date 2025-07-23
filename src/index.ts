@@ -3,6 +3,7 @@ import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./schemas";
 import { ErrorCode, ErrorCollector } from "./schemas/errors";
 import {
+  ChainFamily,
   ChainId,
   DecodeParams,
   DecodeResult,
@@ -12,6 +13,7 @@ import {
   TransactionIntent,
   VerificationResult,
 } from "./types";
+import { getChainById } from "./utils/chain-utils";
 import { TransactionVerifier } from "./utils/transaction-verifier";
 
 /**
@@ -34,6 +36,99 @@ export class AdamikSDK {
 
   constructor() {
     this.decoderRegistry = new DecoderRegistry();
+  }
+
+  /**
+   * Gets all supported chains with their available decoders
+   * 
+   * @returns An object mapping chain IDs to their supported formats and decoder status
+   * 
+   * @example
+   * ```typescript
+   * const sdk = new AdamikSDK();
+   * const supported = sdk.getSupportedChains();
+   * console.log(supported);
+   * // {
+   * //   "ethereum": {
+   * //     "family": "evm",
+   * //     "formats": ["RLP"],
+   * //     "hasDecoder": true
+   * //   },
+   * //   "bitcoin": {
+   * //     "family": "bitcoin", 
+   * //     "formats": ["PSBT"],
+   * //     "hasDecoder": true
+   * //   },
+   * //   ...
+   * // }
+   * ```
+   */
+  getSupportedChains(): Record<string, { family: ChainFamily; formats: RawFormat[]; hasDecoder: boolean }> {
+    const result: Record<string, { family: ChainFamily; formats: RawFormat[]; hasDecoder: boolean }> = {};
+    
+    // Get all registered decoders
+    const decoderKeys = this.decoderRegistry.listDecoders();
+    const chainFormats = new Map<string, Set<string>>();
+    
+    // Parse decoder keys to build chain->formats mapping
+    decoderKeys.forEach(key => {
+      const [chainId, format] = key.split(':');
+      if (!chainFormats.has(chainId)) {
+        chainFormats.set(chainId, new Set());
+      }
+      chainFormats.get(chainId)!.add(format);
+    });
+    
+    // Build result with chain metadata
+    chainFormats.forEach((formats, chainId) => {
+      const chain = getChainById(chainId);
+      if (chain) {
+        result[chainId] = {
+          family: chain.family as ChainFamily,
+          formats: Array.from(formats) as RawFormat[],
+          hasDecoder: true
+        };
+      }
+    });
+    
+    return result;
+  }
+
+  /**
+   * Checks if a specific chain has decoder support
+   * 
+   * @param chainId - The chain ID to check
+   * @returns True if the chain has at least one decoder registered
+   * 
+   * @example
+   * ```typescript
+   * const sdk = new AdamikSDK();
+   * if (sdk.isChainSupported("ethereum")) {
+   *   // Proceed with Ethereum transactions
+   * }
+   * ```
+   */
+  isChainSupported(chainId: ChainId): boolean {
+    const supported = this.getSupportedChains();
+    return chainId in supported && supported[chainId].hasDecoder;
+  }
+
+  /**
+   * Gets the supported formats for a specific chain
+   * 
+   * @param chainId - The chain ID to check
+   * @returns Array of supported formats, or empty array if chain is not supported
+   * 
+   * @example
+   * ```typescript
+   * const sdk = new AdamikSDK();
+   * const formats = sdk.getSupportedFormats("ethereum");
+   * console.log(formats); // ["RLP"]
+   * ```
+   */
+  getSupportedFormats(chainId: ChainId): RawFormat[] {
+    const supported = this.getSupportedChains();
+    return supported[chainId]?.formats || [];
   }
 
   /**

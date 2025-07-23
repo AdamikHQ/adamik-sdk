@@ -6,8 +6,8 @@
 
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
 - **Status**: Production-ready core, EVM fully implemented with EIP-55 support and Chain ID validation, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing, Solana with BORSH decoding
-- **Tests**: 83 tests across 8 suites (all passing)
-- **Recent**: EVM decoder already includes Chain ID validation to prevent replay attacks
+- **Tests**: 92 tests across 9 suites (all passing)
+- **Recent**: Chain discovery methods added - getSupportedChains(), isChainSupported(), getSupportedFormats()
 
 ## Project Overview
 
@@ -66,6 +66,7 @@ tests/
 ├── error-handling.test.ts   # Error path tests (10 tests)
 ├── api-responses.test.ts    # Real API response tests (12 tests)
 ├── evm-chainid-real-data.test.ts # EVM chain ID security tests (8 tests)
+├── chain-discovery.test.ts  # Chain discovery functionality tests (9 tests)
 └── fixtures/
     └── api-responses/       # Real API response data by blockchain (object format)
         ├── ethereum.json    # Ethereum test cases
@@ -76,7 +77,7 @@ tests/
         └── celestia.json    # Celestia test cases
 ```
 
-**Total: 80 tests across 8 suites (all passing)**
+**Total: 92 tests across 9 suites (all passing)**
 
 ### Test Summary Table
 
@@ -108,6 +109,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **TypeScript support** with strict mode
 - **Enhanced error handling** - Deduplication, context aggregation, recovery strategies
 - **Development tooling** - ESLint, type checking, prepublish scripts
+- **Chain discovery methods** - getSupportedChains(), isChainSupported(), getSupportedFormats() for runtime discovery
 
 ### ⚠️ Placeholder/Limited
 
@@ -426,6 +428,23 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
   - Staking operations (stake, unstake, withdraw) are not yet implemented - would require parsing different instruction types and stake account data
 - Test count increased from 80 to 83 tests (added 3 Solana tests)
 
+### ✅ Completed: Chain Discovery Methods (July 2025)
+**What**: Added public methods for discovering supported blockchain chains
+**Impact**: Users can now programmatically discover which chains have decoder support
+**Changes**:
+- **Added getSupportedChains()** - Returns all chains with their family, formats, and decoder status
+- **Added isChainSupported()** - Quick check if a specific chain has decoder support
+- **Added getSupportedFormats()** - Get supported encoding formats for a specific chain
+- **86 supported chains** - Across EVM (37), Bitcoin (5), Cosmos (42), Tron (1), and Solana (1)
+- **Added chain-discovery.test.ts** - 9 new tests for chain discovery functionality
+- **Updated README** - Added API reference documentation and examples
+- **Test count increased** - From 83 to 92 tests
+**Benefits**:
+- Users can check chain support before attempting to decode/verify
+- Clear visibility into which blockchains have real vs placeholder decoders
+- Enables dynamic UI that adapts to available decoders
+- Better developer experience with runtime discovery
+
 ## Key Security Features
 
 ### Attack Detection
@@ -509,7 +528,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing
-pnpm test             # All 80 tests
+pnpm test             # All 92 tests
 pnpm run test:watch   # Watch mode
 pnpm run typecheck    # TypeScript type checking
 pnpm run lint         # ESLint checking
@@ -562,7 +581,7 @@ pnpm test:decoders   # Run all decoder tests
 ### Development Stack
 
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 83 tests across 8 suites
+- **Jest** (^30.0.4) - Testing framework, 92 tests across 9 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ESLint** (^9.1.1) - Linting with TypeScript support
 - **ts-node** (^10.9.2) - Development execution
@@ -685,14 +704,16 @@ This prevents permission prompts during the development session and ensures smoo
 ## Last Updated
 
 **Date**: July 2025  
-**Session**: EVM Chain ID Validation Documentation Update
+**Session**: Chain Discovery Methods Implementation
 **Major Changes**:
 
-- Updated documentation to reflect existing security feature (chain id mismatch)
-- EVM decoder validates transaction chain ID matches expected network to prevent replay attacks
-- Throws clear error messages when chain ID mismatches are detected
-  **Previous Session**: Solana Decoder Implementation
-  **Next Session Should**: Implement TON decoder or add Solana staking operations
+- Added getSupportedChains(), isChainSupported(), and getSupportedFormats() methods
+- Users can now programmatically discover which of the 86 chains have decoder support
+- Added comprehensive test suite with 9 new tests
+- Updated README with API reference and examples
+- Test count increased from 83 to 92 tests
+**Previous Session**: Solana Decoder Implementation
+**Next Session Should**: Implement TON decoder or add Solana staking operations
 
 ## Future Product Direction
 

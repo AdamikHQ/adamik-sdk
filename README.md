@@ -65,12 +65,15 @@ if (!result.isValid) {
 ## Supported Blockchains
 
 **Real Decoders Available:**
-- **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base (using `viem`)
-- **Bitcoin**: Bitcoin mainnet and testnet (using `bitcoinjs-lib`)
-- **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon (using `@cosmjs/proto-signing`)
+- **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base (37 chains using `viem`)
+- **Bitcoin**: Bitcoin mainnet and testnet (5 chains using `bitcoinjs-lib`)
+- **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon (42 chains using `@cosmjs/proto-signing`)
 - **Tron**: Tron mainnet with TRC20 support (using `tronweb`)
+- **Solana**: Solana with SPL token support (using `@solana/web3.js`)
 
-**Placeholder Decoders** (verification only): Solana, Algorand, Aptos, and others
+**Total: 86 chains with real decoders**
+
+Use `sdk.getSupportedChains()` to get the complete list of supported chains at runtime.
 
 ## Installation
 
@@ -255,9 +258,10 @@ console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 - **🛡️ Security Verification**: Two-step validation of API responses
 - **📦 TypeScript Support**: Full type definitions and IDE support
 - **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
-- **✅ Comprehensive Testing**: 80 tests across 8 test suites
+- **✅ Comprehensive Testing**: 92 tests across 9 test suites
 - **🏗️ Clean Architecture**: Modular design with utility classes
 - **⚡ Zero Dependencies**: Uses trusted blockchain libraries only
+- **🔍 Chain Discovery**: Runtime methods to discover supported chains and formats
 
 ## Usage Examples
 
@@ -493,6 +497,89 @@ if (result.decoded) {
   console.log("Amount:", result.decoded.amount);
   console.log("Fee:", result.decoded.fee);
 }
+```
+
+### `getSupportedChains(): Record<string, ChainInfo>`
+
+Gets all blockchain chains that have decoder support in the SDK.
+
+**Returns:**
+
+An object mapping chain IDs to their information:
+- `family`: The blockchain family (e.g., "evm", "bitcoin", "cosmos")
+- `formats`: Array of supported encoding formats
+- `hasDecoder`: Always true for returned chains
+
+**Example:**
+
+```typescript
+const supportedChains = sdk.getSupportedChains();
+console.log(supportedChains);
+// {
+//   "ethereum": { family: "evm", formats: ["RLP"], hasDecoder: true },
+//   "bitcoin": { family: "bitcoin", formats: ["PSBT"], hasDecoder: true },
+//   "cosmoshub": { family: "cosmos", formats: ["COSMOS_PROTOBUF", "SIGNDOC_DIRECT", ...], hasDecoder: true },
+//   ...
+// }
+
+// Count chains by family
+const families = Object.values(supportedChains).reduce((acc, chain) => {
+  acc[chain.family] = (acc[chain.family] || 0) + 1;
+  return acc;
+}, {});
+console.log(families); // { evm: 37, bitcoin: 5, cosmos: 42, tron: 1, solana: 1 }
+```
+
+### `isChainSupported(chainId: string): boolean`
+
+Checks if a specific blockchain has decoder support.
+
+**Parameters:**
+
+- `chainId`: The blockchain identifier to check
+
+**Returns:**
+
+- `true` if the chain has decoder support, `false` otherwise
+
+**Example:**
+
+```typescript
+if (sdk.isChainSupported("ethereum")) {
+  // Proceed with Ethereum transaction
+} else {
+  console.warn("Ethereum decoder not available");
+}
+
+// Check multiple chains
+const chains = ["ethereum", "algorand", "bitcoin"];
+chains.forEach(chain => {
+  console.log(`${chain}: ${sdk.isChainSupported(chain) ? "✓" : "✗"}`);
+});
+// ethereum: ✓
+// algorand: ✗
+// bitcoin: ✓
+```
+
+### `getSupportedFormats(chainId: string): string[]`
+
+Gets the supported encoding formats for a specific blockchain.
+
+**Parameters:**
+
+- `chainId`: The blockchain identifier
+
+**Returns:**
+
+- Array of supported format strings, or empty array if chain is not supported
+
+**Example:**
+
+```typescript
+console.log(sdk.getSupportedFormats("ethereum"));    // ["RLP"]
+console.log(sdk.getSupportedFormats("bitcoin"));     // ["PSBT"]
+console.log(sdk.getSupportedFormats("cosmoshub"));   // ["COSMOS_PROTOBUF", "SIGNDOC_DIRECT", ...]
+console.log(sdk.getSupportedFormats("algorand"));    // []
 ```
 
 ### DecodedTransaction Structure
