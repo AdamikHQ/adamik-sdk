@@ -63,7 +63,7 @@ export interface VerificationResult {
   decodedData?: {
     chainId: string;
     transaction: unknown;
-    raw?: unknown;
+    chainSpecificData?: unknown;
   };
 }
 

@@ -66,7 +66,7 @@ export class SolanaDecoder extends BaseDecoder implements DecoderWithPlaceholder
         recipientAddress: to,
         amount: amount,
         mode: "transfer",
-        raw: {
+        chainSpecificData: {
           instructions: instructions.map((i) => ({
             programId: i.programId.toBase58(),
             keys: i.keys.map((k) => ({
@@ -87,7 +87,7 @@ export class SolanaDecoder extends BaseDecoder implements DecoderWithPlaceholder
   validate(decodedData: unknown): boolean {
     // Implement validation logic
     const data = decodedData as DecodedTransaction;
-    return !!(data.senderAddress && data.raw);
+    return !!(data.senderAddress && data.chainSpecificData);
   }
 }
 ```
@@ -215,7 +215,7 @@ export class TonDecoder extends BaseDecoder {
         recipientAddress: message?.dest?.nonBouncable || undefined,
         amount: message?.grams?.toString() || undefined,
         mode: "transfer",
-        raw: cells,
+        chainSpecificData: cells,
       };
     } catch (error) {
       throw new Error(`Failed to decode TON transaction: ${error.message}`);
@@ -318,7 +318,7 @@ export class SubstrateDecoder extends BaseDecoder {
         recipientAddress,
         amount,
         mode,
-        raw: {
+        chainSpecificData: {
           ...decodedExtrinsic.toHuman(),
           ...extrinsicPayload,
         },
@@ -455,7 +455,7 @@ export class NearDecoder extends BaseDecoder {
         recipientAddress: receiverId,
         amount,
         mode,
-        raw: tx,
+        chainSpecificData: tx,
       };
     } catch (error) {
       throw new Error(`Failed to decode Near transaction: ${error.message}`);
@@ -548,7 +548,7 @@ async decode(rawData: string): Promise<DecodedTransaction> {
       mode: parsed.to ? "transfer" : "contract_deployment",
       // ADD THIS CRITICAL FIELD:
       networkChainId: parsed.chainId, // Chain ID from transaction data
-      raw: parsed,
+      chainSpecificData: parsed,
     };
   } catch (error) {
     throw new Error(`Failed to decode EVM transaction: ${error.message}`);
@@ -566,7 +566,7 @@ export interface DecodedTransaction {
   recipientAddress?: string;
   amount?: string;
   mode: string;
-  raw: any;
+  chainSpecificData: any;
 }
 ```
 

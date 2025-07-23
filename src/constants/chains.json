@@ -1,0 +1,5364 @@
+{
+  "chains": {
+    "algorand": {
+      "family": "algorand",
+      "id": "algorand",
+      "nativeId": "algorand",
+      "name": "Algorand",
+      "ticker": "ALGO",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "ed25519",
+        "hashFunction": "sha512_256",
+        "signatureFormat": "rs",
+        "coinType": "283"
+      }
+    },
+    "cosmoshub": {
+      "family": "cosmos",
+      "id": "cosmoshub",
+      "nativeId": "cosmoshub-4",
+      "name": "CosmosHub",
+      "ticker": "ATOM",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "cosmoshub-testnet": {
+      "family": "cosmos",
+      "id": "cosmoshub-testnet",
+      "nativeId": "theta-testnet-001",
+      "name": "CosmosHub Testnet",
+      "ticker": "ATOM",
+      "decimals": 6,
+      "isTestnetFor": "cosmoshub",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "osmosis": {
+      "family": "cosmos",
+      "id": "osmosis",
+      "nativeId": "osmosis-1",
+      "name": "Osmosis",
+      "ticker": "OSMO",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "osmosis-testnet": {
+      "family": "cosmos",
+      "id": "osmosis-testnet",
+      "nativeId": "osmo-test-5",
+      "name": "Osmosis Testnet",
+      "ticker": "OSMO",
+      "decimals": 6,
+      "isTestnetFor": "osmosis",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "celestia": {
+      "family": "cosmos",
+      "id": "celestia",
+      "nativeId": "celestia",
+      "name": "Celestia",
+      "ticker": "TIA",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "celestia-testnet": {
+      "family": "cosmos",
+      "id": "celestia-testnet",
+      "nativeId": "mocha-4",
+      "name": "Celestia Testnet",
+      "ticker": "TIA",
+      "decimals": 6,
+      "isTestnetFor": "celestia",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "dydx": {
+      "family": "cosmos",
+      "id": "dydx",
+      "nativeId": "dydx-mainnet-1",
+      "name": "dYdX Protocol",
+      "ticker": "DYDX",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "axelar": {
+      "family": "cosmos",
+      "id": "axelar",
+      "nativeId": "axelar-dojo-1",
+      "name": "Axelar",
+      "ticker": "AXL",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "ethereum": {
+      "family": "evm",
+      "id": "ethereum",
+      "nativeId": "1",
+      "name": "Ethereum",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "sepolia": {
+      "family": "evm",
+      "id": "sepolia",
+      "nativeId": "11155111",
+      "name": "Sepolia",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "ethereum",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "holesky": {
+      "family": "evm",
+      "id": "holesky",
+      "nativeId": "17000",
+      "name": "Holesky",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "ethereum",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "zksync": {
+      "family": "evm",
+      "id": "zksync",
+      "nativeId": "324",
+      "name": "zkSync",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "zksync-sepolia": {
+      "family": "evm",
+      "id": "zksync-sepolia",
+      "nativeId": "300",
+      "name": "ZkSync Testnet",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "zksync",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "injective-evm-testnet": {
+      "family": "evm",
+      "id": "injective-evm-testnet",
+      "nativeId": "2424",
+      "name": "Injective Evm Testnet",
+      "ticker": "INJ",
+      "decimals": 18,
+      "isTestnetFor": "injective-evm",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "base": {
+      "family": "evm",
+      "id": "base",
+      "nativeId": "8453",
+      "name": "Base",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "base-sepolia": {
+      "family": "evm",
+      "id": "base-sepolia",
+      "nativeId": "84532",
+      "name": "Base Sepolia",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "base",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "optimism": {
+      "family": "evm",
+      "id": "optimism",
+      "nativeId": "10",
+      "name": "Optimism",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "optimism-sepolia": {
+      "family": "evm",
+      "id": "optimism-sepolia",
+      "nativeId": "11155420",
+      "name": "Optimism Sepolia",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "optimism",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "arbitrum": {
+      "family": "evm",
+      "id": "arbitrum",
+      "nativeId": "42161",
+      "name": "Arbitrum One",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "arbitrum-sepolia": {
+      "family": "evm",
+      "id": "arbitrum-sepolia",
+      "nativeId": "421614",
+      "name": "Arbitrum Sepolia",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "arbitrum",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "bitcoin": {
+      "family": "bitcoin",
+      "id": "bitcoin",
+      "nativeId": "bitcoin",
+      "name": "Bitcoin",
+      "ticker": "BTC",
+      "decimals": 8,
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": false,
+              "withdraw": true,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "0"
+      }
+    },
+    "bitcoin-testnet": {
+      "family": "bitcoin",
+      "id": "bitcoin-testnet",
+      "nativeId": "bitcoin-testnet",
+      "name": "Bitcoin Testnet",
+      "ticker": "BTC",
+      "decimals": 8,
+      "isTestnetFor": "bitcoin",
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "0"
+      }
+    },
+    "bitcoin-signet": {
+      "family": "bitcoin",
+      "id": "bitcoin-signet",
+      "nativeId": "bitcoin-signet",
+      "name": "Bitcoin Signet",
+      "ticker": "sBTC",
+      "decimals": 8,
+      "isTestnetFor": "bitcoin",
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": false,
+              "withdraw": true,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "0"
+      }
+    },
+    "polygon": {
+      "family": "evm",
+      "id": "polygon",
+      "nativeId": "137",
+      "name": "Polygon",
+      "ticker": "POL",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "polygon-amoy": {
+      "family": "evm",
+      "id": "polygon-amoy",
+      "nativeId": "80002",
+      "name": "Polygon Amoy",
+      "ticker": "MATIC",
+      "decimals": 18,
+      "isTestnetFor": "polygon",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "bsc": {
+      "family": "evm",
+      "id": "bsc",
+      "nativeId": "56",
+      "name": "Binance Smart Chain",
+      "ticker": "BNB",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "bsc-testnet": {
+      "family": "evm",
+      "id": "bsc-testnet",
+      "nativeId": "97",
+      "name": "Binance Smart Chain Testnet",
+      "ticker": "BNB",
+      "decimals": 18,
+      "isTestnetFor": "bsc",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "linea": {
+      "family": "evm",
+      "id": "linea",
+      "nativeId": "59144",
+      "name": "Linea",
+      "ticker": "ETH",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "linea-sepolia": {
+      "family": "evm",
+      "id": "linea-sepolia",
+      "nativeId": "59141",
+      "name": "Linea Sepolia",
+      "ticker": "ETH",
+      "decimals": 18,
+      "isTestnetFor": "linea",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "avalanche": {
+      "family": "evm",
+      "id": "avalanche",
+      "nativeId": "43114",
+      "name": "Avalanche",
+      "ticker": "AVAX",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "avalanche-fuji": {
+      "family": "evm",
+      "id": "avalanche-fuji",
+      "nativeId": "43113",
+      "name": "Avalanche Fuji Testnet",
+      "ticker": "AVAX",
+      "decimals": 18,
+      "isTestnetFor": "avalanche",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "gnosis": {
+      "family": "evm",
+      "id": "gnosis",
+      "nativeId": "100",
+      "name": "Gnosis",
+      "ticker": "xDAI",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "gnosis-chiado": {
+      "family": "evm",
+      "id": "gnosis-chiado",
+      "nativeId": "10200",
+      "name": "Gnosis Chiado",
+      "ticker": "xDAI",
+      "decimals": 18,
+      "isTestnetFor": "gnosis",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "moonbeam": {
+      "family": "evm",
+      "id": "moonbeam",
+      "nativeId": "1284",
+      "name": "Moonbeam",
+      "ticker": "GLMR",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "moonriver": {
+      "family": "evm",
+      "id": "moonriver",
+      "nativeId": "1285",
+      "name": "Moonriver",
+      "ticker": "MOVR",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "moonbase": {
+      "family": "evm",
+      "id": "moonbase",
+      "nativeId": "1287",
+      "name": "Moonbase",
+      "ticker": "DEV",
+      "decimals": 18,
+      "isTestnetFor": "moonbeam",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "fantom": {
+      "family": "evm",
+      "id": "fantom",
+      "nativeId": "250",
+      "name": "Fantom",
+      "ticker": "FTM",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "mantle": {
+      "family": "evm",
+      "id": "mantle",
+      "nativeId": "5000",
+      "name": "Mantle Network",
+      "ticker": "MNT",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": false
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "rootstock": {
+      "family": "evm",
+      "id": "rootstock",
+      "nativeId": "30",
+      "name": "RootStock",
+      "ticker": "RBTC",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": false,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "rootstock-testnet": {
+      "family": "evm",
+      "id": "rootstock-testnet",
+      "nativeId": "31",
+      "name": "RootStock Testnet",
+      "ticker": "tRBTC",
+      "decimals": 18,
+      "isTestnetFor": "rootstock",
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": false,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "litecoin": {
+      "family": "bitcoin",
+      "id": "litecoin",
+      "nativeId": "litecoin",
+      "name": "Litecoin",
+      "ticker": "LTC",
+      "decimals": 8,
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "2"
+      }
+    },
+    "dogecoin": {
+      "family": "bitcoin",
+      "id": "dogecoin",
+      "nativeId": "dogecoin",
+      "name": "Dogecoin",
+      "ticker": "DOGE",
+      "decimals": 8,
+      "supportedFeatures": {
+        "read": {
+          "token": false,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "3"
+      }
+    },
+    "ton": {
+      "family": "ton",
+      "id": "ton",
+      "nativeId": "ton",
+      "name": "TON",
+      "ticker": "TON",
+      "decimals": 9,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "ed25519",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "607"
+      }
+    },
+    "chiliz": {
+      "family": "evm",
+      "id": "chiliz",
+      "nativeId": "88888",
+      "name": "Chiliz Chain",
+      "ticker": "CHZ",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "chiliz-testnet": {
+      "family": "evm",
+      "id": "chiliz-testnet",
+      "nativeId": "88882",
+      "name": "Chiliz Spicy Testnet",
+      "ticker": "CHZ",
+      "decimals": 18,
+      "isTestnetFor": "chiliz",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "injective": {
+      "family": "cosmos",
+      "id": "injective",
+      "nativeId": "injective-1",
+      "name": "Injective",
+      "ticker": "INJ",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rs",
+        "coinType": "60"
+      }
+    },
+    "akash": {
+      "family": "cosmos",
+      "id": "akash",
+      "nativeId": "akashnet-2",
+      "name": "Akash",
+      "ticker": "AKT",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "band": {
+      "family": "cosmos",
+      "id": "band",
+      "nativeId": "laozi-mainnet",
+      "name": "Band Protocol",
+      "ticker": "BAND",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "dymension": {
+      "family": "cosmos",
+      "id": "dymension",
+      "nativeId": "dymension_1100-1",
+      "name": "Dymension",
+      "ticker": "DYM",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "kyve": {
+      "family": "cosmos",
+      "id": "kyve",
+      "nativeId": "kyve-1",
+      "name": "KYVE",
+      "ticker": "KYVE",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "terra2": {
+      "family": "cosmos",
+      "id": "terra2",
+      "nativeId": "phoenix-1",
+      "name": "Terra",
+      "ticker": "LUNA",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "stargaze": {
+      "family": "cosmos",
+      "id": "stargaze",
+      "nativeId": "stargaze-1",
+      "name": "Stargaze",
+      "ticker": "STARS",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "tron": {
+      "family": "tron",
+      "id": "tron",
+      "nativeId": "tron",
+      "name": "Tron",
+      "ticker": "TRX",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": false
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rsv",
+        "coinType": "195"
+      }
+    },
+    "evmos": {
+      "family": "cosmos",
+      "id": "evmos",
+      "nativeId": "evmos_9001-2",
+      "name": "Evmos",
+      "ticker": "EVMOS",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "60"
+      }
+    },
+    "irisnet": {
+      "family": "cosmos",
+      "id": "irisnet",
+      "nativeId": "irishub-1",
+      "name": "IRISnet",
+      "ticker": "IRIS",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "juno": {
+      "family": "cosmos",
+      "id": "juno",
+      "nativeId": "juno-1",
+      "name": "Juno",
+      "ticker": "JUNO",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "lum-network": {
+      "family": "cosmos",
+      "id": "lum-network",
+      "nativeId": "lum-network-1",
+      "name": "Lum Network",
+      "ticker": "LUM",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "omniflix": {
+      "family": "cosmos",
+      "id": "omniflix",
+      "nativeId": "omniflixhub-1",
+      "name": "OmniFlix",
+      "ticker": "FLIX",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "sei": {
+      "family": "cosmos",
+      "id": "sei",
+      "nativeId": "pacific-1",
+      "name": "Sei",
+      "ticker": "SEI",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "medibloc": {
+      "family": "cosmos",
+      "id": "medibloc",
+      "nativeId": "panacea-3",
+      "name": "MediBloc",
+      "ticker": "MED",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "passage": {
+      "family": "cosmos",
+      "id": "passage",
+      "nativeId": "passage-2",
+      "name": "Passage",
+      "ticker": "PASG",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "quasar": {
+      "family": "cosmos",
+      "id": "quasar",
+      "nativeId": "quasar-1",
+      "name": "Quasar",
+      "ticker": "QSR",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "seda": {
+      "family": "cosmos",
+      "id": "seda",
+      "nativeId": "seda-1",
+      "name": "Seda",
+      "ticker": "SEDA",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "sommelier": {
+      "family": "cosmos",
+      "id": "sommelier",
+      "nativeId": "sommelier-3",
+      "name": "Sommelier",
+      "ticker": "SOMM",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "shentu": {
+      "family": "cosmos",
+      "id": "shentu",
+      "nativeId": "shentu-2.2",
+      "name": "Shentu",
+      "ticker": "CTK",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "stride": {
+      "family": "cosmos",
+      "id": "stride",
+      "nativeId": "stride-1",
+      "name": "Stride",
+      "ticker": "STRD",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "chihuahua": {
+      "family": "cosmos",
+      "id": "chihuahua",
+      "nativeId": "chihuahua-1",
+      "name": "Chihuahua",
+      "ticker": "HUAHUA",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "bitsong": {
+      "family": "cosmos",
+      "id": "bitsong",
+      "nativeId": "bitsong-1",
+      "name": "Bitsong",
+      "ticker": "BTSG",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "persistence": {
+      "family": "cosmos",
+      "id": "persistence",
+      "nativeId": "core-1",
+      "name": "Persistence",
+      "ticker": "XPRT",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "comdex": {
+      "family": "cosmos",
+      "id": "comdex",
+      "nativeId": "comdex-1",
+      "name": "Comdex",
+      "ticker": "CMDX",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "fetch-ai": {
+      "family": "cosmos",
+      "id": "fetch-ai",
+      "nativeId": "fetchhub-4",
+      "name": "Fetch.ai",
+      "ticker": "FET",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "humans-ai": {
+      "family": "cosmos",
+      "id": "humans-ai",
+      "nativeId": "humans_1",
+      "name": "Humans.ai",
+      "ticker": "HEART",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "ki": {
+      "family": "cosmos",
+      "id": "ki",
+      "nativeId": "kichain-2",
+      "name": "Ki Chain",
+      "ticker": "XKI",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "likecoin": {
+      "family": "cosmos",
+      "id": "likecoin",
+      "nativeId": "likecoin-mainnet-2",
+      "name": "LikeCoin",
+      "ticker": "LIKE",
+      "decimals": 9,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "provenance": {
+      "family": "cosmos",
+      "id": "provenance",
+      "nativeId": "pio-mainnet-1",
+      "name": "Provenance",
+      "ticker": "HASH",
+      "decimals": 9,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "quicksilver": {
+      "family": "cosmos",
+      "id": "quicksilver",
+      "nativeId": "quicksilver-2",
+      "name": "Quicksilver",
+      "ticker": "QCK",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "saga": {
+      "family": "cosmos",
+      "id": "saga",
+      "nativeId": "saga-1",
+      "name": "Saga",
+      "ticker": "SAGA",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "kava": {
+      "family": "cosmos",
+      "id": "kava",
+      "nativeId": "kava_2222-10",
+      "name": "Kava",
+      "ticker": "KAVA",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "starknet": {
+      "family": "starknet",
+      "id": "starknet",
+      "nativeId": "starknet",
+      "name": "Starknet",
+      "ticker": "STRK",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": true,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "stark",
+        "hashFunction": "pedersen",
+        "signatureFormat": "rs",
+        "coinType": "9004"
+      }
+    },
+    "starknet-sepolia": {
+      "family": "starknet",
+      "id": "starknet-sepolia",
+      "nativeId": "starknet-sepolia",
+      "name": "Starknet Sepolia",
+      "ticker": "STRK",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": true,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "stark",
+        "hashFunction": "pedersen",
+        "signatureFormat": "rs",
+        "coinType": "9004"
+      }
+    },
+    "babylon": {
+      "family": "cosmos",
+      "id": "babylon",
+      "nativeId": "bbn-1",
+      "name": "Babylon",
+      "ticker": "BABY",
+      "decimals": 6,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": true,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "babylon-testnet": {
+      "family": "cosmos",
+      "id": "babylon-testnet",
+      "nativeId": "bbn-test-5",
+      "name": "Babylon Testnet",
+      "ticker": "BABY",
+      "decimals": 6,
+      "isTestnetFor": "babylon",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": false,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": false,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": false,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": true,
+              "withdraw": false,
+              "registerStake": true,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "118"
+      }
+    },
+    "monad-testnet": {
+      "family": "evm",
+      "id": "monad-testnet",
+      "nativeId": "10143",
+      "name": "Monad Private Testnet",
+      "ticker": "MON",
+      "decimals": 18,
+      "isTestnetFor": "monad",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "berachain": {
+      "family": "evm",
+      "id": "berachain",
+      "nativeId": "80094",
+      "name": "Berachain",
+      "ticker": "BERA",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "berachain-bepolia": {
+      "family": "evm",
+      "id": "berachain-bepolia",
+      "nativeId": "80084",
+      "name": "Berachain Bepolia",
+      "ticker": "BERA",
+      "decimals": 18,
+      "isTestnetFor": "berachain",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "cronos": {
+      "family": "evm",
+      "id": "cronos",
+      "nativeId": "25",
+      "name": "CRONOS",
+      "ticker": "CRO",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "world-chain": {
+      "family": "evm",
+      "id": "world-chain",
+      "nativeId": "480",
+      "name": "Worldchain",
+      "ticker": "WLD",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "world-chain-sepolia": {
+      "family": "evm",
+      "id": "world-chain-sepolia",
+      "nativeId": "4801",
+      "name": "Worldchain Sepolia",
+      "ticker": "WLD",
+      "decimals": 18,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": false,
+          "transaction": {
+            "native": false,
+            "tokens": false,
+            "staking": false
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": false,
+              "staking": false
+            },
+            "transactions": {
+              "native": false,
+              "tokens": false,
+              "staking": false
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": false,
+              "unstake": false,
+              "claimRewards": false,
+              "withdraw": false,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "secp256k1",
+        "hashFunction": "keccak256",
+        "signatureFormat": "rsv",
+        "coinType": "60"
+      }
+    },
+    "solana": {
+      "family": "solana",
+      "id": "solana",
+      "nativeId": "solana",
+      "name": "Solana",
+      "ticker": "SOL",
+      "decimals": 9,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": false,
+              "withdraw": true,
+              "registerStake": false,
+              "convertAsset": true
+            },
+            "field": {
+              "memo": true
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "ed25519",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "501"
+      }
+    },
+    "aptos": {
+      "family": "aptos",
+      "id": "aptos",
+      "nativeId": "aptos",
+      "name": "Aptos",
+      "ticker": "APT",
+      "decimals": 8,
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": false,
+              "withdraw": true,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "ed25519",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "637"
+      }
+    },
+    "aptos-testnet": {
+      "family": "aptos",
+      "id": "aptos-testnet",
+      "nativeId": "aptos-testnet",
+      "name": "Aptos Testnet",
+      "ticker": "APT",
+      "decimals": 8,
+      "isTestnetFor": "aptos",
+      "supportedFeatures": {
+        "read": {
+          "token": true,
+          "validators": true,
+          "transaction": {
+            "native": true,
+            "tokens": true,
+            "staking": true
+          },
+          "account": {
+            "balances": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            },
+            "transactions": {
+              "native": true,
+              "tokens": true,
+              "staking": true
+            }
+          }
+        },
+        "write": {
+          "transaction": {
+            "type": {
+              "deployAccount": false,
+              "transfer": true,
+              "transferToken": true,
+              "stake": true,
+              "unstake": true,
+              "claimRewards": false,
+              "withdraw": true,
+              "registerStake": false,
+              "convertAsset": false
+            },
+            "field": {
+              "memo": false
+            }
+          }
+        },
+        "utils": {
+          "addresses": true
+        }
+      },
+      "signerSpec": {
+        "curve": "ed25519",
+        "hashFunction": "sha256",
+        "signatureFormat": "rs",
+        "coinType": "637"
+      }
+    }
+  }
+}

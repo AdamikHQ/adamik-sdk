@@ -34,9 +34,11 @@ Total Tests:   58
 ⏭️  Skipped:    0
 ```
 
-## import-bruno-tests.ts
+## import-bruno-tests.ts (DEPRECATED)
 
-Imports test scenarios from the Adamik API's Bruno test suite for independent verification.
+**Note**: Bruno import functionality has been removed as per CLAUDE.md. The SDK now uses manually curated test fixtures in `tests/fixtures/api-responses/`.
+
+This script was used to import test scenarios from the Adamik API's Bruno test suite for independent verification.
 
 **Philosophy:**
 The SDK performs **independent verification** of API responses. While we import test scenarios from the API's Bruno tests, we do NOT trust their assertions. Instead:

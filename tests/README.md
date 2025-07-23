@@ -4,7 +4,7 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 
 ## Overview
 
-**72 tests** across **7 test suites** providing complete coverage of:
+**80 tests** across **8 test suites** providing complete coverage of:
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM, PSBT for Bitcoin, and protobuf for Cosmos)
 - ✅ Security attack scenarios with comprehensive coverage
@@ -24,6 +24,7 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 - **`decoders.test.ts`** (17 tests) - Decoder functionality and registry
 - **`integration.test.ts`** (1 test) - End-to-end workflow testing
 - **`api-responses.test.ts`** (12 tests) - Real API response validation
+- **`evm-chainid-real-data.test.ts`** (8 tests) - EVM chain ID security validation
 
 ### Fixtures
 
@@ -188,7 +189,7 @@ it("should decode transaction data", async () => {
   // 3. Assert
   expect(result.decoded).toBeDefined();
   expect(result.decoded.recipientAddress).toBe("0x...");
-  expect(result.isPlaceholder).toBe(false);
+  expect(result.warnings).toHaveLength(0);
 });
 ```
 
@@ -322,4 +323,4 @@ This demonstrates **"less is more"** - maintaining comprehensive test coverage w
 - **Simplified main SDK file** - Reduced `src/index.ts` from ~450 to ~270 lines
 - **Removed unused method** - Deleted private `compareTransactionData()` method
 - **Added 6 new tests** - Comprehensive decode() functionality testing
-- **Test count increased** - From 63 to 72 tests total (added Cosmos unstake and claim rewards)
+- **Test count increased** - From 63 to 80 tests total (added Cosmos unstake/claim rewards, EVM chain ID tests)

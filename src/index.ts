@@ -50,7 +50,6 @@ export class AdamikSDK {
    *
    * @returns A DecodeResult object containing:
    *   - decoded: The decoded transaction data (null if decoding failed)
-   *   - isPlaceholder: Whether a placeholder decoder was used
    *   - warnings: Any warnings generated during decoding
    *   - error: Error message if decoding failed
    *
@@ -88,16 +87,15 @@ export class AdamikSDK {
       if (!decoder) {
         return {
           decoded: null,
-          isPlaceholder: false,
           error: `No decoder available for ${params.chainId} with format ${params.format}`,
         };
       }
 
       // Check if this is a placeholder decoder
       const decoderWithPlaceholder = decoder as DecoderWithPlaceholder;
-      const isPlaceholder = decoderWithPlaceholder.isPlaceholder === true;
+      const hasPlaceholder = decoderWithPlaceholder.isPlaceholder === true;
 
-      if (isPlaceholder) {
+      if (hasPlaceholder) {
         warnings.push({
           code: "PLACEHOLDER_DECODER",
           message: `Using placeholder decoder for ${params.chainId} - decoded data may be incomplete`,
@@ -112,13 +110,11 @@ export class AdamikSDK {
 
       return {
         decoded,
-        isPlaceholder,
         warnings: warnings.length > 0 ? warnings : undefined,
       };
     } catch (error) {
       return {
         decoded: null,
-        isPlaceholder: false,
         error: `Failed to decode transaction: ${error}`,
         warnings: warnings.length > 0 ? warnings : undefined,
       };
@@ -182,7 +178,7 @@ export class AdamikSDK {
       return errorCollector.getResult({
         chainId,
         transaction: data,
-        raw: decodedRaw,
+        chainSpecificData: decodedRaw,
       });
     } catch (error) {
       errorCollector.addError(ErrorCode.INVALID_API_RESPONSE, `Verification error: ${error}`, "error", {
@@ -276,7 +272,8 @@ export class AdamikSDK {
     }
 
     // Skip verification for placeholder decoders
-    if (decodeResult.isPlaceholder) {
+    const hasPlaceholderWarning = decodeResult.warnings?.some(w => w.code === "PLACEHOLDER_DECODER");
+    if (hasPlaceholderWarning) {
       return decodeResult.decoded;
     }
 
@@ -318,6 +315,7 @@ export * from "./types";
 // Export utilities for advanced usage
 export { AddressNormalizer } from "./utils/address-normalizer";
 export { TransactionVerifier } from "./utils/transaction-verifier";
+export * from "./utils/chain-utils";
 
 // Default export for convenience
 export default AdamikSDK;

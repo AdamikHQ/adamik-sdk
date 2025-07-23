@@ -56,7 +56,7 @@ describe("Integration Tests", () => {
       expect(verificationResult.isValid).toBe(true);
       expect(verificationResult.errors).toHaveLength(0);
       expect(verificationResult.decodedData).toBeDefined();
-      expect(verificationResult.decodedData?.raw).toBeDefined();
+      expect(verificationResult.decodedData?.chainSpecificData).toBeDefined();
     });
   });
 });

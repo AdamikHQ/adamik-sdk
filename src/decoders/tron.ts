@@ -99,7 +99,7 @@ export class TronDecoder extends BaseDecoder {
       tokenId: contractHex ? this.tronWeb.address.fromHex(contractHex) : undefined,
       // TODO: Add fee calculation for Tron transactions
       // fee: "0", // Need to extract fee from transaction data
-      raw: rawData,
+      chainSpecificData: rawData,
     };
   }
 
@@ -133,7 +133,7 @@ export class TronDecoder extends BaseDecoder {
       amount: amount,
       // TODO: Add fee calculation for Tron transactions
       // fee: "0", // Need to extract fee from transaction data
-      raw: rawData,
+      chainSpecificData: rawData,
     };
   }
 

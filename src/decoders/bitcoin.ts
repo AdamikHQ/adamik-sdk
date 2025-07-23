@@ -101,12 +101,13 @@ export class BitcoinDecoder extends BaseDecoder {
       const fee = totalInputValue - totalOutputValue;
       
       return {
+        chainId: this.chainId,
         mode: "transfer",
         recipientAddress,
         amount: totalAmount.toString(),
         senderAddress,
         fee: fee.toString(),
-        raw: {
+        chainSpecificData: {
           psbt: psbt.toBase64(),
           inputs: psbt.data.inputs.length,
           outputs: txOutputs.length,

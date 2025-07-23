@@ -63,6 +63,9 @@ export class CosmosDecoder extends BaseDecoder {
         fee = decodedTx.authInfo.fee.amount[0].amount;
       }
       
+      // Extract memo from body
+      const memo = decodedTx.body.memo || undefined;
+      
       // Process the first message
       if (decodedTx.body.messages.length > 0) {
         const firstMsg = decodedTx.body.messages[0];
@@ -79,12 +82,14 @@ export class CosmosDecoder extends BaseDecoder {
           }
           
           return {
+            chainId: this.chainId,
             mode: "transfer" as TransactionMode,
             senderAddress: msgSend.fromAddress,
             recipientAddress: msgSend.toAddress,
             amount: totalAmount,
             fee,
-            raw: rawData,
+            memo,
+            chainSpecificData: rawData,
           };
         } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
           const msgDelegate = MsgDelegate.decode(firstMsg.value);
@@ -96,12 +101,14 @@ export class CosmosDecoder extends BaseDecoder {
           }
           
           return {
+            chainId: this.chainId,
             mode: "stake" as TransactionMode,
             senderAddress: msgDelegate.delegatorAddress,
             targetValidatorAddress: msgDelegate.validatorAddress,
             amount: totalAmount,
             fee,
-            raw: rawData,
+            memo,
+            chainSpecificData: rawData,
           };
         } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
           const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
@@ -113,34 +120,40 @@ export class CosmosDecoder extends BaseDecoder {
           }
           
           return {
+            chainId: this.chainId,
             mode: "unstake" as TransactionMode,
             senderAddress: msgUndelegate.delegatorAddress,
             validatorAddress: msgUndelegate.validatorAddress,
             amount: totalAmount,
             fee,
-            raw: rawData,
+            memo,
+            chainSpecificData: rawData,
           };
         } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
           const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
           
           return {
+            chainId: this.chainId,
             mode: "claimRewards" as TransactionMode,
             senderAddress: msgWithdrawReward.delegatorAddress,
             validatorAddress: msgWithdrawReward.validatorAddress,
             amount: "0", // Rewards amount is not known until claimed
             fee,
-            raw: rawData,
+            memo,
+            chainSpecificData: rawData,
           };
         }
       }
       
       // Fallback for non-transfer messages
       return {
+        chainId: this.chainId,
         mode: "transfer" as TransactionMode,
         recipientAddress: "cosmos1unknown",
         amount: "0",
         fee,
-        raw: rawData,
+        memo,
+        chainSpecificData: rawData,
       };
       
     } catch (error) {
@@ -162,7 +175,7 @@ export class CosmosDecoder extends BaseDecoder {
     const data = decodedData as DecodedTransaction;
 
     // Basic validation
-    if (!data.mode || !data.raw) {
+    if (!data.mode || !data.chainSpecificData) {
       return false;
     }
 

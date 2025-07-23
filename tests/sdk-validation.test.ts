@@ -190,7 +190,6 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       });
 
       expect(result.decoded).toBeDefined();
-      expect(result.isPlaceholder).toBe(false);
       expect(result.error).toBeUndefined();
       expect(result.decoded?.recipientAddress).toBe("0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6");
       expect(result.decoded?.mode).toBe("transfer");
@@ -204,7 +203,6 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       });
 
       expect(result.decoded).toBeNull();
-      expect(result.isPlaceholder).toBe(false);
       expect(result.error).toContain("No decoder available");
     });
 
@@ -242,7 +240,6 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       });
 
       expect(result.decoded).toBeDefined();
-      expect(result.isPlaceholder).toBe(false);
       expect(result.error).toBeUndefined();
       expect(result.decoded?.mode).toBe("transfer");
       expect(result.decoded?.recipientAddress).toBeTruthy();
@@ -270,7 +267,6 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       });
 
       expect(result.decoded).toBeDefined();
-      expect(result.isPlaceholder).toBe(false);
       expect(result.decoded?.recipientAddress).toBe("0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6");
     });
   });

@@ -5,7 +5,7 @@
 ## Quick Context Summary
 - **What**: TypeScript SDK for verifying Adamik API transaction responses
 - **Status**: Production-ready core, EVM fully implemented with EIP-55 support, Bitcoin with real PSBT decoding, Cosmos with real protobuf decoding (including stake/unstake/claim rewards), Tron with real transaction parsing
-- **Tests**: 72 tests across 7 suites (all passing)
+- **Tests**: 80 tests across 8 suites (all passing)
 - **Recent**: Comprehensive code quality improvements with enhanced error handling and test coverage
 
 ## Project Overview
@@ -54,12 +54,13 @@ src/
 ```
 tests/
 ├── decoders.test.ts         # Decoder tests (17 tests) 
-├── sdk-validation.test.ts   # Core SDK tests (6 tests)
+├── sdk-validation.test.ts   # Core SDK tests (12 tests)
 ├── integration.test.ts      # End-to-end tests (1 test)
 ├── attack-scenarios.test.ts # Security attack tests (9 tests)
 ├── edge-cases.test.ts       # Boundary condition tests (11 tests)
 ├── error-handling.test.ts   # Error path tests (10 tests)
-├── api-responses.test.ts    # Real API response tests (9 tests)
+├── api-responses.test.ts    # Real API response tests (12 tests)
+├── evm-chainid-real-data.test.ts # EVM chain ID security tests (8 tests)
 └── fixtures/
     └── api-responses/       # Real API response data by blockchain (object format)
         ├── ethereum.json    # Ethereum test cases
@@ -70,7 +71,7 @@ tests/
         └── celestia.json    # Celestia test cases
 ```
 
-**Total: 72 tests across 7 suites (all passing)**
+**Total: 80 tests across 8 suites (all passing)**
 
 ### Test Summary Table
 All test runs now display a comprehensive summary table showing:
@@ -243,7 +244,7 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **ESLint Configuration**: Added comprehensive linting rules for TypeScript
 - **Test Coverage**: Added 30 new tests across attack-scenarios, edge-cases, and error-handling
 - **EVM Address Normalization**: Implemented case-insensitive address comparison for EVM chains
-- Test count increased from 38 to 63 tests (all passing)
+- Test count increased from 38 to 63 tests (later increased to 80 with additional tests)
 
 ### ✅ Completed: EVM Sender Address Analysis (July 2025)
 **What**: Investigated why EVM decoder returns empty sender address
@@ -312,6 +313,24 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - No more confusion between `from` vs `senderAddress`
 - Better consistency across different blockchain decoders
 - All 80 tests pass (8 new tests added)
+
+### ✅ Completed: Chain Types and Utilities (July 2025)
+**What**: Added comprehensive Chain type system based on Adamik API chains.json
+**Impact**: Better type safety and chain metadata access
+**Changes**:
+- **Created Chain types** - Comprehensive interfaces for chain metadata
+- **Added chain utilities** - Helper functions for accessing chain information
+- **Updated EVM constants** - Now uses chains.json as single source of truth
+- **Removed redundant files** - Deleted hardcoded evm-chains.ts
+
+### ✅ Completed: Enhanced DecodedTransaction Fields (July 2025)
+**What**: Renamed raw field and added memo support
+**Impact**: Clearer API and standard memo field support
+**Changes**:
+- **Renamed raw to chainSpecificData** - More descriptive field name
+- **Added memo field** - Standard field for transaction memos
+- **Updated all decoders** - Cosmos decoder extracts memo from transactions
+- **Updated all tests** - Fixed references to use new field names
 
 ## Key Security Features
 
@@ -386,7 +405,7 @@ pnpm run build        # TypeScript compilation
 pnpm run format       # Prettier formatting
 
 # Testing  
-pnpm test             # All 72 tests
+pnpm test             # All 80 tests
 pnpm run test:watch   # Watch mode
 pnpm run typecheck    # TypeScript type checking
 pnpm run lint         # ESLint checking
@@ -431,7 +450,7 @@ pnpm test:decoders   # Run all decoder tests
 
 ### Development Stack
 - **TypeScript** (^5.8.3) - Strict mode enabled, full type safety
-- **Jest** (^30.0.4) - Testing framework, 72 tests across 7 suites
+- **Jest** (^30.0.4) - Testing framework, 80 tests across 8 suites
 - **Prettier** (^3.6.2) - Code formatting (pnpm run format)
 - **ESLint** (^9.1.1) - Linting with TypeScript support
 - **ts-node** (^10.9.2) - Development execution
@@ -535,17 +554,17 @@ This prevents permission prompts during the development session and ensures smoo
 
 ## Last Updated
 **Date**: July 2025  
-**Session**: Improved DecodedTransaction Structure
+**Session**: Enhanced DecodedTransaction Fields & Chain Types
 **Major Changes**: 
-- Moved `fee` field from `raw` to top level of `DecodedTransaction` interface
-- Removed redundant fields (`from`, `to`, `value`, `data`) to avoid confusion
-- Standardized on `senderAddress` and `recipientAddress` naming
-- Added fee calculation to Bitcoin decoder (inputs - outputs)
-- Updated all decoders (EVM, Bitcoin, Cosmos) to return fees at top level
-- Updated documentation (README, CHANGELOG) to reflect new structure
-- All 80 tests pass (added 8 new tests)
-**Previous Session**: SDK Dogfooding - verify() now uses decode() internally
-**Next Session Should**: Consider renaming `raw` to `chainSpecificParams` for clarity, or implement hash validation
+- Renamed `raw` field to `chainSpecificData` for clarity
+- Added `memo` field to DecodedTransaction interface
+- Updated Cosmos decoder to extract memo from transactions
+- Added comprehensive Chain type system based on chains.json
+- Created chain utility functions for metadata access
+- Removed hardcoded evm-chains.ts in favor of dynamic chain data
+- All 80 tests pass
+**Previous Session**: Improved DecodedTransaction Structure (moved fee to top level)
+**Next Session Should**: Implement hash validation or add more blockchain decoders
 
 ## Future Product Direction
 

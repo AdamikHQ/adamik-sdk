@@ -99,7 +99,7 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("mode");
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
-      expect(decoded).toHaveProperty("raw");
+      expect(decoded).toHaveProperty("chainSpecificData");
     });
 
     it("should validate decoded transaction", () => {
@@ -140,7 +140,7 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("mode");
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
-      expect(decoded).toHaveProperty("raw");
+      expect(decoded).toHaveProperty("chainSpecificData");
     });
 
     it("should validate decoded transaction", () => {
@@ -149,7 +149,7 @@ describe("Decoders", () => {
         recipientAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
         amount: "10000",
         senderAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        raw: "0x1234",
+        chainSpecificData: "0x1234",
       };
 
       expect(decoder.validate(validTx)).toBe(true);
@@ -181,7 +181,7 @@ describe("Decoders", () => {
           mode: "transfer",
           recipientAddress: address,
           amount: "1000",
-          raw: "0x",
+          chainSpecificData: "0x",
         };
         expect(decoder.validate(tx)).toBe(true);
       });
@@ -204,7 +204,7 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("senderAddress");
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
-      expect(decoded).toHaveProperty("raw");
+      expect(decoded).toHaveProperty("chainSpecificData");
     });
 
     it("should validate decoded Tron transaction", () => {
@@ -213,7 +213,7 @@ describe("Decoders", () => {
         recipientAddress: "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
         amount: "12345",
         senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-        raw: "0x1234",
+        chainSpecificData: "0x1234",
       };
 
       expect(decoder.validate(validTx)).toBe(true);
@@ -243,7 +243,7 @@ describe("Decoders", () => {
           recipientAddress: address,
           amount: "1000",
           senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-          raw: "0x1234",
+          chainSpecificData: "0x1234",
         };
         expect(decoder.validate(tx)).toBe(true);
       });

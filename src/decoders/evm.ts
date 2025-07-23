@@ -1,7 +1,7 @@
 import { BaseDecoder } from "./base";
 import { ChainId, TransactionMode, DecodedTransaction } from "../types";
 import { isAddress, isHex, parseTransaction, getAddress } from "viem";
-import { validateChainId } from "../constants/evm-chains";
+import { getEvmNetworkId } from "../utils/chain-utils";
 
 export class EVMDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
@@ -21,22 +21,34 @@ export class EVMDecoder extends BaseDecoder {
       const parsed = parseTransaction(hexData);
 
       // Validate chain ID to prevent replay attacks
-      const chainIdValidation = validateChainId(this.chainId, parsed.chainId ? Number(parsed.chainId) : undefined);
-      if (!chainIdValidation.valid) {
-        throw new Error(chainIdValidation.error);
+      const expectedNetworkId = getEvmNetworkId(this.chainId);
+      if (!expectedNetworkId) {
+        throw new Error(`${this.chainId} is not an EVM chain`);
+      }
+      
+      const expectedChainId = parseInt(expectedNetworkId, 10);
+      const transactionChainId = parsed.chainId ? Number(parsed.chainId) : undefined;
+      
+      if (transactionChainId === undefined) {
+        throw new Error(`Transaction does not contain chain ID, vulnerable to replay attacks`);
+      }
+      
+      if (transactionChainId !== expectedChainId) {
+        throw new Error(`Chain ID mismatch: expected ${expectedChainId} for ${this.chainId}, but transaction has ${transactionChainId}. This could be a replay attack.`);
       }
 
       // Determine transaction mode and extract relevant data
       const { mode, tokenId, recipientAddress, amount } = this.analyzeTransaction(parsed);
 
       return {
+        chainId: this.chainId,
         mode,
         senderAddress: "", // Will be filled by verification logic from API response
         recipientAddress,
         amount: amount.toString(), // Convert bigint to string
         fee: this.calculateFees(parsed).toString(),
         tokenId,
-        raw: {
+        chainSpecificData: {
           gas: parsed.gas?.toString(),
           nonce: parsed.nonce ? BigInt(parsed.nonce).toString() : undefined,
           data: parsed.data,

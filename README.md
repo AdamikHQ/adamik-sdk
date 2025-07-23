@@ -158,9 +158,11 @@ const btcTx = await sdk.decode({
 });
 // Returns: { recipientAddress, amount, mode, ... }
 
-// Check if placeholder decoder was used
-if (result.isPlaceholder) {
-  console.warn("Using placeholder decoder - data may be incomplete");
+// Check for warnings (e.g., placeholder decoder)
+if (result.warnings) {
+  result.warnings.forEach(warning => {
+    console.warn(`${warning.code}: ${warning.message}`);
+  });
 }
 ```
 
@@ -253,7 +255,7 @@ console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 - **🛡️ Security Verification**: Two-step validation of API responses
 - **📦 TypeScript Support**: Full type definitions and IDE support
 - **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
-- **✅ Comprehensive Testing**: 69 tests across 7 test suites
+- **✅ Comprehensive Testing**: 80 tests across 8 test suites
 - **🏗️ Clean Architecture**: Modular design with utility classes
 - **⚡ Zero Dependencies**: Uses trusted blockchain libraries only
 
@@ -383,13 +385,14 @@ The SDK includes a streamlined test suite with:
 
 ```bash
 # Core test files
-tests/sdk-validation.test.ts     # Complete validation tests (12 tests)
-tests/attack-scenarios.test.ts   # Security attack tests (9 tests)
-tests/decoders.test.ts          # Decoder and registry tests (17 tests)
-tests/integration.test.ts       # End-to-end tests (1 test)
-tests/api-responses.test.ts     # API response validation tests (9 tests)
-tests/edge-cases.test.ts        # Boundary condition tests (11 tests)
-tests/error-handling.test.ts    # Error path tests (10 tests)
+tests/sdk-validation.test.ts        # Complete validation tests (12 tests)
+tests/attack-scenarios.test.ts      # Security attack tests (9 tests)
+tests/decoders.test.ts             # Decoder and registry tests (17 tests)
+tests/integration.test.ts          # End-to-end tests (1 test)
+tests/api-responses.test.ts        # API response validation tests (12 tests)
+tests/edge-cases.test.ts           # Boundary condition tests (11 tests)
+tests/error-handling.test.ts       # Error path tests (10 tests)
+tests/evm-chainid-real-data.test.ts # EVM chain ID security tests (8 tests)
 
 # Fixtures
 tests/fixtures/api-responses/    # Real API response data per blockchain
@@ -473,7 +476,6 @@ Decodes raw transaction data for a specific blockchain without running verificat
 
 - `DecodeResult` object containing:
   - `decoded`: The decoded transaction data (null if decoding failed)
-  - `isPlaceholder`: Whether a placeholder decoder was used
   - `warnings`: Any warnings generated during decoding
   - `error`: Error message if decoding failed
 
@@ -505,10 +507,11 @@ interface DecodedTransaction {
   recipientAddress?: string; // Transaction recipient
   amount?: string;          // Transaction amount in smallest unit
   fee?: string;             // Transaction fee in native currency
+  memo?: string;            // Transaction memo/message
   tokenId?: string;         // Token contract address (for token transfers)
   validatorAddress?: string; // Validator address (for staking operations)
   targetValidatorAddress?: string; // Target validator (for re-delegation)
-  raw?: unknown;            // Chain-specific additional data
+  chainSpecificData?: unknown; // Chain-specific additional data
 }
 ```
 
