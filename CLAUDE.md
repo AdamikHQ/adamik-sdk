@@ -246,6 +246,17 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **EVM Address Normalization**: Implemented case-insensitive address comparison for EVM chains
 - Test count increased from 38 to 63 tests (later increased to 80 with additional tests)
 
+### ✅ Completed: EVM Chain ID Security Fix (July 2025)
+**What**: Implemented comprehensive chain ID validation for EVM transactions
+**Impact**: Prevents replay attacks across different EVM networks
+**Changes**:
+- **Chain ID extraction** - EVM decoder extracts chainId from transactions
+- **Chain ID validation** - Decoder validates transaction chainId matches expected network
+- **Security error handling** - Chain ID mismatches throw critical errors with clear messages
+- **Integration with verify()** - Main SDK treats chain ID mismatches as critical security errors
+- **Comprehensive tests** - Added evm-chainid-real-data.test.ts with 8 tests covering replay attack scenarios
+**Security benefit**: Transactions can only be executed on their intended network, preventing cross-chain replay attacks
+
 ### ✅ Completed: EVM Sender Address Analysis (July 2025)
 **What**: Investigated why EVM decoder returns empty sender address
 **Impact**: Clarified design decision and improved integration documentation
@@ -331,6 +342,15 @@ This is powered by a custom Jest reporter at `scripts/jest-table-reporter.js`
 - **Added memo field** - Standard field for transaction memos
 - **Updated all decoders** - Cosmos decoder extracts memo from transactions
 - **Updated all tests** - Fixed references to use new field names
+
+### ✅ Completed: Removed isPlaceholder from DecodeResult (July 2025)
+**What**: Removed the isPlaceholder field from DecodeResult interface
+**Impact**: Cleaner API without confusing implementation details
+**Changes**:
+- **Removed isPlaceholder field** - This was an internal implementation detail that confused users
+- **Internal handling only** - Placeholder decoder detection is now handled internally
+- **Maintained warnings** - Placeholder decoders still generate appropriate warnings
+- **No breaking changes** - Users weren't supposed to rely on this field anyway
 
 ## Key Security Features
 
@@ -476,16 +496,17 @@ This prevents permission prompts during the development session and ensures smoo
 ## Future Enhancements (Planned)
 
 ### 🔥 High Priority (Next Features)
-- **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
+- **Solana decoder** - Most requested blockchain, straightforward implementation with reference code
+- **TON decoder** - Complex but valuable, good test of architecture flexibility
+- **Complete decoder coverage** - Implement decoders for all chain families in chains.json (Algorand, Aptos, Starknet)
 - **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-- **Other chain decoders** - Implement decoders for Solana, Algorand, Aptos, etc.
 - **Add fee calculation to Tron decoder** - Extract fee information from Tron transactions
-- **Remove isPlaceholder from DecodeResult** - This field confuses end users and provides no value. It's an implementation detail that should be internal only.
 
 ### 📋 Medium Priority
+- **Hash validation** - Verify `transaction.encoded[0].hash.value` matches actual transaction
 - **Gas estimation verification** - Ensure API doesn't overcharge fees
-- **Solana decoder** - New architecture needed for Solana transaction format
-- **Retry mechanisms** - Better network error handling in API client
+- **Substrate support** - Advanced feature, requires WebSocket management
+- **Protocol registry pattern** - Consistent chain metadata management
 
 ### 💡 Nice to Have
 - **Multi-signature support** - Transaction signing workflows
@@ -528,17 +549,20 @@ This prevents permission prompts during the development session and ensures smoo
 ## Important Notes for Development
 
 ### ⚠️ Key Constraints
-- **EVM, Bitcoin, and Cosmos** have real encoded validation - Other chains still need decoders
+- **EVM, Bitcoin, Cosmos, and Tron** have real encoded validation - Other chains still need decoders
 - **Test with real data** - Use `fixtures/api-responses/` for authentic API responses
 - **Security focus** - Always test malicious API scenarios
 - **TypeScript strict** - No `any` types, full type safety required
 - **EIP-55 compliance** - All EVM addresses must use proper checksumming
+- **EVM Chain ID validation** - Already implemented to prevent replay attacks
 - **Always use pnpm** - Package manager consistency is important
 
 ### 🎯 Current Priorities
-1. **Hash validation** - Cryptographic verification of encoded transactions
-2. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
-3. **Other blockchain decoders** - Solana, Algorand, Aptos following established patterns
+1. **Solana decoder** - Most requested, straightforward implementation
+2. **TON decoder** - Complex but valuable, good test of architecture flexibility
+3. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
+4. **Additional EVM chains** - Easy wins: Avalanche-C, Fantom, etc.
+5. **Hash validation** - Cryptographic verification of encoded transactions
 
 ### 🚫 Avoid These Patterns
 - Complex configuration-driven testing (was removed for good reason)

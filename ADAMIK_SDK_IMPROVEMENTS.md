@@ -403,90 +403,28 @@ abstract generateHash?(rawData: string): Promise<string>;
 
 ---
 
-## 5. Add Near Protocol Support
+## 5. Complete Decoder Coverage for All Chain Families
 
-### Implementation Steps
+### Current Gap
 
-1. **Install Near dependencies**
+The SDK needs decoder implementations for all blockchain families defined in `src/constants/chains.json`. Currently missing decoders for several families.
 
-```bash
-pnpm add near-api-js
-```
+### Blockchain Families Status
 
-2. **Create Near decoder**: `src/decoders/near.ts`
+Based on chains.json, the SDK supports these families:
+- ✅ **evm** - Fully implemented (Ethereum, Polygon, BSC, etc.)
+- ✅ **bitcoin** - Fully implemented 
+- ✅ **cosmos** - Fully implemented
+- ✅ **tron** - Fully implemented
+- ⚠️ **solana** - Needs implementation
+- ⚠️ **algorand** - Needs implementation
+- ⚠️ **aptos** - Needs implementation
+- ⚠️ **starknet** - Needs implementation
+- ⚠️ **ton** - Needs implementation
 
-```typescript
-import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, RawFormat } from "../types";
-import { transactions } from "near-api-js";
+### Implementation Priority
 
-export class NearDecoder extends BaseDecoder {
-  constructor(chainId: ChainId) {
-    super(chainId, "NEAR_TRANSACTION");
-  }
-
-  async decode(rawData: string): Promise<DecodedTransaction> {
-    try {
-      // Reference: minitel/src/lib/parseNearTx.ts
-      const tx = transactions.Transaction.decode(Buffer.from(rawData, "hex"));
-
-      // Extract transaction details
-      const signerId = tx.signerId;
-      const receiverId = tx.receiverId;
-      const actions = tx.actions;
-
-      // Parse first action (typically the main operation)
-      let amount: string | undefined;
-      let mode = "transfer";
-
-      if (actions.length > 0) {
-        const action = actions[0];
-        if (action.transfer) {
-          amount = action.transfer.deposit;
-        } else if (action.stake) {
-          mode = "stake";
-          amount = action.stake.stake;
-        }
-      }
-
-      return {
-        chainId: this.chainId,
-        senderAddress: signerId,
-        recipientAddress: receiverId,
-        amount,
-        mode,
-        chainSpecificData: tx,
-      };
-    } catch (error) {
-      throw new Error(`Failed to decode Near transaction: ${error.message}`);
-    }
-  }
-
-  validate(decodedData: unknown): boolean {
-    return true; // Implement validation
-  }
-}
-```
-
-### Reference Files
-
-- Near parser: `/Users/fabricedautriat/Documents/GitHub/minitel/src/lib/parseNearTx.ts`
-- Example: `/Users/fabricedautriat/Documents/GitHub/minitel/src/lib/examples.ts` (line 12)
-
----
-
-## 6. Add Cardano Support
-
-### Implementation Steps
-
-1. **Install Cardano dependencies**
-
-```bash
-pnpm add @emurgo/cardano-serialization-lib-nodejs
-```
-
-2. **Create Cardano decoder** following pattern from:
-   - `/Users/fabricedautriat/Documents/GitHub/minitel/src/lib/parseAdaTx.ts`
+Focus on implementing decoders for all chains in chains.json to ensure complete SDK coverage. This provides better support than targeting individual chains.
 
 ---
 
@@ -516,136 +454,6 @@ export type ProtocolId = keyof typeof PROTOCOLS;
 
 ---
 
-## 8. Critical Security Fix: EVM Chain ID in Transaction Decoding
-
-### Current Gap
-
-**CRITICAL SECURITY ISSUE**: EVM transaction decoding currently doesn't return the chainId, which is essential for preventing replay attacks across different EVM networks.
-
-### Security Impact
-
-Without chainId validation:
-
-- Transactions from Ethereum mainnet could be replayed on BSC, Polygon, etc.
-- Cross-chain replay attacks become possible
-- Users could unknowingly sign transactions for wrong networks
-
-### Implementation Steps
-
-1. **Update EVM decoder to extract chainId**: Modify `src/decoders/evm.ts`
-
-```typescript
-async decode(rawData: string): Promise<DecodedTransaction> {
-  try {
-    const hex = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
-    const parsed = parseTransaction(hex as `0x${string}`);
-
-    return {
-      chainId: this.chainId,
-      senderAddress: parsed.from,
-      recipientAddress: parsed.to,
-      amount: parsed.value?.toString(),
-      mode: parsed.to ? "transfer" : "contract_deployment",
-      // ADD THIS CRITICAL FIELD:
-      networkChainId: parsed.chainId, // Chain ID from transaction data
-      chainSpecificData: parsed,
-    };
-  } catch (error) {
-    throw new Error(`Failed to decode EVM transaction: ${error.message}`);
-  }
-}
-```
-
-2. **Update DecodedTransaction type** in `src/types/index.ts`
-
-```typescript
-export interface DecodedTransaction {
-  chainId: ChainId; // Adamik chain identifier
-  networkChainId?: number; // Network chain ID from transaction (critical for EVM)
-  senderAddress?: string;
-  recipientAddress?: string;
-  amount?: string;
-  mode: string;
-  chainSpecificData: any;
-}
-```
-
-3. **Add chainId validation** in `src/utils/transaction-verifier.ts`
-
-```typescript
-// Validate network chainId matches expected chain
-if (decodedData.networkChainId && this.isEVMChain(decodedData.chainId)) {
-  const expectedChainId = this.getExpectedChainId(decodedData.chainId);
-  if (decodedData.networkChainId !== expectedChainId) {
-    errors.add({
-      severity: "critical",
-      code: "CHAIN_ID_MISMATCH",
-      message: "Transaction chainId does not match target network",
-      context: {
-        expected: expectedChainId,
-        actual: decodedData.networkChainId,
-        chainId: decodedData.chainId,
-      },
-    });
-  }
-}
-```
-
-### Required Test Data
-
-**URGENT**: Need encoded transactions from different EVM networks to verify chainId parsing:
-
-1. **Ethereum Mainnet** (chainId: 1)
-2. **Polygon** (chainId: 137)
-3. **BSC** (chainId: 56)
-4. **Ethereum Sepolia** (chainId: 11155111)
-5. **Polygon Mumbai** (chainId: 80001)
-
-### Test Implementation
-
-Add to `tests/decoders.test.ts`:
-
-```typescript
-describe("EVM ChainId Security", () => {
-  it("should extract correct chainId from Ethereum transaction", async () => {
-    // Need real encoded Ethereum transaction
-    const decoder = new EVMDecoder("ethereum");
-    const result = await decoder.decode(ETHEREUM_MAINNET_TX);
-    expect(result.networkChainId).toBe(1);
-  });
-
-  it("should extract correct chainId from Polygon transaction", async () => {
-    // Need real encoded Polygon transaction
-    const decoder = new EVMDecoder("polygon");
-    const result = await decoder.decode(POLYGON_MAINNET_TX);
-    expect(result.networkChainId).toBe(137);
-  });
-
-  it("should detect chainId mismatch attacks", async () => {
-    // Try to decode Polygon tx as Ethereum
-    const decoder = new EVMDecoder("ethereum");
-    const verifier = new TransactionVerifier();
-
-    const result = await decoder.decode(POLYGON_TX_WITH_CHAIN_137);
-    const verification = verifier.verify(mockApiResponse, result);
-
-    expect(verification.errors).toContainEqual(expect.objectContaining({ code: "CHAIN_ID_MISMATCH" }));
-  });
-});
-```
-
-### Developer Action Required
-
-**Please provide encoded transaction examples for each EVM network:**
-
-- Include both mainnet and testnet examples
-- Ensure transactions have different chainIds
-- Provide the expected chainId for each example
-- Include edge cases (legacy transactions without explicit chainId)
-
-This fix should be **HIGHEST PRIORITY** due to security implications.
-
----
 
 ## Testing Each Implementation
 
@@ -658,12 +466,11 @@ For each new decoder:
 
 ## Priority Order
 
-1. **EVM Chain ID Security Fix** - CRITICAL: Prevents replay attacks across EVM networks
-2. **Hash Validation** - Critical security feature, partially implemented
-3. **Solana** - Most requested, straightforward implementation
-4. **TON** - Complex but valuable, good test of architecture flexibility
-5. **Near/Cardano** - Fill ecosystem gaps
-6. **Substrate** - Advanced feature, requires WebSocket management
+1. **Solana decoder** - Most requested, straightforward implementation
+2. **TON decoder** - Complex but valuable, good test of architecture flexibility
+3. **Complete decoder coverage** - Ensure all chain families from chains.json have implementations (Algorand, Aptos, Starknet)
+4. **Substrate support** - Advanced feature, requires WebSocket management
+5. **Hash validation** - Security feature to verify transaction integrity
 
 ## Key Success Factors
 
