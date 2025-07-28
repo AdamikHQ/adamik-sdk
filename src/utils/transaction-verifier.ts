@@ -9,9 +9,9 @@ import { parseAmount } from "./amount";
  */
 export class TransactionVerifier {
   /**
-   * Verifies transaction fields between intent and API data
+   * Verifies transaction intent against API data
    */
-  static verifyIntentAgainstAPI(
+  static verifyIntentAgainstAPIData(
     originalIntent: TransactionIntent,
     apiData: TransactionData,
     errorCollector: ErrorCollector,
@@ -19,12 +19,7 @@ export class TransactionVerifier {
   ): void {
     // Verify mode
     if (apiData.mode !== originalIntent.mode) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.MODE_MISMATCH,
-        "mode",
-        originalIntent.mode,
-        apiData.mode
-      );
+      errorCollector.addFieldMismatch(ErrorCode.MODE_MISMATCH, "mode", originalIntent.mode, apiData.mode);
     }
 
     // Verify sender address
@@ -33,96 +28,49 @@ export class TransactionVerifier {
       const normalizedDataSender = AddressNormalizer.normalize(apiData.senderAddress || '', chainId);
       
       if (normalizedDataSender !== normalizedIntentSender) {
-        errorCollector.addFieldMismatch(
-          ErrorCode.SENDER_MISMATCH,
-          "senderAddress",
-          originalIntent.senderAddress,
-          apiData.senderAddress
-        );
+        errorCollector.addFieldMismatch(ErrorCode.SENDER_MISMATCH, "senderAddress", originalIntent.senderAddress, apiData.senderAddress);
       }
     }
 
     // Verify amount (if not using max amount)
-    if ('amount' in originalIntent && originalIntent.amount !== undefined) {
-      if (!('useMaxAmount' in originalIntent) || !originalIntent.useMaxAmount) {
-        if (apiData.amount !== originalIntent.amount) {
-          errorCollector.addFieldMismatch(
-            ErrorCode.AMOUNT_MISMATCH,
-            "amount",
-            originalIntent.amount,
-            apiData.amount
-          );
-        }
-      }
+    if ('amount' in originalIntent && originalIntent.amount !== undefined && 
+        !('useMaxAmount' in originalIntent && originalIntent.useMaxAmount) && 
+        apiData.amount !== originalIntent.amount) {
+      errorCollector.addFieldMismatch(ErrorCode.AMOUNT_MISMATCH, "amount", originalIntent.amount, apiData.amount);
     }
 
-    // Verify mode-specific fields
-    this.verifyModeSpecificFields(originalIntent, apiData, errorCollector, chainId);
-  }
-
-  /**
-   * Verifies mode-specific fields (recipient, validator, token)
-   */
-  private static verifyModeSpecificFields(
-    originalIntent: TransactionIntent,
-    apiData: TransactionData,
-    errorCollector: ErrorCollector,
-    chainId: string
-  ): void {
-    // Use type guards to check for specific fields
-    
-    // Recipient address (for transfers)
+    // Verify recipient address (for transfers)
     if ('recipientAddress' in originalIntent && originalIntent.recipientAddress !== undefined && 'recipientAddress' in apiData) {
       const normalizedIntentRecipient = AddressNormalizer.normalize(originalIntent.recipientAddress, chainId);
       const normalizedDataRecipient = AddressNormalizer.normalize(apiData.recipientAddress || '', chainId);
       
       if (normalizedDataRecipient !== normalizedIntentRecipient) {
-        errorCollector.addFieldMismatch(
-          ErrorCode.RECIPIENT_MISMATCH,
-          "recipientAddress",
-          originalIntent.recipientAddress,
-          apiData.recipientAddress
-        );
+        errorCollector.addFieldMismatch(ErrorCode.RECIPIENT_MISMATCH, "recipientAddress", originalIntent.recipientAddress, apiData.recipientAddress);
       }
     }
     
-    // Validator addresses (for staking)
+    // Verify validator addresses (for staking)
     if ('validatorAddress' in originalIntent && originalIntent.validatorAddress !== undefined && 
         'validatorAddress' in apiData && apiData.validatorAddress !== originalIntent.validatorAddress) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.VALIDATOR_MISMATCH,
-        "validatorAddress",
-        originalIntent.validatorAddress,
-        apiData.validatorAddress
-      );
+      errorCollector.addFieldMismatch(ErrorCode.VALIDATOR_MISMATCH, "validatorAddress", originalIntent.validatorAddress, apiData.validatorAddress);
     }
     
     if ('targetValidatorAddress' in originalIntent && originalIntent.targetValidatorAddress !== undefined && 
         'targetValidatorAddress' in apiData && apiData.targetValidatorAddress !== originalIntent.targetValidatorAddress) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.VALIDATOR_MISMATCH,
-        "targetValidatorAddress",
-        originalIntent.targetValidatorAddress,
-        apiData.targetValidatorAddress
-      );
+      errorCollector.addFieldMismatch(ErrorCode.VALIDATOR_MISMATCH, "targetValidatorAddress", originalIntent.targetValidatorAddress, apiData.targetValidatorAddress);
     }
     
-    // Token ID (for token transfers)
+    // Verify token ID (for token transfers)
     if ('tokenId' in originalIntent && originalIntent.tokenId !== undefined && 
         'tokenId' in apiData && apiData.tokenId !== originalIntent.tokenId) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.TOKEN_MISMATCH,
-        "tokenId",
-        originalIntent.tokenId,
-        apiData.tokenId
-      );
+      errorCollector.addFieldMismatch(ErrorCode.TOKEN_MISMATCH, "tokenId", originalIntent.tokenId, apiData.tokenId);
     }
   }
 
   /**
-   * Verifies decoded transaction against original intent
+   * Verifies transaction intent against decoded API data
    */
-  static verifyDecodedAgainstIntent(
+  static verifyIntentAgainstAPIDecoded(
     decoded: Record<string, unknown>,
     originalIntent: TransactionIntent,
     errorCollector: ErrorCollector,
@@ -130,15 +78,8 @@ export class TransactionVerifier {
   ): void {
     // Verify transaction mode
     if (decoded.mode !== originalIntent.mode) {
-      errorCollector.addFieldMismatch(
-        ErrorCode.MODE_MISMATCH,
-        "mode",
-        originalIntent.mode,
-        String(decoded.mode)
-      );
+      errorCollector.addFieldMismatch(ErrorCode.MODE_MISMATCH, "mode", originalIntent.mode, String(decoded.mode));
     }
-
-    // Type guards for optional fields
 
     // Verify recipient address
     if ('recipientAddress' in originalIntent && originalIntent.recipientAddress !== undefined) {
@@ -207,9 +148,9 @@ export class TransactionVerifier {
   }
 
   /**
-   * Verifies consistency between decoded transaction and API response
+   * Verifies consistency between API data and decoded API data
    */
-  static verifyDecodedAgainstAPI(
+  static verifyAPIDataAgainstAPIDecoded(
     decoded: Record<string, unknown>,
     apiData: TransactionData,
     errorCollector: ErrorCollector,
@@ -256,5 +197,4 @@ export class TransactionVerifier {
       );
     }
   }
-
 }

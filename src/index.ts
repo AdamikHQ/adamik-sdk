@@ -211,7 +211,7 @@ export class AdamikSDK {
       const { data, encoded } = transaction;
 
       // Step 2: Verify intent against API response
-      TransactionVerifier.verifyIntentAgainstAPI(validatedIntent, data, errorCollector, chainId);
+      TransactionVerifier.verifyIntentAgainstAPIData(validatedIntent, data, errorCollector, chainId);
 
       // Step 3: Decode and verify encoded transaction
       let decodedRaw: unknown;
@@ -331,14 +331,14 @@ export class AdamikSDK {
     }
 
     // Perform two-step verification
-    TransactionVerifier.verifyDecodedAgainstIntent(
+    TransactionVerifier.verifyIntentAgainstAPIDecoded(
       decoded as Record<string, unknown>, 
       originalIntent, 
       errorCollector, 
       chainId
     );
 
-    TransactionVerifier.verifyDecodedAgainstAPI(
+    TransactionVerifier.verifyAPIDataAgainstAPIDecoded(
       decoded as Record<string, unknown>, 
       apiData, 
       errorCollector, 
