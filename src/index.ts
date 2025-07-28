@@ -1,4 +1,3 @@
-import { DecoderWithPlaceholder } from "./decoders/base";
 import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./schemas";
 import { ErrorCode } from "./schemas/errors";
@@ -154,17 +153,6 @@ export class AdamikSDK {
         };
       }
 
-      // Check if this is a placeholder decoder
-      const decoderWithPlaceholder = decoder as DecoderWithPlaceholder;
-      const hasPlaceholder = decoderWithPlaceholder.isPlaceholder === true;
-
-      if (hasPlaceholder) {
-        warnings.push({
-          code: "PLACEHOLDER_DECODER",
-          message: `Using placeholder decoder for ${params.chainId} - decoded data may be incomplete`,
-        });
-      }
-
       // Attempt to decode
       const decodedRaw = await decoder.decode(params.encodedData);
 
@@ -317,10 +305,7 @@ export class AdamikSDK {
     // Map warnings
     if (decodeResult.warnings) {
       decodeResult.warnings.forEach(warning => {
-        const code = warning.code === "PLACEHOLDER_DECODER" 
-          ? ErrorCode.MISSING_DECODER 
-          : ErrorCode.DECODE_FAILED;
-        errorCollector.addError(code, warning.message, "warning");
+        errorCollector.addError(ErrorCode.DECODE_FAILED, warning.message, "warning");
       });
     }
 
@@ -332,12 +317,6 @@ export class AdamikSDK {
         "error"
       );
       return undefined;
-    }
-
-    // Skip verification for placeholder decoders
-    const hasPlaceholderWarning = decodeResult.warnings?.some(w => w.code === "PLACEHOLDER_DECODER");
-    if (hasPlaceholderWarning) {
-      return decodeResult.decoded;
     }
 
     // Validate decoded structure

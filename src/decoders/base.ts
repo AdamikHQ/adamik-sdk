@@ -30,11 +30,3 @@ export abstract class BaseDecoder {
   }
 
 }
-
-/**
- * Interface for decoders that may be placeholders
- * Used to properly type decoders that haven't been fully implemented yet
- */
-export interface DecoderWithPlaceholder extends BaseDecoder {
-  isPlaceholder?: boolean;
-}
