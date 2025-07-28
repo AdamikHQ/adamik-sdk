@@ -60,26 +60,6 @@ describe("Decoders", () => {
       expect(decoded.mode).toBe("transfer");
       expect(typeof decoded.amount).toBe("string"); // DecodedTransaction uses string for amounts
     });
-
-    it("should validate decoded transaction", () => {
-      const validTx = {
-        mode: "transfer",
-        senderAddress: "0x1234567890123456789012345678901234567890",
-        recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000", // String format for DecodedTransaction
-      };
-
-      expect(decoder.validate(validTx)).toBe(true);
-    });
-
-    it("should reject invalid transaction", () => {
-      const invalidTx = {
-        mode: "transfer",
-        senderAddress: "invalid-address", // Invalid format
-      };
-
-      expect(decoder.validate(invalidTx)).toBe(false);
-    });
   });
 
   describe("BitcoinDecoder", () => {
@@ -100,26 +80,6 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
       expect(decoded).toHaveProperty("chainSpecificData");
-    });
-
-    it("should validate decoded transaction", () => {
-      const validTx = {
-        mode: "transfer",
-        recipientAddress: "bc1q4gwr68h0sqqwca8p40kamch69ynttq4ypw8pwu",
-        amount: "1000",
-        senderAddress: "bc1qxwhn3cj8spt7kawsdsf2vw36qqjrkmj2ucaf0f",
-      };
-
-      expect(decoder.validate(validTx)).toBe(true);
-    });
-
-    it("should reject invalid transaction", () => {
-      const invalidTx = {
-        version: 2,
-        // Missing required fields
-      };
-
-      expect(decoder.validate(invalidTx)).toBe(false);
     });
   });
 
@@ -142,50 +102,6 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("amount");
       expect(decoded).toHaveProperty("chainSpecificData");
     });
-
-    it("should validate decoded transaction", () => {
-      const validTx = {
-        mode: "transfer",
-        recipientAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        amount: "10000",
-        senderAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        chainSpecificData: "0x1234",
-      };
-
-      expect(decoder.validate(validTx)).toBe(true);
-    });
-
-    it("should reject invalid transaction", () => {
-      const invalidTx = {
-        mode: "transfer",
-        recipientAddress: "invalid-address", // Not a valid Cosmos address
-        amount: "10000",
-      };
-
-      expect(decoder.validate(invalidTx)).toBe(false);
-    });
-
-    it("should validate addresses from different Cosmos chains", () => {
-      const addresses = [
-        "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        "celestia1tkepfylhl7fmkrzsvphky2z0r7upvr9ttd5cs3",
-        "osmo1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        "juno1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        "secret1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        "inj1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-        "bbn1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
-      ];
-
-      addresses.forEach(address => {
-        const tx = {
-          mode: "transfer",
-          recipientAddress: address,
-          amount: "1000",
-          chainSpecificData: "0x",
-        };
-        expect(decoder.validate(tx)).toBe(true);
-      });
-    });
   });
 
   describe("TronDecoder", () => {
@@ -207,48 +123,6 @@ describe("Decoders", () => {
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
       expect(decoded).toHaveProperty("chainSpecificData");
-    });
-
-    it("should validate decoded Tron transaction", () => {
-      const validTx = {
-        mode: "transfer",
-        recipientAddress: "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
-        amount: "12345",
-        senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-        chainSpecificData: "0x1234",
-      };
-
-      expect(decoder.validate(validTx)).toBe(true);
-    });
-
-    it("should reject invalid Tron address", () => {
-      const invalidTx = {
-        mode: "transfer",
-        recipientAddress: "not-a-tron-address", // Invalid Tron address
-        amount: "12345",
-        senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-      };
-
-      expect(decoder.validate(invalidTx)).toBe(false);
-    });
-
-    it("should validate Tron addresses starting with T", () => {
-      const addresses = [
-        "TCYvG9EYyHjBij8Xma6iDtLzow88888888",
-        "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-        "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
-      ];
-
-      addresses.forEach(address => {
-        const tx = {
-          mode: "transfer",
-          recipientAddress: address,
-          amount: "1000",
-          senderAddress: "TVKG4gUar24bpAVrDv4GSzyDRtPkjPkogL",
-          chainSpecificData: "0x1234",
-        };
-        expect(decoder.validate(tx)).toBe(true);
-      });
     });
   });
 });

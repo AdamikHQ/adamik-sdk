@@ -161,43 +161,4 @@ export class TronDecoder extends BaseDecoder {
     
     return result;
   }
-
-  validate(decodedData: unknown): boolean {
-    if (!decodedData || typeof decodedData !== "object") {
-      return false;
-    }
-
-    const data = decodedData as DecodedTransaction;
-    
-    // Basic validation
-    if (!data.senderAddress || !data.recipientAddress) {
-      return false;
-    }
-
-    // Tron addresses should start with 'T' when in base58 format
-    const isValidTronAddress = (addr: string): boolean => {
-      try {
-        // Use TronWeb to validate the address
-        return this.tronWeb.isAddress(addr);
-      } catch {
-        return false;
-      }
-    };
-
-    if (!isValidTronAddress(data.senderAddress) || !isValidTronAddress(data.recipientAddress)) {
-      return false;
-    }
-
-    // Validate mode
-    if (!["transfer", "transferToken"].includes(data.mode || "")) {
-      return false;
-    }
-
-    // For token transfers, tokenId should be present and valid
-    if (data.mode === "transferToken" && (!data.tokenId || !isValidTronAddress(data.tokenId))) {
-      return false;
-    }
-
-    return true;
-  }
 }

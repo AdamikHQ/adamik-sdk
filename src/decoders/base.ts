@@ -14,13 +14,6 @@ export abstract class BaseDecoder {
   abstract decode(rawData: string): unknown;
 
   /**
-   * Validates the decoded data matches expected structure
-   * @param decodedData The decoded transaction data
-   * @returns true if valid, false otherwise
-   */
-  abstract validate(decodedData: unknown): boolean;
-
-  /**
    * Helper method to convert hex string to buffer
    */
   protected hexToBuffer(hex: string): Buffer {

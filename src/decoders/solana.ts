@@ -150,42 +150,4 @@ export class SolanaDecoder extends BaseDecoder {
     }
     return base58;
   }
-
-  validate(decodedData: unknown): boolean {
-    if (!decodedData || typeof decodedData !== "object") {
-      return false;
-    }
-
-    const data = decodedData as DecodedTransaction;
-    
-    // Basic validation - at least some chain-specific data should be present
-    if (!data.chainSpecificData || typeof data.chainSpecificData !== "object") {
-      return false;
-    }
-    
-    // Check if addresses are valid Solana addresses (base58 format)
-    const isValidSolanaAddress = (address?: string): boolean => {
-      if (!address) return true; // Optional field
-      try {
-        new PublicKey(address);
-        return true;
-      } catch {
-        return false;
-      }
-    };
-    
-    if (!isValidSolanaAddress(data.senderAddress) || 
-        !isValidSolanaAddress(data.recipientAddress) ||
-        !isValidSolanaAddress(data.validatorAddress)) {
-      return false;
-    }
-    
-    // Validate mode
-    const validModes = ["transfer", "transferToken", "stake", "unstake", "withdraw", "claimRewards"];
-    if (data.mode && !validModes.includes(data.mode)) {
-      return false;
-    }
-    
-    return true;
-  }
 }

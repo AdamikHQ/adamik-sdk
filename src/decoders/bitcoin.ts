@@ -104,19 +104,4 @@ export class BitcoinDecoder extends BaseDecoder {
     }
   }
 
-  validate(decodedData: unknown): boolean {
-    const tx = decodedData as DecodedTransaction;
-
-    // Basic validation
-    if (!tx || typeof tx !== "object") return false;
-
-    // Check required fields for a decoded transaction
-    return (
-      "mode" in tx &&
-      "recipientAddress" in tx &&
-      typeof tx.recipientAddress === "string" &&
-      "amount" in tx &&
-      typeof tx.amount === "string"
-    );
-  }
 }

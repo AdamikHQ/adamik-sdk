@@ -1,6 +1,6 @@
 import { BaseDecoder } from "./base";
 import { ChainId, DecodedTransaction, TransactionMode } from "../types";
-import { getAddress, isAddress, isHex, parseTransaction } from "viem";
+import { getAddress, isHex, parseTransaction } from "viem";
 import type { TransactionSerializable } from "viem";
 import { getEvmNetworkId } from "../utils/chain-utils";
 
@@ -115,29 +115,6 @@ export class EVMDecoder extends BaseDecoder {
     }
 
     return 0n;
-  }
-
-  validate(decodedData: unknown): boolean {
-    const tx = decodedData as DecodedTransaction;
-
-    // Basic validation
-    if (!tx || typeof tx !== "object") return false;
-
-    // Check required fields exist
-    if (!tx.recipientAddress || !tx.mode || !tx.amount) return false;
-
-    // Validate addresses - senderAddress is optional in DecodedTransaction
-    if (!isAddress(tx.recipientAddress)) return false;
-    if (tx.senderAddress && !isAddress(tx.senderAddress)) return false;
-
-    // Validate mode
-    const validModes = ["transfer", "transferToken"];
-    if (!validModes.includes(tx.mode)) return false;
-
-    // For token transfers, tokenId should be present and a valid address
-    if (tx.mode === "transferToken" && (!tx.tokenId || !isAddress(tx.tokenId))) return false;
-
-    return true;
   }
 
 }

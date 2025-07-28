@@ -77,7 +77,7 @@ tests/
         └── celestia.json    # Celestia test cases
 ```
 
-**Total: 92 tests across 9 suites (all passing)**
+**Total: 76 tests across 9 suites (all passing)**
 
 ### Test Summary Table
 

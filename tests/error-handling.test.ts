@@ -22,10 +22,6 @@ describe("Error Handling Paths", () => {
         decode(_rawData: string): Promise<unknown> {
           throw new Error("Decoder internal error");
         }
-        
-        validate(_decodedData: unknown): boolean {
-          return false;
-        }
       }
 
       // Replace the default decoder
@@ -266,10 +262,6 @@ describe("Error Handling Paths", () => {
             amount: "2000000000000000000", // Different amount
             senderAddress: ""
           };
-        }
-        
-        validate(_decodedData: unknown): boolean {
-          return true;
         }
       }
 
