@@ -1,7 +1,8 @@
 import { DecoderWithPlaceholder } from "./decoders/base";
 import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./schemas";
-import { ErrorCode, ErrorCollector } from "./schemas/errors";
+import { ErrorCode } from "./schemas/errors";
+import { ErrorCollector } from "./utils/error-collector";
 import {
   ChainFamily,
   ChainId,
@@ -144,7 +145,7 @@ export class AdamikSDK {
 
     try {
       // Get the appropriate decoder
-      const decoder = this.decoderRegistry.getDecoder(params.chainId, params.format);
+      const decoder = this.decoderRegistry.getDecoder(params.chainId as ChainId, params.format as RawFormat);
 
       if (!decoder) {
         return {

@@ -10,7 +10,7 @@ export * from "./errors";
 // Re-export schemas grouped for convenience
 export { TransactionIntentSchema, TransactionDataSchema, AdamikEncodeResponseSchema } from "./transaction";
 export { ChainIdSchema, TransactionModeSchema, HashFormatSchema, RawFormatSchema } from "./common";
-export { ErrorCode, ErrorCollector } from "./errors";
+export { ErrorCode } from "./errors";
 
 // Export type utilities
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./transaction";

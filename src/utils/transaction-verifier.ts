@@ -1,6 +1,7 @@
 import { TransactionData, TransactionIntent } from "../types";
-import { ErrorCode, ErrorCollector } from "../schemas/errors";
-import { AddressNormalizer } from "../utils/address-normalizer";
+import { ErrorCode } from "../schemas/errors";
+import { ErrorCollector } from "./error-collector";
+import { AddressNormalizer } from "./address-normalizer";
 
 /**
  * Handles transaction verification logic

@@ -1,7 +1,9 @@
 /**
- * Re-export types from Zod schemas for backward compatibility
- * All types are now inferred from Zod schemas for consistency
+ * Type definitions for Adamik SDK
+ * Pure TypeScript types without any functions or classes
  */
+
+// Re-export types from Zod schemas for backward compatibility
 export type {
   ChainId,
   TransactionMode,
@@ -10,23 +12,28 @@ export type {
   TransactionIntent,
   TransactionData,
   AdamikEncodeResponse,
-} from "../schemas/transaction";
+} from "./schemas/transaction";
 
-export type { VerificationResult, VerificationError } from "../schemas/errors";
+export type { VerificationResult, VerificationError, ErrorSeverity } from "./schemas/errors";
 
-// Import types for use in legacy interfaces
-import type { ChainId, HashFormat, RawFormat, TransactionMode } from "../schemas/transaction";
+// Import for use in local types
+import type { TransactionMode } from "./schemas/transaction";
+
+/**
+ * Chain families supported by Adamik
+ */
+export type ChainFamily = "algorand" | "aptos" | "bitcoin" | "cosmos" | "evm" | "solana" | "starknet" | "ton" | "tron";
 
 /**
  * Legacy types maintained for backward compatibility
  */
 export interface EncodedTransaction {
   hash: {
-    format: HashFormat;
+    format: string;
     value: string;
   };
   raw: {
-    format: RawFormat;
+    format: string;
     value: string;
   };
 }
@@ -49,8 +56,8 @@ export interface DecodedTransaction {
  * Parameters for decoding a transaction
  */
 export interface DecodeParams {
-  chainId: ChainId;
-  format: RawFormat;
+  chainId: string;
+  format: string;
   encodedData: string;
 }
 
@@ -70,9 +77,13 @@ export interface DecodeResult {
 }
 
 /**
- * Chain families supported by Adamik
+ * Information about a supported chain
  */
-export type ChainFamily = "algorand" | "aptos" | "bitcoin" | "cosmos" | "evm" | "solana" | "starknet" | "ton" | "tron";
+export interface ChainInfo {
+  family: ChainFamily;
+  formats: string[];
+  hasDecoder: boolean;
+}
 
 /**
  * Supported features for reading blockchain data
