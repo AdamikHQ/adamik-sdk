@@ -1,7 +1,7 @@
 # Adamik SDK
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://badge.fury.io/js/adamik-sdk.svg)](https://badge.fury.io/js/adamik-sdk)
+[![npm version](https://badge.fury.io/js/@adamik/sdk.svg)](https://badge.fury.io/js/@adamik/sdk)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green)](https://nodejs.org/)
 
@@ -17,7 +17,7 @@ A TypeScript/Node.js SDK with two powerful capabilities:
 Decode raw transaction data from any blockchain without needing blockchain-specific libraries:
 
 ```typescript
-import AdamikSDK from "adamik-sdk";
+import AdamikSDK from "@adamik/sdk";
 
 const sdk = new AdamikSDK();
 
@@ -85,11 +85,11 @@ Use `sdk.getSupportedChains()` to get the complete list of supported chains at r
 ## Installation
 
 ```bash
-npm install adamik-sdk
+npm install @adamik/sdk
 # or
-yarn add adamik-sdk
+yarn add @adamik/sdk
 # or
-pnpm add adamik-sdk
+pnpm add @adamik/sdk
 ```
 
 ## Quick Start
@@ -97,7 +97,7 @@ pnpm add adamik-sdk
 ### Decode Transactions
 
 ```typescript
-import AdamikSDK from "adamik-sdk";
+import AdamikSDK from "@adamik/sdk";
 
 const sdk = new AdamikSDK();
 
@@ -280,7 +280,7 @@ console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 ### Complete Example with Adamik API
 
 ```typescript
-import AdamikSDK from "adamik-sdk";
+import AdamikSDK from "@adamik/sdk";
 
 const sdk = new AdamikSDK();
 
@@ -638,7 +638,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Links
 
-- [GitHub Repository](https://github.com/adamik/adamik-sdk)
-- [NPM Package](https://www.npmjs.com/package/adamik-sdk)
-- [Report Issues](https://github.com/adamik/adamik-sdk/issues)
+- [GitHub Repository](https://github.com/AdamikHQ/adamik-sdk)
+- [NPM Package](https://www.npmjs.com/package/@adamik/sdk)
+- [Report Issues](https://github.com/AdamikHQ/adamik-sdk/issues)
 - [Adamik API Documentation](https://docs.adamik.io)
