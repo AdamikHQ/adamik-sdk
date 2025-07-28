@@ -1,6 +1,6 @@
 # GitHub Issues for Adamik SDK
 
-## Issue #1: [BLOCKER] Remove package-lock.json
+## ✅ Issue #1: [BLOCKER] Remove package-lock.json - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/package-lock.json
@@ -14,7 +14,7 @@ NOTE: please review the whole project for other references to "npm", as I think 
 
 ---
 
-## Issue #3: [BLOCKER] Node.js version alignment
+## ✅ Issue #3: [BLOCKER] Node.js version alignment - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L82
@@ -26,7 +26,7 @@ My recommendation is to actually use the lowest possible node version, because i
 
 ---
 
-## Issue #4: [BLOCKER] Change package name to @adamik/sdk
+## ✅ Issue #4: [BLOCKER] Change package name to @adamik/sdk - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L88-L92
@@ -118,7 +118,7 @@ These instructions are also at the end of the README, I don't think we need a de
 
 ---
 
-## Issue #13: [BLOCKER] Change npm to pnpm in prepublishOnly script
+## ✅ Issue #13: [BLOCKER] Change npm to pnpm in prepublishOnly script - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/package.json#L19
@@ -127,7 +127,7 @@ This should use `pnpm` instead of `npm`
 
 ---
 
-## Issue #14: [BLOCKER] Update repository URLs in package.json
+## ✅ Issue #14: [BLOCKER] Update repository URLs in package.json - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/package.json#L36-L41
@@ -294,5 +294,22 @@ This is not a trivial task though, let's discuss it when appropriate.
 # Summary
 
 **Total Issues**: 26
-**Blockers**: 13
+**Blockers**: 13 (5 completed, 8 remaining)
 **Improvements**: 13
+
+## Completed Blockers:
+- ✅ Issue #1: Remove package-lock.json
+- ✅ Issue #3: Align Node.js version requirements  
+- ✅ Issue #4: Change package name to @adamik/sdk
+- ✅ Issue #13: Change npm to pnpm in prepublishOnly script
+- ✅ Issue #14: Update repository URLs in package.json
+
+## Remaining Blockers:
+- Issue #7: Change npm references to pnpm in README
+- Issue #10: Remove RELEASE_CHECKLIST.md
+- Issue #16: Remove unnecessary SDK functions
+- Issue #21: Reorganize types, schema, and utils structure
+- Issue #22: Move parseAmount to utils
+- Issue #23: Remove DecoderWithPlaceholder class
+- Issue #24: Remove unused decoder.validate function
+- Issue #25: Refactor transaction-verifier.ts functions
