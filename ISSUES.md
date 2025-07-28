@@ -41,7 +41,7 @@ https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f5
 
 ---
 
-## Issue #5: [IMPROVEMENT] Update "Placeholder" wording
+## ✅ Issue #5: [IMPROVEMENT] Update "Placeholder" wording - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L155
@@ -50,7 +50,7 @@ https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f5
 
 ---
 
-## Issue #6: [IMPROVEMENT] Move Features section to top of README
+## ✅ Issue #6: [IMPROVEMENT] Move Features section to top of README - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L267
@@ -68,7 +68,7 @@ All references to `npm` should be changed to `pnpm`
 
 ---
 
-## Issue #8: [IMPROVEMENT] Remove Architecture section from README
+## ✅ Issue #8: [IMPROVEMENT] Remove Architecture section from README - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L462
@@ -79,7 +79,7 @@ My advice is to simply replace it with inline comments in the source code direct
 
 ---
 
-## Issue #9: [IMPROVEMENT] Simplify README sections
+## ✅ Issue #9: [IMPROVEMENT] Simplify README sections - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/README.md?plain=1#L142
@@ -99,7 +99,7 @@ This file is a nice memento while working before the first release 👍  but it 
 
 ---
 
-## Issue #11: [IMPROVEMENT] Remove ROADMAP.md
+## ✅ Issue #11: [IMPROVEMENT] Remove ROADMAP.md - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/ROADMAP.md
@@ -109,7 +109,7 @@ The "new decoder guidelines" could be usefully merged into CONTRIBUTING.md, then
 
 ---
 
-## Issue #12: [IMPROVEMENT] Merge SECURITY.md into README
+## ✅ Issue #12: [IMPROVEMENT] Merge SECURITY.md into README - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/SECURITY.md
@@ -136,7 +136,7 @@ These URLs should be updated to target the org's repo.
 
 ---
 
-## Issue #15: [IMPROVEMENT] Remove unused files
+## ✅ Issue #15: [IMPROVEMENT] Remove unused files - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 - https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/adamik.code-workspace
@@ -182,7 +182,7 @@ Maybe the decoder doesn't need to also take the `RawFormat` as input, and instea
 
 ---
 
-## Issue #18: [IMPROVEMENT] Map decoders by family instead of chain
+## ✅ Issue #18: [IMPROVEMENT] Map decoders by family instead of chain - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/src/decoders/registry.ts#L13
@@ -295,7 +295,7 @@ This is not a trivial task though, let's discuss it when appropriate.
 
 **Total Issues**: 26
 **Blockers**: 13 (ALL COMPLETED ✅)
-**Improvements**: 13
+**Improvements**: 13 (8 COMPLETED ✅, 5 remaining)
 
 ## All Blockers Completed ✅:
 - ✅ Issue #1: Remove package-lock.json
@@ -312,5 +312,18 @@ This is not a trivial task though, let's discuss it when appropriate.
 - ✅ Issue #24: Remove unused decoder.validate function
 - ✅ Issue #25: Refactor transaction-verifier.ts functions
 
+## Completed Improvements ✅:
+- ✅ Issue #5: Update "Placeholder" wording
+- ✅ Issue #6: Move Features section to top of README
+- ✅ Issue #8: Remove Architecture section from README
+- ✅ Issue #9: Simplify README sections
+- ✅ Issue #11: Remove ROADMAP.md and merge guidelines to CONTRIBUTING.md
+- ✅ Issue #12: Merge SECURITY.md into README
+- ✅ Issue #15: Remove unused files (adamik.code-workspace, audit-ci.json)
+- ✅ Issue #18: Map decoders by family instead of chain (already implemented)
+
 ## Remaining Improvements:
-See improvement issues (#5, #6, #8, #9, #11, #12, #15, #17, #18, #19, #20, #26) above for optional enhancements.
+- Issue #17: Decoder format auto-detection (marked as "skip for v1")
+- Issue #19: Store chain info in TypeScript instead of JSON
+- Issue #20: Simplify error system
+- Issue #26: API Types lib (future work, not for initial release)
