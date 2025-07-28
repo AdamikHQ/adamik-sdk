@@ -68,3 +68,7 @@ coverage/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Package manager lock files (we use pnpm only)
+package-lock.json
+yarn.lock

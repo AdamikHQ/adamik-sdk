@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests --ext .ts",
     "lint:fix": "eslint src tests --ext .ts --fix",
-    "prepublishOnly": "npm run build && npm run typecheck && npm test"
+    "prepublishOnly": "pnpm run build && pnpm run typecheck && pnpm test"
   },
   "keywords": [
     "adamik",
