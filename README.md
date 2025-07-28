@@ -381,18 +381,18 @@ src/
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run specific test suites
-npm test -- --testNamePattern="SDK Validation"
-npm test -- --testNamePattern="Test Scenarios"
-npm test -- --testNamePattern="Decoders"
+pnpm test -- --testNamePattern="SDK Validation"
+pnpm test -- --testNamePattern="Test Scenarios"
+pnpm test -- --testNamePattern="Decoders"
 
 # Run with real API integration
-USE_REAL_API=true npm test
+USE_REAL_API=true pnpm test
 
 # Run in watch mode
-npm run test:watch
+pnpm run test:watch
 ```
 
 ### Test Organization
@@ -419,13 +419,13 @@ See `tests/README.md` for detailed test documentation.
 ### Build
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ### Run in Development
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Extending the SDK
