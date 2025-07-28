@@ -39,11 +39,14 @@
     "url": "https://github.com/fabricedautriat/adamik-sdk/issues"
   },
   "homepage": "https://github.com/fabricedautriat/adamik-sdk#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "@jest/reporters": "^30.0.4",
     "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.14",
+    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^8.57.0",
