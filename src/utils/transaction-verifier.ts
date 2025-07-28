@@ -2,6 +2,7 @@ import { TransactionData, TransactionIntent } from "../types";
 import { ErrorCode } from "../schemas/errors";
 import { ErrorCollector } from "./error-collector";
 import { AddressNormalizer } from "./address-normalizer";
+import { parseAmount } from "./amount";
 
 /**
  * Handles transaction verification logic
@@ -181,7 +182,7 @@ export class TransactionVerifier {
     if ('amount' in originalIntent && originalIntent.amount && 
         !('useMaxAmount' in originalIntent && originalIntent.useMaxAmount)) {
       const expectedAmount = BigInt(originalIntent.amount);
-      const decodedAmount = this.parseAmount(decoded.amount);
+      const decodedAmount = parseAmount(decoded.amount);
 
       if (decodedAmount !== expectedAmount) {
         errorCollector.addError(
@@ -256,16 +257,4 @@ export class TransactionVerifier {
     }
   }
 
-  /**
-   * Helper to parse amount from various formats
-   */
-  private static parseAmount(amount: unknown): bigint {
-    if (typeof amount === "bigint") {
-      return amount;
-    }
-    if (typeof amount === "string") {
-      return BigInt(amount);
-    }
-    return 0n;
-  }
 }
