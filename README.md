@@ -542,58 +542,6 @@ const families = Object.values(supportedChains).reduce((acc, chain) => {
 console.log(families); // { evm: 37, bitcoin: 5, cosmos: 42, tron: 1, solana: 1 }
 ```
 
-### `isChainSupported(chainId: string): boolean`
-
-Checks if a specific blockchain has decoder support.
-
-**Parameters:**
-
-- `chainId`: The blockchain identifier to check
-
-**Returns:**
-
-- `true` if the chain has decoder support, `false` otherwise
-
-**Example:**
-
-```typescript
-if (sdk.isChainSupported("ethereum")) {
-  // Proceed with Ethereum transaction
-} else {
-  console.warn("Ethereum decoder not available");
-}
-
-// Check multiple chains
-const chains = ["ethereum", "algorand", "bitcoin"];
-chains.forEach(chain => {
-  console.log(`${chain}: ${sdk.isChainSupported(chain) ? "✓" : "✗"}`);
-});
-// ethereum: ✓
-// algorand: ✗
-// bitcoin: ✓
-```
-
-### `getSupportedFormats(chainId: string): string[]`
-
-Gets the supported encoding formats for a specific blockchain.
-
-**Parameters:**
-
-- `chainId`: The blockchain identifier
-
-**Returns:**
-
-- Array of supported format strings, or empty array if chain is not supported
-
-**Example:**
-
-```typescript
-console.log(sdk.getSupportedFormats("ethereum"));    // ["RLP"]
-console.log(sdk.getSupportedFormats("bitcoin"));     // ["PSBT"]
-console.log(sdk.getSupportedFormats("cosmoshub"));   // ["COSMOS_PROTOBUF", "SIGNDOC_DIRECT", ...]
-console.log(sdk.getSupportedFormats("algorand"));    // []
-```
-
 ### DecodedTransaction Structure
 
 The decoded transaction object contains:

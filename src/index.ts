@@ -97,42 +97,6 @@ export class AdamikSDK {
     return result;
   }
 
-  /**
-   * Checks if a specific chain has decoder support
-   * 
-   * @param chainId - The chain ID to check
-   * @returns True if the chain has at least one decoder registered
-   * 
-   * @example
-   * ```typescript
-   * const sdk = new AdamikSDK();
-   * if (sdk.isChainSupported("ethereum")) {
-   *   // Proceed with Ethereum transactions
-   * }
-   * ```
-   */
-  isChainSupported(chainId: ChainId): boolean {
-    const supported = this.getSupportedChains();
-    return chainId in supported && supported[chainId].hasDecoder;
-  }
-
-  /**
-   * Gets the supported formats for a specific chain
-   * 
-   * @param chainId - The chain ID to check
-   * @returns Array of supported formats, or empty array if chain is not supported
-   * 
-   * @example
-   * ```typescript
-   * const sdk = new AdamikSDK();
-   * const formats = sdk.getSupportedFormats("ethereum");
-   * console.log(formats); // ["RLP"]
-   * ```
-   */
-  getSupportedFormats(chainId: ChainId): RawFormat[] {
-    const supported = this.getSupportedChains();
-    return supported[chainId]?.formats || [];
-  }
 
   /**
    * Decodes raw transaction data for a specific blockchain

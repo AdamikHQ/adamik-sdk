@@ -81,54 +81,6 @@ describe("Chain Discovery", () => {
     });
   });
 
-  describe("isChainSupported", () => {
-    it("should return true for supported chains", () => {
-      expect(sdk.isChainSupported("ethereum")).toBe(true);
-      expect(sdk.isChainSupported("bitcoin")).toBe(true);
-      expect(sdk.isChainSupported("cosmoshub")).toBe(true);
-      expect(sdk.isChainSupported("tron")).toBe(true);
-      expect(sdk.isChainSupported("solana")).toBe(true);
-      expect(sdk.isChainSupported("polygon")).toBe(true);
-    });
-    
-    it("should return false for unsupported chains", () => {
-      expect(sdk.isChainSupported("algorand")).toBe(false);
-      expect(sdk.isChainSupported("aptos")).toBe(false);
-      expect(sdk.isChainSupported("ton")).toBe(false);
-      expect(sdk.isChainSupported("starknet")).toBe(false);
-    });
-    
-    it("should return false for invalid chain IDs", () => {
-      expect(sdk.isChainSupported("invalid-chain" as any)).toBe(false);
-      expect(sdk.isChainSupported("" as any)).toBe(false);
-    });
-  });
-
-  describe("getSupportedFormats", () => {
-    it("should return formats for supported chains", () => {
-      expect(sdk.getSupportedFormats("ethereum")).toEqual(["RLP"]);
-      expect(sdk.getSupportedFormats("bitcoin")).toEqual(["PSBT"]);
-      expect(sdk.getSupportedFormats("tron")).toEqual(["RAW_TRANSACTION"]);
-      expect(sdk.getSupportedFormats("solana")).toEqual(["BORSH"]);
-    });
-    
-    it("should return multiple formats for Cosmos chains", () => {
-      const cosmosFormats = sdk.getSupportedFormats("cosmoshub");
-      expect(cosmosFormats).toContain("COSMOS_PROTOBUF");
-      expect(cosmosFormats).toContain("SIGNDOC_DIRECT");
-      expect(cosmosFormats).toContain("SIGNDOC_DIRECT_JSON");
-      expect(cosmosFormats).toContain("SIGNDOC_AMINO");
-      expect(cosmosFormats).toContain("SIGNDOC_AMINO_JSON");
-      expect(cosmosFormats.length).toBe(5);
-    });
-    
-    it("should return empty array for unsupported chains", () => {
-      expect(sdk.getSupportedFormats("algorand")).toEqual([]);
-      expect(sdk.getSupportedFormats("aptos")).toEqual([]);
-      expect(sdk.getSupportedFormats("ton")).toEqual([]);
-      expect(sdk.getSupportedFormats("invalid-chain" as any)).toEqual([]);
-    });
-  });
   
   describe("Chain coverage statistics", () => {
     it("should provide useful statistics about decoder coverage", () => {

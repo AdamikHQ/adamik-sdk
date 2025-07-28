@@ -90,7 +90,7 @@ Personally I would be happy with either just "Quick Start" with maybe a bit more
 
 ---
 
-## Issue #10: [BLOCKER] Remove RELEASE_CHECKLIST.md
+## ✅ Issue #10: [BLOCKER] Remove RELEASE_CHECKLIST.md - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/RELEASE_CHECKLIST.md
@@ -294,7 +294,7 @@ This is not a trivial task though, let's discuss it when appropriate.
 # Summary
 
 **Total Issues**: 26
-**Blockers**: 13 (6 completed, 7 remaining)
+**Blockers**: 13 (7 completed, 6 remaining)
 **Improvements**: 13
 
 ## Completed Blockers:
@@ -302,11 +302,11 @@ This is not a trivial task though, let's discuss it when appropriate.
 - ✅ Issue #3: Align Node.js version requirements  
 - ✅ Issue #4: Change package name to @adamik/sdk
 - ✅ Issue #7: Change npm references to pnpm in README
+- ✅ Issue #10: Remove RELEASE_CHECKLIST.md
 - ✅ Issue #13: Change npm to pnpm in prepublishOnly script
 - ✅ Issue #14: Update repository URLs in package.json
 
 ## Remaining Blockers:
-- Issue #10: Remove RELEASE_CHECKLIST.md
 - Issue #16: Remove unnecessary SDK functions
 - Issue #21: Reorganize types, schema, and utils structure
 - Issue #22: Move parseAmount to utils
