@@ -215,7 +215,7 @@ Maybe you can just ask Claude to try and make it simpler, otherwise no pb we can
 
 ---
 
-## Issue #21: [BLOCKER] Types & Utils organization
+## ✅ Issue #21: [BLOCKER] Types & Utils organization - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 Global comment on the file structure:
@@ -229,7 +229,7 @@ Here's my recommendation:
 
 ---
 
-## Issue #22: [BLOCKER] Move parseAmount to utils
+## ✅ Issue #22: [BLOCKER] Move parseAmount to utils - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/src/decoders/base.ts#L26
@@ -238,7 +238,7 @@ This rather belongs in `/utils` as a standalone function.
 
 ---
 
-## Issue #23: [BLOCKER] Remove DecoderWithPlaceholder class
+## ✅ Issue #23: [BLOCKER] Remove DecoderWithPlaceholder class - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/src/decoders/base.ts#L38
@@ -250,7 +250,7 @@ So I think you can just remove the `DecoderWithPlaceholder` class.
 
 ---
 
-## Issue #24: [BLOCKER] Remove unused decoder.validate function
+## ✅ Issue #24: [BLOCKER] Remove unused decoder.validate function - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/src/decoders/base.ts#L21
@@ -260,7 +260,7 @@ Otherwise we can remove it, as the validation is actually always done by the `Tr
 
 ---
 
-## Issue #25: [BLOCKER] Refactor transaction-verifier.ts
+## ✅ Issue #25: [BLOCKER] Refactor transaction-verifier.ts - COMPLETED
 **Author**: hakim-adamik  
 **Body**: 
 https://github.com/AdamikHQ/adamik-sdk/blob/bd19e38d5c3b5c0634ba30210ee6b64e93f50ed8/src/utils/transaction-verifier.ts#L8
@@ -294,10 +294,10 @@ This is not a trivial task though, let's discuss it when appropriate.
 # Summary
 
 **Total Issues**: 26
-**Blockers**: 13 (8 completed, 5 remaining)
+**Blockers**: 13 (ALL COMPLETED ✅)
 **Improvements**: 13
 
-## Completed Blockers:
+## All Blockers Completed ✅:
 - ✅ Issue #1: Remove package-lock.json
 - ✅ Issue #3: Align Node.js version requirements  
 - ✅ Issue #4: Change package name to @adamik/sdk
@@ -306,10 +306,11 @@ This is not a trivial task though, let's discuss it when appropriate.
 - ✅ Issue #13: Change npm to pnpm in prepublishOnly script
 - ✅ Issue #14: Update repository URLs in package.json
 - ✅ Issue #16: Remove unnecessary SDK functions
+- ✅ Issue #21: Reorganize types, schema, and utils structure
+- ✅ Issue #22: Move parseAmount to utils
+- ✅ Issue #23: Remove DecoderWithPlaceholder class
+- ✅ Issue #24: Remove unused decoder.validate function
+- ✅ Issue #25: Refactor transaction-verifier.ts functions
 
-## Remaining Blockers:
-- Issue #21: Reorganize types, schema, and utils structure
-- Issue #22: Move parseAmount to utils
-- Issue #23: Remove DecoderWithPlaceholder class
-- Issue #24: Remove unused decoder.validate function
-- Issue #25: Refactor transaction-verifier.ts functions
+## Remaining Improvements:
+See improvement issues (#5, #6, #8, #9, #11, #12, #15, #17, #18, #19, #20, #26) above for optional enhancements.
