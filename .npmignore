@@ -1,0 +1,42 @@
+# Source files (only dist/ should be published)
+src/
+tests/
+scripts/
+
+# Config files
+.eslintrc.js
+.prettierrc
+jest.config.js
+tsconfig.json
+*.code-workspace
+audit-ci.json
+
+# Documentation
+CLAUDE.md
+CONTRIBUTING.md
+ROADMAP.md
+DOCUMENTATION_STRUCTURE.md
+ISSUES.md
+
+# Git and CI
+.github/
+.git/
+.gitignore
+
+# Coverage
+coverage/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
+# Keep only:
+# dist/
+# LICENSE
+# README.md
+# package.json
+# SECURITY.md
