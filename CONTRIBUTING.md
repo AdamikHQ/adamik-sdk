@@ -75,18 +75,26 @@ To add support for a new blockchain:
    ```typescript
    // src/decoders/mychain.ts
    import { BaseDecoder } from './base';
+   import { DecodedTransaction } from '../types';
    
    export class MyChainDecoder extends BaseDecoder {
      constructor(chainId: ChainId) {
        super(chainId, 'MY_FORMAT');
      }
    
-     async decode(rawData: string): Promise<unknown> {
+     async decode(rawData: string): Promise<DecodedTransaction> {
        // Implement decoding logic
-     }
-   
-     validate(decodedData: unknown): boolean {
-       // Implement validation logic
+       // Parse the raw transaction data
+       // Extract sender, recipient, amount, etc.
+       return {
+         chainId: this.chainId,
+         mode: 'transfer',
+         senderAddress: '...',
+         recipientAddress: '...',
+         amount: '...',
+         fee: '...',
+         // ... other fields
+       };
      }
    }
    ```
@@ -100,13 +108,22 @@ To add support for a new blockchain:
    this.registerDecoder(new MyChainDecoder('mychain'));
    ```
 
-3. **Add Tests**
-   ```typescript
-   // tests/mychain.test.ts
-   describe('MyChainDecoder', () => {
-     // Add comprehensive tests
-   });
-   ```
+3. **Update Types**
+   - Add chain to `ChainId` type in `src/types.ts`
+   - Add format to `RawFormat` type if needed
+   - Ensure chain exists in `src/constants/chains.json`
+
+4. **Add Tests**
+   - Create unit tests in `tests/decoders.test.ts`
+   - Add integration tests in `tests/api-responses.test.ts`
+   - Create real transaction fixtures in `tests/fixtures/api-responses/mychain.json`
+
+5. **Follow These Guidelines**
+   - Use established libraries when available (e.g., `viem` for EVM, `bitcoinjs-lib` for Bitcoin)
+   - Handle errors gracefully - return warnings rather than throwing
+   - Ensure decoded addresses match the chain's format
+   - Extract all available transaction data (fee, memo, etc.)
+   - Test with real transaction data from the Adamik API
 
 ## Testing
 

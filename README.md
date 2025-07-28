@@ -64,6 +64,17 @@ if (!result.isValid) {
 }
 ```
 
+## Features
+
+- **🔓 Multi-chain Decoding**: Unified interface for decoding transactions across blockchains
+- **🛡️ Security Verification**: Two-step validation of API responses
+- **📦 TypeScript Support**: Full type definitions and IDE support
+- **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
+- **✅ Comprehensive Testing**: 92 tests across 9 test suites
+- **🏗️ Clean Architecture**: Modular design with utility classes
+- **⚡ Minimal Dependencies**: Only trusted blockchain libraries
+- **🔍 Chain Discovery**: Runtime methods to discover supported chains and formats
+
 ## Supported Blockchains
 
 **Real Decoders Available:**
@@ -139,10 +150,6 @@ if (verification.isValid) {
 }
 ```
 
-## Transaction Decoding
-
-The SDK provides a unified interface for decoding transactions across multiple blockchains:
-
 ### Supported Formats
 
 | Blockchain | Format | Status | Library Used |
@@ -152,79 +159,11 @@ The SDK provides a unified interface for decoding transactions across multiple b
 | Cosmos Hub, Celestia, etc. | COSMOS_PROTOBUF | ✅ Real | `@cosmjs/proto-signing` |
 | Tron | RAW_TRANSACTION | ✅ Real | `tronweb` |
 | Solana | BORSH | ✅ Real | `@solana/web3.js` |
-| Algorand, Aptos, TON | Various | ⚠️ Placeholder | - |
+| Algorand, Aptos, TON | Various | ❌ Not supported yet | - |
 
-### Decode Examples
+### How Security Works
 
-```typescript
-// Ethereum RLP
-const ethTx = await sdk.decode({
-  chainId: "ethereum",
-  format: "RLP",
-  encodedData: "0xf86c..." 
-});
-// Returns: { recipientAddress, amount, mode, senderAddress, ... }
-
-// Bitcoin PSBT
-const btcTx = await sdk.decode({
-  chainId: "bitcoin",
-  format: "PSBT",
-  encodedData: "cHNidP8..." 
-});
-// Returns: { recipientAddress, amount, mode, ... }
-
-// Check for warnings (e.g., placeholder decoder)
-if (result.warnings) {
-  result.warnings.forEach(warning => {
-    console.warn(`${warning.code}: ${warning.message}`);
-  });
-}
-```
-
-### Handling Decode Errors
-
-```typescript
-const result = await sdk.decode(params);
-
-if (result.error) {
-  console.error("Decode failed:", result.error);
-} else if (result.warnings) {
-  console.warn("Decode warnings:", result.warnings);
-}
-
-// Safe to use decoded data
-const { recipientAddress, amount } = result.decoded;
-```
-
-## Security Verification
-
-When working with transaction APIs, the SDK provides crucial security verification:
-
-### The Two-Variable Problem
-
-```typescript
-// Variable A: Your original intent
-const intent = {
-  mode: "transfer",
-  recipientAddress: "0x123...",
-  amount: "1000"
-};
-
-// Variable B: API response (can be tampered!)
-const apiResponse = {
-  transaction: {
-    data: { /* looks correct */ },
-    encoded: [{ raw: { value: "0x..." } }] // but is it?
-  }
-};
-
-// Solution: Verify B matches A
-const result = await sdk.verify(apiResponse, intent);
-```
-
-### What Gets Verified
-
-The SDK performs two levels of verification:
+The SDK provides two levels of verification:
 
 **1. Intent Validation** (all chains):
 - Transaction mode matches (transfer, stake, etc.)
@@ -232,15 +171,13 @@ The SDK performs two levels of verification:
 - Amount matches
 - Token ID matches (for token transfers)
 
-**2. Encoded Validation** (EVM, Bitcoin, Cosmos, Tron):
+**2. Encoded Validation** (EVM, Bitcoin, Cosmos, Tron, Solana):
 - Decodes the actual transaction bytes
 - Verifies decoded data matches intent
 - Catches malicious encoded transactions
 
-### Security Example
-
 ```typescript
-// Malicious API attack scenario
+// Attack example: API shows correct data but encoded transaction sends elsewhere
 const intent = { 
   recipientAddress: "0xYourFriend...",
   amount: "100"
@@ -262,18 +199,6 @@ const result = await sdk.verify(maliciousResponse, intent);
 console.log(result.isValid); // false
 console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 ```
-
-
-## Features
-
-- **🔓 Multi-chain Decoding**: Unified interface for decoding transactions across blockchains
-- **🛡️ Security Verification**: Two-step validation of API responses
-- **📦 TypeScript Support**: Full type definitions and IDE support
-- **🔍 Real Decoders**: Production-ready decoders for EVM, Bitcoin, Cosmos, and Tron
-- **✅ Comprehensive Testing**: 92 tests across 9 test suites
-- **🏗️ Clean Architecture**: Modular design with utility classes
-- **⚡ Minimal Dependencies**: Only trusted blockchain libraries
-- **🔍 Chain Discovery**: Runtime methods to discover supported chains and formats
 
 ## Usage Examples
 
@@ -354,25 +279,6 @@ for (const tx of examples) {
   const result = await sdk.decode(tx);
   console.log(`${tx.name}:`, result.decoded);
 }
-```
-
-## Architecture
-
-### Core Components
-
-```
-src/
-├── index.ts              # Main SDK class with verify() and decode()
-├── types/               # TypeScript type definitions
-├── schemas/             # Zod validation schemas
-├── decoders/           # Blockchain-specific decoders
-│   ├── evm.ts          # Ethereum/EVM decoder (viem)
-│   ├── bitcoin.ts      # Bitcoin PSBT decoder (bitcoinjs-lib)
-│   ├── cosmos.ts       # Cosmos protobuf decoder
-│   └── tron.ts         # Tron decoder (tronweb)
-└── utils/              # Utility classes
-    ├── address-normalizer.ts    # EIP-55 address handling
-    └── transaction-verifier.ts  # Verification logic
 ```
 
 ## Development
@@ -576,9 +482,40 @@ For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon).
 
 ## Security
 
-If you discover a security vulnerability, please email security@adamik.io instead of using the issue tracker.
+### Supported Versions
 
-For security considerations and current limitations, see the security examples in this README.
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.x.x   | :white_check_mark: |
+| < 1.0   | :x:                |
+
+### Reporting a Vulnerability
+
+**Please do not report security vulnerabilities through public GitHub issues.**
+
+Instead, please report them via email to contact@adamik.io.
+
+You should receive a response within 48 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
+
+Please include the following information:
+
+- Type of issue (e.g., buffer overflow, SQL injection, cross-site scripting, etc.)
+- Full paths of source file(s) related to the manifestation of the issue
+- The location of the affected source code (tag/branch/commit or direct URL)
+- Any special configuration required to reproduce the issue
+- Step-by-step instructions to reproduce the issue
+- Proof-of-concept or exploit code (if possible)
+- Impact of the issue, including how an attacker might exploit the issue
+
+This information will help us triage your report more quickly.
+
+### Preferred Languages
+
+We prefer all communications to be in English.
+
+### Policy
+
+Adamik follows the principle of Coordinated Vulnerability Disclosure.
 
 ## License
 
