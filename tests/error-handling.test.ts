@@ -1,5 +1,6 @@
 import AdamikSDK from "../src";
 import { DecoderRegistry } from "../src/decoders/registry";
+import { ErrorCode } from "../src/schemas/errors";
 import { BaseDecoder } from "../src/decoders/base";
 import { ChainId } from "../src/types";
 
@@ -18,7 +19,7 @@ describe("Error Handling Paths", () => {
           super("ethereum" as ChainId, "RLP");
         }
         
-        async decode(_rawData: string): Promise<unknown> {
+        decode(_rawData: string): Promise<unknown> {
           throw new Error("Decoder internal error");
         }
         
@@ -63,8 +64,8 @@ describe("Error Handling Paths", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "DECODE_FAILED")).toBe(true);
-      const decodeError = result.errors.find(e => e.code === "DECODE_FAILED");
+      expect(result.errors.some(e => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
+      const decodeError = result.errors.find(e => e.code === ErrorCode.DECODE_FAILED);
       expect(decodeError?.message).toContain("Decoder internal error");
       expect(decodeError?.recoveryStrategy).toContain("encoded transaction data may be corrupted");
     });
@@ -102,7 +103,7 @@ describe("Error Handling Paths", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "DECODE_FAILED")).toBe(true);
+      expect(result.errors.some(e => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
     });
   });
 
@@ -122,8 +123,8 @@ describe("Error Handling Paths", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "INVALID_API_RESPONSE")).toBe(true);
-      const validationError = result.errors.find(e => e.code === "INVALID_API_RESPONSE");
+      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
+      const validationError = result.errors.find(e => e.code === ErrorCode.INVALID_API_RESPONSE);
       // Recovery strategy might not be present for all error types
       expect(validationError).toBeDefined();
     });
@@ -152,7 +153,7 @@ describe("Error Handling Paths", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "INVALID_INTENT")).toBe(true);
+      expect(result.errors.some(e => e.code === ErrorCode.INVALID_INTENT)).toBe(true);
     });
 
     it("should handle API response with wrong types", async () => {
@@ -178,7 +179,7 @@ describe("Error Handling Paths", () => {
 
       const result = await sdk.verify(apiResponse as any, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "INVALID_API_RESPONSE")).toBe(true);
+      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
   });
 
@@ -258,7 +259,7 @@ describe("Error Handling Paths", () => {
           super("ethereum" as ChainId, "RLP");
         }
         
-        async decode(_rawData: string): Promise<unknown> {
+        decode(_rawData: string): unknown {
           return {
             mode: "transfer",
             recipientAddress: "0xDifferentAddress1234567890123456789012345",
@@ -309,8 +310,8 @@ describe("Error Handling Paths", () => {
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_AMOUNT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_AMOUNT_MISMATCH)).toBe(true);
     });
   });
 
@@ -326,7 +327,7 @@ describe("Error Handling Paths", () => {
       // Force an internal error by passing non-object values
       const result = await sdk.verify("not an object" as any, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === "INVALID_API_RESPONSE")).toBe(true);
+      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
 
     it("should handle BigInt conversion errors", async () => {

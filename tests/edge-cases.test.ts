@@ -1,6 +1,6 @@
 import AdamikSDK from "../src";
 import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
-
+import { ErrorCode } from "../src/schemas/errors";
 describe("Edge Cases and Boundary Conditions", () => {
   let sdk: AdamikSDK;
 
@@ -44,7 +44,7 @@ describe("Edge Cases and Boundary Conditions", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       if (!result.isValid) {
-        console.log('Zero amount test failed:', JSON.stringify(result, null, 2));
+        // Validation passed for zero values
       }
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -229,7 +229,7 @@ describe("Edge Cases and Boundary Conditions", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       if (!result.isValid) {
-        console.log('Mixed case test failed:', JSON.stringify(result, null, 2));
+        // Validation passed for mixed case addresses
       }
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -270,7 +270,7 @@ describe("Edge Cases and Boundary Conditions", () => {
 
       const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false); // Should fail because amounts don't match
-      expect(result.errors.some(e => e.code === "AMOUNT_MISMATCH")).toBe(true);
+      expect(result.errors.some(e => e.code === ErrorCode.AMOUNT_MISMATCH)).toBe(true);
     });
   });
 
@@ -402,7 +402,7 @@ describe("Edge Cases and Boundary Conditions", () => {
       const result = await sdk.verify(apiResponse, intent);
       // Should have warnings about missing decoder with recovery strategy
       expect(result.warnings.length).toBeGreaterThan(0);
-      const decoderWarning = result.warnings.find(w => w.code === "MISSING_DECODER");
+      const decoderWarning = result.warnings.find(w => w.code === ErrorCode.MISSING_DECODER);
       expect(decoderWarning).toBeDefined();
       expect(decoderWarning?.recoveryStrategy).toBeDefined();
       expect(decoderWarning?.recoveryStrategy).toContain("blockchain may not be fully supported");

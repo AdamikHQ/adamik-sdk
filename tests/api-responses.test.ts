@@ -33,7 +33,7 @@ describe("API Response Validation", () => {
           const result = await sdk.verify(response, intent);
 
           if (!result.isValid) {
-            console.log(`Test ${name} failed with errors:`, result.errors);
+            // Validation failed
           }
           expect(result.isValid).toBe(true);
           expect(result.errors || []).toHaveLength(0);

@@ -142,11 +142,8 @@ describe("Chain Discovery", () => {
       });
       
       // Log statistics (useful for documentation)
-      console.log("\nDecoder Coverage Statistics:");
-      console.log(`Total supported chains: ${supportedChains.length}`);
-      console.log("\nBy family:");
-      Object.entries(familyCounts).forEach(([family, count]) => {
-        console.log(`  ${family}: ${count} chains`);
+      Object.entries(familyCounts).forEach(([_family, _count]) => {
+        // Family statistics
       });
       
       // Verify we have good coverage

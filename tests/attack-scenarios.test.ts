@@ -1,6 +1,6 @@
 import AdamikSDK from "../src";
 import { AdamikEncodeResponse, TransactionIntent } from "../src/types";
-
+import { ErrorCode } from "../src/schemas/errors";
 describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   let sdk: AdamikSDK;
 
@@ -50,9 +50,9 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
       
-      const criticalError = result.criticalErrors.find(e => e.code === "CRITICAL_RECIPIENT_MISMATCH");
+      const criticalError = result.criticalErrors.find(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH);
       expect(criticalError?.recoveryStrategy).toContain("SECURITY ALERT: Do not sign this transaction!");
     });
 
@@ -94,7 +94,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_AMOUNT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_AMOUNT_MISMATCH)).toBe(true);
     });
 
     it("should detect subtle attacks with valid-looking but different addresses", async () => {
@@ -135,7 +135,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       const result = await sdk.verify(maliciousResponse, intent);
       
       expect(result.isValid).toBe(false);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
   });
 
@@ -177,7 +177,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
   });
 
@@ -221,7 +221,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       const result = await sdk.verify(maliciousResponse, intent);
       
       expect(result.isValid).toBe(false);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
 
     it("should detect when wrong token contract is used", async () => {
@@ -263,7 +263,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       const result = await sdk.verify(maliciousResponse, intent);
       
       expect(result.isValid).toBe(false);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_TOKEN_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_TOKEN_MISMATCH)).toBe(true);
     });
   });
 
@@ -313,7 +313,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
       // Valid computed fields don't make the transaction safe
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_RECIPIENT_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
 
     it("should handle attacks with multiple encoded formats where only one is malicious", async () => {
@@ -408,7 +408,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       const result = await sdk.verify(maliciousResponse, intent);
       
       expect(result.isValid).toBe(false);
-      expect(result.criticalErrors.some(e => e.code === "CRITICAL_VALIDATOR_MISMATCH")).toBe(true);
+      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_VALIDATOR_MISMATCH)).toBe(true);
     });
   });
 });
