@@ -13,7 +13,7 @@ export enum ErrorCode {
   MISSING_DECODER = "MISSING_DECODER",
   DECODE_FAILED = "DECODE_FAILED",
   INVALID_DECODED_STRUCTURE = "INVALID_DECODED_STRUCTURE",
-  
+
   // Field mismatch errors
   MODE_MISMATCH = "MODE_MISMATCH",
   SENDER_MISMATCH = "SENDER_MISMATCH",
@@ -21,13 +21,14 @@ export enum ErrorCode {
   AMOUNT_MISMATCH = "AMOUNT_MISMATCH",
   TOKEN_MISMATCH = "TOKEN_MISMATCH",
   VALIDATOR_MISMATCH = "VALIDATOR_MISMATCH",
-  
+
   // Critical security errors
+  CRITICAL_CHAIN_MISMATCH = "CRITICAL_CHAIN_MISMATCH",
   CRITICAL_RECIPIENT_MISMATCH = "CRITICAL_RECIPIENT_MISMATCH",
   CRITICAL_AMOUNT_MISMATCH = "CRITICAL_AMOUNT_MISMATCH",
   CRITICAL_TOKEN_MISMATCH = "CRITICAL_TOKEN_MISMATCH",
   CRITICAL_VALIDATOR_MISMATCH = "CRITICAL_VALIDATOR_MISMATCH",
-  
+
   // Cross-validation warnings
   DECODED_API_MISMATCH = "DECODED_API_MISMATCH",
 }
@@ -44,16 +45,16 @@ export interface VerificationError {
   code: ErrorCode;
   severity: ErrorSeverity;
   message: string;
-  field?: string;
   recoveryStrategy?: string;
-  context?: {
-    expected?: string;
-    actual?: string;
-    chainId?: string;
-    format?: string;
-    [key: string]: unknown;
-  };
+  context?: ErrorContext;
 }
+
+export type ErrorContext = {
+  field: string;
+  expected: string | null | undefined;
+  actual: string | null | undefined;
+  format?: string;
+};
 
 /**
  * Verification result with enhanced error reporting
@@ -69,4 +70,3 @@ export interface VerificationResult {
     chainSpecificData?: unknown;
   };
 }
-

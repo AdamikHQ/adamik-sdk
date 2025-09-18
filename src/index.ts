@@ -1,7 +1,6 @@
 import { DecoderRegistry } from "./decoders/registry";
 import { AdamikEncodeResponseSchema, TransactionIntentSchema } from "./schemas";
 import { ErrorCode } from "./schemas/errors";
-import { ErrorCollector } from "./utils/error-collector";
 import {
   ChainFamily,
   ChainId,
@@ -14,6 +13,7 @@ import {
   VerificationResult,
 } from "./types";
 import { getChainById } from "./utils/chain-utils";
+import { ErrorCollector } from "./utils/error-collector";
 import { TransactionVerifier } from "./utils/transaction-verifier";
 
 /**
@@ -40,9 +40,9 @@ export class AdamikSDK {
 
   /**
    * Gets all supported chains with their available decoders
-   * 
+   *
    * @returns An object mapping chain IDs to their supported formats and decoder status
-   * 
+   *
    * @example
    * ```typescript
    * const sdk = new AdamikSDK();
@@ -55,7 +55,7 @@ export class AdamikSDK {
    * //     "hasDecoder": true
    * //   },
    * //   "bitcoin": {
-   * //     "family": "bitcoin", 
+   * //     "family": "bitcoin",
    * //     "formats": ["PSBT"],
    * //     "hasDecoder": true
    * //   },
@@ -65,14 +65,14 @@ export class AdamikSDK {
    */
   getSupportedChains(): Record<string, { family: ChainFamily; formats: RawFormat[]; hasDecoder: boolean }> {
     const result: Record<string, { family: ChainFamily; formats: RawFormat[]; hasDecoder: boolean }> = {};
-    
+
     // Get all registered decoders
     const decoderKeys = this.decoderRegistry.listDecoders();
     const chainFormats = new Map<string, Set<string>>();
-    
+
     // Parse decoder keys to build chain->formats mapping
-    decoderKeys.forEach(key => {
-      const [chainId, format] = key.split(':');
+    decoderKeys.forEach((key) => {
+      const [chainId, format] = key.split(":");
       if (!chainFormats.has(chainId)) {
         chainFormats.set(chainId, new Set());
       }
@@ -81,7 +81,7 @@ export class AdamikSDK {
         set.add(format);
       }
     });
-    
+
     // Build result with chain metadata
     chainFormats.forEach((formats, chainId) => {
       const chain = getChainById(chainId);
@@ -89,14 +89,13 @@ export class AdamikSDK {
         result[chainId] = {
           family: chain.family,
           formats: Array.from(formats) as RawFormat[],
-          hasDecoder: true
+          hasDecoder: true,
         };
       }
     });
-    
+
     return result;
   }
-
 
   /**
    * Decodes raw transaction data for a specific blockchain
@@ -191,64 +190,57 @@ export class AdamikSDK {
   async verify(apiResponse: unknown, originalIntent: unknown): Promise<VerificationResult> {
     const errorCollector = new ErrorCollector();
 
-    try {
-      // Step 1: Validate inputs using Zod schemas
-      const intentValidation = TransactionIntentSchema.safeParse(originalIntent);
-      if (!intentValidation.success) {
-        errorCollector.addZodError(intentValidation.error, ErrorCode.INVALID_INTENT);
-        return errorCollector.getResult();
-      }
-
-      const responseValidation = AdamikEncodeResponseSchema.safeParse(apiResponse);
-      if (!responseValidation.success) {
-        errorCollector.addZodError(responseValidation.error, ErrorCode.INVALID_API_RESPONSE);
-        return errorCollector.getResult();
-      }
-
-      const validatedIntent = intentValidation.data;
-      const validatedResponse = responseValidation.data;
-      const { chainId, transaction } = validatedResponse;
-      const { data, encoded } = transaction;
-
-      // Step 2: Verify intent against API response
-      TransactionVerifier.verifyIntentAgainstAPIData(validatedIntent, data, errorCollector, chainId);
-
-      // Step 3: Decode and verify encoded transaction
-      let decodedRaw: unknown;
-      if (encoded && encoded.length > 0 && encoded[0].raw) {
-        decodedRaw = await this.processEncodedTransaction(
-          chainId,
-          encoded[0].raw,
-          validatedIntent,
-          data,
-          errorCollector
-        );
-      }
-
-      // Step 4: Return verification result
-      return errorCollector.getResult({
-        chainId,
-        transaction: data,
-        chainSpecificData: decodedRaw,
-      });
-    } catch (error) {
-      errorCollector.addError(ErrorCode.INVALID_API_RESPONSE, `Verification error: ${error instanceof Error ? error.message : String(error)}`, "error", {
-        error: String(error),
-      });
+    // Step 1: Validate inputs using Zod schemas
+    const intentValidation = TransactionIntentSchema.safeParse(originalIntent);
+    if (!intentValidation.success) {
+      errorCollector.addZodError(intentValidation.error, ErrorCode.INVALID_INTENT);
       return errorCollector.getResult();
     }
+
+    const responseValidation = AdamikEncodeResponseSchema.safeParse(apiResponse);
+    if (!responseValidation.success) {
+      errorCollector.addZodError(responseValidation.error, ErrorCode.INVALID_API_RESPONSE);
+      return errorCollector.getResult();
+    }
+
+    const validatedIntent = intentValidation.data;
+    const validatedResponse = responseValidation.data;
+    const { chainId, transaction } = validatedResponse;
+    const { data, encoded } = transaction;
+
+    // Step 2: Verify intent against API response
+    TransactionVerifier.verifyIntentAgainstAPIData(validatedIntent, data, errorCollector, chainId);
+
+    // Step 3: Decode and verify encoded transaction
+    let decodedRaw: unknown;
+    if (encoded && encoded.length > 0 && encoded[0].raw) {
+      decodedRaw = await this.processEncodedTransaction(
+        chainId,
+        encoded[0].raw,
+        validatedIntent,
+        data,
+        errorCollector
+      );
+    }
+
+    // Step 4: Return verification result
+    return errorCollector.getResult({
+      chainId,
+      transaction: data,
+      chainSpecificData: decodedRaw,
+    });
   }
 
   /**
    * Processes the encoded transaction by decoding it and verifying against intent and API data
-   * 
+   *
    * This method:
    * 1. Delegates decoding to the public decode() method
    * 2. Maps any decode errors/warnings to the ErrorCollector
    * 3. Performs two-step verification if decoding succeeds:
    *    - Verifies decoded data matches the original user intent
    *    - Cross-verifies decoded data matches the API response
-   * 
+   *
    * @param chainId - The blockchain identifier
    * @param raw - The raw encoded transaction data (format and value)
    * @param originalIntent - The user's original transaction intent
@@ -267,36 +259,34 @@ export class AdamikSDK {
     const decodeResult = await this.decode({
       chainId: chainId as ChainId,
       format: raw.format as RawFormat,
-      encodedData: raw.value
+      encodedData: raw.value,
     });
 
     // Handle decode errors
     if (decodeResult.error) {
       if (decodeResult.error.includes("No decoder available")) {
-        errorCollector.addError(
-          ErrorCode.MISSING_DECODER,
-          decodeResult.error,
-          "warning",
-          { chainId, format: raw.format }
-        );
+        errorCollector.addError(ErrorCode.MISSING_DECODER, decodeResult.error, "warning");
       } else if (decodeResult.error.includes("Chain ID mismatch")) {
         // Chain ID mismatches are critical security errors
-        errorCollector.addError(
-          ErrorCode.DECODE_FAILED,
-          decodeResult.error,
-          "critical",
-          { 
-            chainId, 
-            format: raw.format,
-            recoveryStrategy: "SECURITY ALERT: Do not sign this transaction! The transaction is for a different blockchain network than expected."
-          }
-        );
+        errorCollector.addError(ErrorCode.CRITICAL_CHAIN_MISMATCH, decodeResult.error, "critical", {
+          field: "chainId",
+          expected: chainId,
+          actual: decodeResult.decoded?.chainId,
+        });
       } else {
         errorCollector.addError(
           ErrorCode.DECODE_FAILED,
           decodeResult.error,
-          "error",
-          { chainId, format: raw.format }
+          "error"
+          // FIXME put context back
+          /*
+        {
+          field: decodeResult.decoded,
+          expected: chainId,
+          actual: decodeResult.decoded?.chainId,
+          format: raw.format,
+        }
+        */
         );
       }
       return undefined;
@@ -304,18 +294,14 @@ export class AdamikSDK {
 
     // Map warnings
     if (decodeResult.warnings) {
-      decodeResult.warnings.forEach(warning => {
+      decodeResult.warnings.forEach((warning) => {
         errorCollector.addError(ErrorCode.DECODE_FAILED, warning.message, "warning");
       });
     }
 
     // Ensure we have decoded data
     if (!decodeResult.decoded) {
-      errorCollector.addError(
-        ErrorCode.INVALID_DECODED_STRUCTURE,
-        "Decoded transaction is null",
-        "error"
-      );
+      errorCollector.addError(ErrorCode.INVALID_DECODED_STRUCTURE, "Decoded transaction is null", "error");
       return undefined;
     }
 
@@ -332,16 +318,16 @@ export class AdamikSDK {
 
     // Perform two-step verification
     TransactionVerifier.verifyIntentAgainstAPIDecoded(
-      decoded as Record<string, unknown>, 
-      originalIntent, 
-      errorCollector, 
+      decoded as Record<string, unknown>,
+      originalIntent,
+      errorCollector,
       chainId
     );
 
     TransactionVerifier.verifyAPIDataAgainstAPIDecoded(
-      decoded as Record<string, unknown>, 
-      apiData, 
-      errorCollector, 
+      decoded as Record<string, unknown>,
+      apiData,
+      errorCollector,
       chainId
     );
 
@@ -356,8 +342,8 @@ export * from "./types";
 
 // Export utilities for advanced usage
 export { AddressNormalizer } from "./utils/address-normalizer";
-export { TransactionVerifier } from "./utils/transaction-verifier";
 export * from "./utils/chain-utils";
+export { TransactionVerifier } from "./utils/transaction-verifier";
 
 // Default export for convenience
 export default AdamikSDK;
