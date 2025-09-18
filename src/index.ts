@@ -4,7 +4,6 @@ import { ErrorCode } from "./schemas/errors";
 import {
   ChainFamily,
   ChainId,
-  DecodedTransaction,
   DecodeParams,
   DecodeResult,
   RawFormat,
@@ -138,7 +137,7 @@ export class AdamikSDK {
    * });
    * ```
    */
-  async decode(params: DecodeParams): Promise<DecodeResult> {
+  decode(params: DecodeParams): DecodeResult {
     const warnings: Array<{ code: string; message: string }> = [];
 
     try {
@@ -153,10 +152,7 @@ export class AdamikSDK {
       }
 
       // Attempt to decode
-      const decodedRaw = await decoder.decode(params.encodedData);
-
-      // Convert the raw decoded data to DecodedTransaction format
-      const decoded: DecodedTransaction = decodedRaw as DecodedTransaction;
+      const decoded = decoder.decode(params.encodedData);
 
       return {
         decoded,
@@ -187,7 +183,7 @@ export class AdamikSDK {
    * });
    * ```
    */
-  async verify(apiResponse: unknown, originalIntent: unknown): Promise<VerificationResult> {
+  verify(apiResponse: unknown, originalIntent: unknown): VerificationResult {
     const errorCollector = new ErrorCollector();
 
     // Step 1: Validate inputs using Zod schemas
@@ -214,7 +210,7 @@ export class AdamikSDK {
     // Step 3: Decode and verify encoded transaction
     let decodedRaw: unknown;
     if (encoded && encoded.length > 0 && encoded[0].raw) {
-      decodedRaw = await this.processEncodedTransaction(
+      decodedRaw = this.processEncodedTransaction(
         chainId,
         encoded[0].raw,
         validatedIntent,
@@ -248,15 +244,15 @@ export class AdamikSDK {
    * @param errorCollector - Collector for errors and warnings
    * @returns The decoded transaction data if successful, undefined otherwise
    */
-  private async processEncodedTransaction(
+  private processEncodedTransaction(
     chainId: string,
     raw: { format: string; value: string },
     originalIntent: TransactionIntent,
     apiData: TransactionData,
     errorCollector: ErrorCollector
-  ): Promise<unknown> {
+  ): unknown {
     // Decode using the public method
-    const decodeResult = await this.decode({
+    const decodeResult = this.decode({
       chainId: chainId as ChainId,
       format: raw.format as RawFormat,
       encodedData: raw.value,

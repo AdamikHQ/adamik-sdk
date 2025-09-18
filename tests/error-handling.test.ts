@@ -1,8 +1,8 @@
 import AdamikSDK from "../src";
+import { BaseDecoder } from "../src/decoders/base";
 import { DecoderRegistry } from "../src/decoders/registry";
 import { ErrorCode } from "../src/schemas/errors";
-import { BaseDecoder } from "../src/decoders/base";
-import { ChainId } from "../src/types";
+import { ChainId, DecodedTransaction } from "../src/types";
 
 describe("Error Handling Paths", () => {
   let sdk: AdamikSDK;
@@ -12,14 +12,14 @@ describe("Error Handling Paths", () => {
   });
 
   describe("Decoder Errors", () => {
-    it("should handle decoder throwing exceptions", async () => {
+    it("should handle decoder throwing exceptions", () => {
       // Create a custom decoder that throws
       class ThrowingDecoder extends BaseDecoder {
         constructor() {
           super("ethereum" as ChainId, "RLP");
         }
-        
-        decode(_rawData: string): Promise<unknown> {
+
+        decode(_rawData: string): DecodedTransaction {
           throw new Error("Decoder internal error");
         }
       }
@@ -32,7 +32,7 @@ describe("Error Handling Paths", () => {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -43,35 +43,38 @@ describe("Error Handling Paths", () => {
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
-          fees: "21000000000000"
+            fees: "21000000000000",
           },
-          encoded: [{
-            raw: {
-              format: "RLP",
-              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
+          encoded: [
+            {
+              raw: {
+                format: "RLP",
+                value:
+                  "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0",
+              },
+              hash: {
+                format: "keccak256",
+                value: "0xabcdef...",
+              },
             },
-            hash: {
-              format: "keccak256",
-              value: "0xabcdef..."
-            }
-          }]
-        }
+          ],
+        },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
-      const decodeError = result.errors.find(e => e.code === ErrorCode.DECODE_FAILED);
+      expect(result.errors.some((e) => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
+      const decodeError = result.errors.find((e) => e.code === ErrorCode.DECODE_FAILED);
       expect(decodeError?.message).toContain("Decoder internal error");
       expect(decodeError?.recoveryStrategy).toContain("encoded transaction data may be corrupted");
     });
 
-    it("should handle malformed encoded data", async () => {
+    it("should handle malformed encoded data", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -82,55 +85,57 @@ describe("Error Handling Paths", () => {
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
-          fees: "21000000000000"
+            fees: "21000000000000",
           },
-          encoded: [{
-            raw: {
-              format: "RLP",
-              value: "invalid_hex_not_starting_with_0x"
+          encoded: [
+            {
+              raw: {
+                format: "RLP",
+                value: "invalid_hex_not_starting_with_0x",
+              },
+              hash: {
+                format: "keccak256",
+                value: "0xabcdef...",
+              },
             },
-            hash: {
-              format: "keccak256",
-              value: "0xabcdef..."
-            }
-          }]
-        }
+          ],
+        },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
+      expect(result.errors.some((e) => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
     });
   });
 
   describe("Schema Validation Errors", () => {
-    it("should handle completely invalid API response structure", async () => {
+    it("should handle completely invalid API response structure", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
         // Missing required fields
-        foo: "bar"
+        foo: "bar",
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
-      const validationError = result.errors.find(e => e.code === ErrorCode.INVALID_API_RESPONSE);
+      expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
+      const validationError = result.errors.find((e) => e.code === ErrorCode.INVALID_API_RESPONSE);
       // Recovery strategy might not be present for all error types
       expect(validationError).toBeDefined();
     });
 
-    it("should handle invalid intent structure", async () => {
+    it("should handle invalid intent structure", () => {
       const intent = {
         // Missing required mode field
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -141,23 +146,23 @@ describe("Error Handling Paths", () => {
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
-          fees: "21000000000000"
+            fees: "21000000000000",
           },
-          encoded: []
-        }
+          encoded: [],
+        },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.INVALID_INTENT)).toBe(true);
+      expect(result.errors.some((e) => e.code === ErrorCode.INVALID_INTENT)).toBe(true);
     });
 
-    it("should handle API response with wrong types", async () => {
+    it("should handle API response with wrong types", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -167,25 +172,25 @@ describe("Error Handling Paths", () => {
             mode: "transfer",
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
-            amount: "1000000000000000000" // Should be string but testing wrong type
+            amount: "1000000000000000000", // Should be string but testing wrong type
           },
-          encoded: "not_an_array" // Should be array
-        }
+          encoded: "not_an_array", // Should be array
+        },
       };
 
-      const result = await sdk.verify(apiResponse as any, intent);
+      const result = sdk.verify(apiResponse as any, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
+      expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
   });
 
   describe("Field Validation Errors", () => {
-    it("should handle null values in required fields", async () => {
+    it("should handle null values in required fields", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -196,23 +201,23 @@ describe("Error Handling Paths", () => {
             senderAddress: null, // Invalid null
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
-          fees: "21000000000000"
+            fees: "21000000000000",
           },
-          encoded: []
-        }
+          encoded: [],
+        },
       };
 
-      const result = await sdk.verify(apiResponse as any, intent);
+      const result = sdk.verify(apiResponse as any, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
-    it("should handle undefined values vs missing fields differently", async () => {
+    it("should handle undefined values vs missing fields differently", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       // API response with undefined (which gets stripped in JSON)
@@ -225,22 +230,25 @@ describe("Error Handling Paths", () => {
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
             fees: "21000000000000",
-            tokenId: undefined // Should be ignored
+            tokenId: undefined, // Should be ignored
           },
-          encoded: [{
-            raw: {
-              format: "RLP",
-              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
+          encoded: [
+            {
+              raw: {
+                format: "RLP",
+                value:
+                  "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0",
+              },
+              hash: {
+                format: "keccak256",
+                value: "0xabcdef...",
+              },
             },
-            hash: {
-              format: "keccak256",
-              value: "0xabcdef..."
-            }
-          }]
-        }
+          ],
+        },
       };
 
-      const result = await sdk.verify(apiResponse as any, intent);
+      const result = sdk.verify(apiResponse as any, intent);
       // Should still be valid since undefined fields are optional
       // The viem decoder will handle this gracefully
       expect(result.isValid).toBe(true);
@@ -248,19 +256,19 @@ describe("Error Handling Paths", () => {
   });
 
   describe("Cross-validation Errors", () => {
-    it("should catch mismatches between decoded data and API response", async () => {
+    it("should catch mismatches between decoded data and API response", () => {
       // Mock a decoder that returns different data than API response
       class MismatchedDecoder extends BaseDecoder {
         constructor() {
           super("ethereum" as ChainId, "RLP");
         }
-        
-        decode(_rawData: string): unknown {
+
+        decode(_rawData: string): DecodedTransaction {
           return {
             mode: "transfer",
             recipientAddress: "0xDifferentAddress1234567890123456789012345",
             amount: "2000000000000000000", // Different amount
-            senderAddress: ""
+            senderAddress: "",
           };
         }
       }
@@ -273,7 +281,7 @@ describe("Error Handling Paths", () => {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       const apiResponse = {
@@ -284,50 +292,53 @@ describe("Error Handling Paths", () => {
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
             amount: "1000000000000000000",
-          fees: "21000000000000"
+            fees: "21000000000000",
           },
-          encoded: [{
-            raw: {
-              format: "RLP",
-              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
+          encoded: [
+            {
+              raw: {
+                format: "RLP",
+                value:
+                  "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0",
+              },
+              hash: {
+                format: "keccak256",
+                value: "0xabcdef...",
+              },
             },
-            hash: {
-              format: "keccak256",
-              value: "0xabcdef..."
-            }
-          }]
-        }
+          ],
+        },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
-      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
-      expect(result.criticalErrors.some(e => e.code === ErrorCode.CRITICAL_AMOUNT_MISMATCH)).toBe(true);
+      expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
+      expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_AMOUNT_MISMATCH)).toBe(true);
     });
   });
 
   describe("Exception Handling", () => {
-    it("should handle unexpected exceptions gracefully", async () => {
+    it("should handle unexpected exceptions gracefully", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "1000000000000000000"
+        amount: "1000000000000000000",
       };
 
       // Force an internal error by passing non-object values
-      const result = await sdk.verify("not an object" as any, intent);
+      const result = sdk.verify("not an object" as any, intent);
       expect(result.isValid).toBe(false);
-      expect(result.errors.some(e => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
+      expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
 
-    it("should handle BigInt conversion errors", async () => {
+    it("should handle BigInt conversion errors", () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
         recipientAddress: "0x0987654321098765432109876543210987654321",
-        amount: "not_a_number"
+        amount: "not_a_number",
       };
 
       const apiResponse = {
@@ -337,22 +348,25 @@ describe("Error Handling Paths", () => {
             mode: "transfer",
             senderAddress: "0x1234567890123456789012345678901234567890",
             recipientAddress: "0x0987654321098765432109876543210987654321",
-            amount: "also_not_a_number"
+            amount: "also_not_a_number",
           },
-          encoded: [{
-            raw: {
-              format: "RLP",
-              value: "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0"
+          encoded: [
+            {
+              raw: {
+                format: "RLP",
+                value:
+                  "0x02f00180843b9aca008506fc23ac00825208940987654321098765432109876543210987654321880de0b6b3a764000080c0",
+              },
+              hash: {
+                format: "keccak256",
+                value: "0xabcdef...",
+              },
             },
-            hash: {
-              format: "keccak256",
-              value: "0xabcdef..."
-            }
-          }]
-        }
+          ],
+        },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
       // Should handle the error gracefully
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);

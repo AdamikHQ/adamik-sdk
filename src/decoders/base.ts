@@ -1,4 +1,4 @@
-import { ChainId, RawFormat } from "../types";
+import { ChainId, DecodedTransaction, RawFormat } from "../types";
 
 export abstract class BaseDecoder {
   constructor(
@@ -11,7 +11,7 @@ export abstract class BaseDecoder {
    * @param rawData The encoded transaction data as a hex string
    * @returns The decoded transaction object
    */
-  abstract decode(rawData: string): unknown;
+  abstract decode(rawData: string): DecodedTransaction;
 
   /**
    * Helper method to convert hex string to buffer
@@ -21,5 +21,4 @@ export abstract class BaseDecoder {
     const cleanHex = hex.startsWith("0x") ? hex.slice(2) : hex;
     return Buffer.from(cleanHex, "hex");
   }
-
 }
