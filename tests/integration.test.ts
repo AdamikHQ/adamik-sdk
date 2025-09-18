@@ -9,7 +9,7 @@ describe("Integration Tests", () => {
   });
 
   describe("End-to-End Verification Flow", () => {
-    it("should successfully encode and verify a transaction", async () => {
+    it("should successfully encode and verify a transaction", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f7BBDc",
@@ -50,7 +50,7 @@ describe("Integration Tests", () => {
       const apiResponse = mockApiResponse;
 
       // Step 2: Verify the API response
-      const verificationResult = await sdk.verify(apiResponse, intent);
+      const verificationResult = sdk.verify(apiResponse, intent);
 
       // Assertions
       expect(verificationResult.isValid).toBe(true);

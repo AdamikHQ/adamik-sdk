@@ -5,6 +5,7 @@ This directory contains the comprehensive test suite for the Adamik SDK.
 ## Overview
 
 **80 tests** across **8 test suites** providing complete coverage of:
+
 - ✅ Intent validation (API response vs user intent)
 - ✅ Encoded transaction validation (real RLP decoding for EVM, PSBT for Bitcoin, and protobuf for Cosmos)
 - ✅ Security attack scenarios with comprehensive coverage
@@ -82,10 +83,10 @@ it("should detect malicious encoded transaction", async () => {
   const intent = { recipientAddress: "0x1111..." };
   const apiResponse = {
     data: intent, // API shows correct data
-    encoded: [{ raw: { value: maliciousTransaction } }] // But sends elsewhere
+    encoded: [{ raw: { value: maliciousTransaction } }], // But sends elsewhere
   };
-  
-  const result = await sdk.verify(apiResponse, intent);
+
+  const result = sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(false);
   expect(result.errors).toContain("Critical: Decoded transaction recipient mismatch");
 });
@@ -94,12 +95,15 @@ it("should detect malicious encoded transaction", async () => {
 ## Adding Tests
 
 ### For new functionality:
+
 Add to existing test files based on component
 
 ### For new scenarios:
+
 Add to `scenarios.test.ts`
 
 ### For new API responses:
+
 Add to appropriate file in `fixtures/api-responses/` directory
 
 ## Design Philosophy
@@ -115,36 +119,49 @@ This demonstrates **"less is more"** - comprehensive coverage with better mainta
 ### Adding New Tests
 
 **For new functionality**: Add to existing test files based on component
+
 ```typescript
 // Add to sdk-validation.test.ts for core SDK features
-// Add to decoders.test.ts for decoder functionality  
+// Add to decoders.test.ts for decoder functionality
 // Add to api-client.test.ts for HTTP client features
 ```
 
 **For new scenarios**: Add to `scenarios.test.ts`
+
 ```typescript
 it("should handle new scenario", async () => {
-  const intent = { /* setup */ };
-  const apiResponse = { /* response */ };
-  const result = await sdk.verify(apiResponse, intent);
+  const intent = {
+    /* setup */
+  };
+  const apiResponse = {
+    /* response */
+  };
+  const result = sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(expected);
 });
 ```
 
 **For new API responses**: Add to appropriate file in `fixtures/api-responses/`
+
 ```json
 {
   "test_case_name": {
     "intent": {
       "transaction": {
-        "data": { /* original transaction intent */ }
+        "data": {
+          /* original transaction intent */
+        }
       }
     },
     "response": {
       "chainId": "blockchain_id",
       "transaction": {
-        "data": { /* API response data */ },
-        "encoded": [ /* encoded transaction data */ ]
+        "data": {
+          /* API response data */
+        },
+        "encoded": [
+          /* encoded transaction data */
+        ]
       },
       "status": {
         "errors": [],
@@ -158,14 +175,19 @@ it("should handle new scenario", async () => {
 ### Test Patterns
 
 **Basic Test Structure**:
+
 ```typescript
 it("should describe what it tests", async () => {
   // 1. Setup
-  const intent = { /* user intent */ };
-  const apiResponse = { /* API response */ };
+  const intent = {
+    /* user intent */
+  };
+  const apiResponse = {
+    /* API response */
+  };
 
-  // 2. Execute  
-  const result = await sdk.verify(apiResponse, intent);
+  // 2. Execute
+  const result = sdk.verify(apiResponse, intent);
 
   // 3. Assert
   expect(result.isValid).toBe(expected);
@@ -174,17 +196,18 @@ it("should describe what it tests", async () => {
 ```
 
 **Decode Test Pattern**:
+
 ```typescript
 it("should decode transaction data", async () => {
   // 1. Setup
   const params = {
     chainId: "ethereum",
     format: "RLP",
-    encodedData: "0xf86c..."
+    encodedData: "0xf86c...",
   };
 
   // 2. Execute
-  const result = await sdk.decode(params);
+  const result = sdk.decode(params);
 
   // 3. Assert
   expect(result.decoded).toBeDefined();
@@ -194,19 +217,20 @@ it("should decode transaction data", async () => {
 ```
 
 **Security Test Pattern**:
+
 ```typescript
 it("should detect [specific attack]", async () => {
   // Create legitimate intent
   const intent = { recipientAddress: "0x1111..." };
-  
+
   // Create malicious API response
   const apiResponse = {
     data: intent, // Looks correct
-    encoded: [{ raw: { value: maliciousTransaction } }] // But isn't
+    encoded: [{ raw: { value: maliciousTransaction } }], // But isn't
   };
-  
+
   // Verify attack is detected
-  const result = await sdk.verify(apiResponse, intent);
+  const result = sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(false);
   expect(result.errors).toContain("Critical: [specific error]");
 });
@@ -273,6 +297,7 @@ it("should detect [specific attack]", async () => {
 ### Real API Response Data
 
 Uses actual API responses from `fixtures/api-responses/`:
+
 - Each blockchain has its own JSON file
 - Consistent object-based format for easy test maintenance
 - Includes both intent and response for complete validation
@@ -280,6 +305,7 @@ Uses actual API responses from `fixtures/api-responses/`:
 ### Test Organization Pattern
 
 The `api-responses.test.ts` file uses a DRY helper function:
+
 ```typescript
 const runBlockchainTests = (
   blockchainName: string,
@@ -287,10 +313,11 @@ const runBlockchainTests = (
   customValidations?: (txData: any, intentData: any) => void
 ) => {
   // Common test logic for all blockchains
-}
+};
 ```
 
 This approach:
+
 - Eliminates code duplication
 - Ensures consistent testing across blockchains
 - Makes it easy to add new blockchain tests
@@ -299,6 +326,7 @@ This approach:
 ## Benefits of Current Architecture
 
 ### ✅ Advantages
+
 1. **Simplicity**: Easy to understand and maintain
 2. **Clarity**: Each test is self-contained and readable
 3. **Performance**: No complex infrastructure overhead
@@ -306,7 +334,8 @@ This approach:
 5. **Coverage**: All security scenarios covered with real data
 
 ### 🚀 Evolution
-**Before**: 1,200+ lines of complex configuration-driven testing infrastructure  
+
+**Before**: 1,200+ lines of complex configuration-driven testing infrastructure
 **After**: Simple, focused tests with same coverage but dramatically reduced complexity
 
 This demonstrates **"less is more"** - maintaining comprehensive test coverage while dramatically improving maintainability and developer experience.
@@ -314,9 +343,11 @@ This demonstrates **"less is more"** - maintaining comprehensive test coverage w
 ## Recent Major Changes (July 2025)
 
 ### ✅ Completed: Public Decode Method & Architecture Refactoring
+
 **What**: Added public decode() method and refactored for better separation of concerns
 **Impact**: Cleaner architecture, easier to use and maintain
 **Changes**:
+
 - **Added public decode() method** - Direct access to decoding without full verification
 - **Extracted TransactionVerifier** - All verification logic in `src/utils/transaction-verifier.ts`
 - **Extracted AddressNormalizer** - EVM address normalization in `src/utils/address-normalizer.ts`

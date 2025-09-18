@@ -22,27 +22,27 @@ import AdamikSDK from "@adamik/sdk";
 const sdk = new AdamikSDK();
 
 // Decode an Ethereum transaction
-const ethResult = await sdk.decode({
+const ethResult = sdk.decode({
   chainId: "ethereum",
   format: "RLP",
-  encodedData: "0xf86c0a8502540be400..."
+  encodedData: "0xf86c0a8502540be400...",
 });
 
 console.log(ethResult.decoded);
 // { recipientAddress: "0x...", amount: "1000000000000000000", ... }
 
 // Decode a Bitcoin PSBT
-const btcResult = await sdk.decode({
-  chainId: "bitcoin", 
+const btcResult = sdk.decode({
+  chainId: "bitcoin",
   format: "PSBT",
-  encodedData: "cHNidP8BAH0CAAAAAf..."
+  encodedData: "cHNidP8BAH0CAAAAAf...",
 });
 
 // Decode a Cosmos transaction
-const cosmosResult = await sdk.decode({
+const cosmosResult = sdk.decode({
   chainId: "cosmoshub",
   format: "COSMOS_PROTOBUF",
-  encodedData: "0a9f010a9c010a..."
+  encodedData: "0a9f010a9c010a...",
 });
 ```
 
@@ -58,7 +58,7 @@ const intent = { recipientAddress: "0x123...", amount: "1000" };
 const apiResponse = await getTransactionFromAPI(intent);
 
 // Verify before signing!
-const result = await sdk.verify(apiResponse, intent);
+const result = sdk.verify(apiResponse, intent);
 if (!result.isValid) {
   throw new Error("Transaction doesn't match intent!");
 }
@@ -78,6 +78,7 @@ if (!result.isValid) {
 ## Supported Blockchains
 
 **Real Decoders Available:**
+
 - **EVM Chains**: Ethereum, Polygon, BSC, Avalanche, Arbitrum, Optimism, Base (37 chains using `viem`)
 - **Bitcoin**: Bitcoin mainnet and testnet (5 chains using `bitcoinjs-lib`)
 - **Cosmos SDK**: Cosmos Hub, Celestia, Injective, Babylon (42 chains using `@cosmjs/proto-signing`)
@@ -113,10 +114,10 @@ import AdamikSDK from "@adamik/sdk";
 const sdk = new AdamikSDK();
 
 // Example: Decode an Ethereum transaction
-const result = await sdk.decode({
+const result = sdk.decode({
   chainId: "ethereum",
   format: "RLP",
-  encodedData: "0xf86c0a8502540be400..."
+  encodedData: "0xf86c0a8502540be400...",
 });
 
 if (result.decoded) {
@@ -140,7 +141,7 @@ const intent = {
 const apiResponse = await fetch(...).then(r => r.json());
 
 // Verify before signing!
-const verification = await sdk.verify(apiResponse, intent);
+const verification = sdk.verify(apiResponse, intent);
 
 if (verification.isValid) {
   // Safe to sign
@@ -152,50 +153,54 @@ if (verification.isValid) {
 
 ### Supported Formats
 
-| Blockchain | Format | Status | Library Used |
-|------------|--------|--------|--------------|
-| Ethereum, Polygon, BSC, etc. | RLP | ✅ Real | `viem` |
-| Bitcoin | PSBT | ✅ Real | `bitcoinjs-lib` |
-| Cosmos Hub, Celestia, etc. | COSMOS_PROTOBUF | ✅ Real | `@cosmjs/proto-signing` |
-| Tron | RAW_TRANSACTION | ✅ Real | `tronweb` |
-| Solana | BORSH | ✅ Real | `@solana/web3.js` |
-| Algorand, Aptos, TON | Various | ❌ Not supported yet | - |
+| Blockchain                   | Format          | Status               | Library Used            |
+| ---------------------------- | --------------- | -------------------- | ----------------------- |
+| Ethereum, Polygon, BSC, etc. | RLP             | ✅ Real              | `viem`                  |
+| Bitcoin                      | PSBT            | ✅ Real              | `bitcoinjs-lib`         |
+| Cosmos Hub, Celestia, etc.   | COSMOS_PROTOBUF | ✅ Real              | `@cosmjs/proto-signing` |
+| Tron                         | RAW_TRANSACTION | ✅ Real              | `tronweb`               |
+| Solana                       | BORSH           | ✅ Real              | `@solana/web3.js`       |
+| Algorand, Aptos, TON         | Various         | ❌ Not supported yet | -                       |
 
 ### How Security Works
 
 The SDK provides two levels of verification:
 
 **1. Intent Validation** (all chains):
+
 - Transaction mode matches (transfer, stake, etc.)
 - Recipient address matches
 - Amount matches
 - Token ID matches (for token transfers)
 
 **2. Encoded Validation** (EVM, Bitcoin, Cosmos, Tron, Solana):
+
 - Decodes the actual transaction bytes
 - Verifies decoded data matches intent
 - Catches malicious encoded transactions
 
 ```typescript
 // Attack example: API shows correct data but encoded transaction sends elsewhere
-const intent = { 
+const intent = {
   recipientAddress: "0xYourFriend...",
-  amount: "100"
+  amount: "100",
 };
 
 const maliciousResponse = {
   transaction: {
     data: intent, // Shows correct data
-    encoded: [{
-      raw: { 
-        value: "0x..." // But sends to attacker!
-      }
-    }]
-  }
+    encoded: [
+      {
+        raw: {
+          value: "0x...", // But sends to attacker!
+        },
+      },
+    ],
+  },
 };
 
 // SDK catches the attack
-const result = await sdk.verify(maliciousResponse, intent);
+const result = sdk.verify(maliciousResponse, intent);
 console.log(result.isValid); // false
 console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 ```
@@ -214,32 +219,32 @@ const intent = {
   mode: "transfer",
   senderAddress: "0x1234...",
   recipientAddress: "0xABCD...",
-  amount: "1000000000000000000" // 1 ETH
+  amount: "1000000000000000000", // 1 ETH
 };
 
 // 2. Get encoded transaction from Adamik API
 const apiResponse = await fetch("https://api.adamik.io/v1/ethereum/transaction/encode", {
   method: "POST",
   headers: {
-    "Authorization": "Bearer YOUR_API_KEY",
-    "Content-Type": "application/json"
+    Authorization: "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json",
   },
-  body: JSON.stringify({ transaction: { data: intent } })
-}).then(r => r.json());
+  body: JSON.stringify({ transaction: { data: intent } }),
+}).then((r) => r.json());
 
 // 3. Verify the response
-const verification = await sdk.verify(apiResponse, intent);
+const verification = sdk.verify(apiResponse, intent);
 
 if (verification.isValid) {
   // 4. Optionally decode to inspect
-  const decoded = await sdk.decode({
+  const decoded = sdk.decode({
     chainId: apiResponse.chainId,
     format: apiResponse.transaction.encoded[0].raw.format,
-    encodedData: apiResponse.transaction.encoded[0].raw.value
+    encodedData: apiResponse.transaction.encoded[0].raw.value,
   });
-  
+
   console.log("Transaction details:", decoded.decoded);
-  
+
   // 5. Safe to sign
   const tx = apiResponse.transaction.encoded[0].raw.value;
   await wallet.signTransaction(tx);
@@ -259,24 +264,24 @@ const examples = [
     name: "Ethereum Transfer",
     chainId: "ethereum",
     format: "RLP",
-    encodedData: "0xf86c0a85..."
+    encodedData: "0xf86c0a85...",
   },
   {
     name: "Bitcoin PSBT",
     chainId: "bitcoin",
-    format: "PSBT", 
-    encodedData: "cHNidP8BAH..."
+    format: "PSBT",
+    encodedData: "cHNidP8BAH...",
   },
   {
     name: "Cosmos Send",
     chainId: "cosmoshub",
     format: "COSMOS_PROTOBUF",
-    encodedData: "0a9f010a9c..."
-  }
+    encodedData: "0a9f010a9c...",
+  },
 ];
 
 for (const tx of examples) {
-  const result = await sdk.decode(tx);
+  const result = sdk.decode(tx);
   console.log(`${tx.name}:`, result.decoded);
 }
 ```
@@ -364,7 +369,6 @@ export class MyChainDecoder extends BaseDecoder {
 this.registerDecoder(new MyChainDecoder("mychain"));
 ```
 
-
 ## API Reference
 
 ### `verify(apiResponse: AdamikEncodeResponse, originalIntent: TransactionIntent): Promise<VerificationResult>`
@@ -404,7 +408,7 @@ Decodes raw transaction data for a specific blockchain without running verificat
 **Example:**
 
 ```typescript
-const result = await sdk.decode({
+const result = sdk.decode({
   chainId: "ethereum",
   format: "RLP",
   encodedData: "0xf86c0a8502540be400...",
@@ -424,6 +428,7 @@ Gets all blockchain chains that have decoder support in the SDK.
 **Returns:**
 
 An object mapping chain IDs to their information:
+
 - `family`: The blockchain family (e.g., "evm", "bitcoin", "cosmos")
 - `formats`: Array of supported encoding formats
 - `hasDecoder`: Always true for returned chains
@@ -454,14 +459,14 @@ The decoded transaction object contains:
 
 ```typescript
 interface DecodedTransaction {
-  chainId?: string;          // Blockchain identifier
-  mode?: TransactionMode;    // "transfer", "transferToken", "stake", etc.
-  senderAddress?: string;    // Transaction sender
+  chainId?: string; // Blockchain identifier
+  mode?: TransactionMode; // "transfer", "transferToken", "stake", etc.
+  senderAddress?: string; // Transaction sender
   recipientAddress?: string; // Transaction recipient
-  amount?: string;          // Transaction amount in smallest unit
-  fee?: string;             // Transaction fee in native currency
-  memo?: string;            // Transaction memo/message
-  tokenId?: string;         // Token contract address (for token transfers)
+  amount?: string; // Transaction amount in smallest unit
+  fee?: string; // Transaction fee in native currency
+  memo?: string; // Transaction memo/message
+  tokenId?: string; // Token contract address (for token transfers)
   validatorAddress?: string; // Validator address (for staking operations)
   targetValidatorAddress?: string; // Target validator (for re-delegation)
   chainSpecificData?: unknown; // Chain-specific additional data

@@ -103,9 +103,6 @@ describe("Decoders", () => {
 
       const decoded = decoder.decode(protoData);
 
-      // FIXME DEBUG TBR
-      console.log("XXX - decoded cosmos:", decoded);
-
       expect(decoded).toBeDefined();
       expect(decoded).toHaveProperty("mode");
       expect(decoded).toHaveProperty("recipientAddress");

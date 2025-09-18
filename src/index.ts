@@ -21,7 +21,7 @@ import { TransactionVerifier } from "./utils/transaction-verifier";
  * @example
  * ```typescript
  * const sdk = new AdamikSDK();
- * const result = await sdk.verify(apiResponse, originalIntent);
+ * const result = sdk.verify(apiResponse, originalIntent);
  *
  * if (result.isValid) {
  *   // Safe to sign the transaction
@@ -115,7 +115,7 @@ export class AdamikSDK {
    *
    * @example
    * ```typescript
-   * const result = await sdk.decode({
+   * const result = sdk.decode({
    *   chainId: "ethereum",
    *   format: "RLP_HEX",
    *   encodedData: "0xf86c0a8502540be400..."
@@ -130,7 +130,7 @@ export class AdamikSDK {
    * @example
    * ```typescript
    * // Decode from API response
-   * const result = await sdk.decode({
+   * const result = sdk.decode({
    *   chainId: apiResponse.chainId,
    *   format: apiResponse.transaction.encoded[0].raw.format,
    *   encodedData: apiResponse.transaction.encoded[0].raw.value
@@ -176,7 +176,7 @@ export class AdamikSDK {
    *
    * @example
    * ```typescript
-   * const result = await sdk.verify(apiResponse, {
+   * const result = sdk.verify(apiResponse, {
    *   mode: 'transfer',
    *   recipientAddress: '0x...',
    *   amount: '1000000000000000000'

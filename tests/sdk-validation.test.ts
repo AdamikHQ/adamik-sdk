@@ -9,7 +9,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
   });
 
   describe("Intent Validation", () => {
-    it("should validate matching transaction data", async () => {
+    it("should validate matching transaction data", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -30,13 +30,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should detect transaction mode mismatch", async () => {
+    it("should detect transaction mode mismatch", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -58,13 +58,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.message.includes("mode mismatch"))).toBe(true);
+      expect(result.errors?.some((err) => err.message.includes("mode mismatch"))).toBe(true);
     });
 
-    it("should detect recipient address mismatch", async () => {
+    it("should detect recipient address mismatch", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -86,13 +86,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.message.includes("recipientAddress mismatch"))).toBe(true);
+      expect(result.errors?.some((err) => err.message.includes("recipientAddress mismatch"))).toBe(true);
     });
 
-    it("should detect amount mismatch", async () => {
+    it("should detect amount mismatch", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -114,13 +114,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
-      expect(result.errors?.some(err => err.message.includes("amount mismatch"))).toBe(true);
+      expect(result.errors?.some((err) => err.message.includes("amount mismatch"))).toBe(true);
     });
 
-    it("should handle token transfers", async () => {
+    it("should handle token transfers", () => {
       const intent: TransactionIntent = {
         mode: "transferToken",
         tokenId: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -142,13 +142,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle useMaxAmount transfers", async () => {
+    it("should handle useMaxAmount transfers", () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -173,7 +173,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = await sdk.verify(apiResponse, intent);
+      const result = sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -181,12 +181,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
   });
 
   describe("Decode Functionality", () => {
-    it("should decode EVM transaction successfully", async () => {
+    it("should decode EVM transaction successfully", () => {
       // Real RLP-encoded Ethereum transaction from test fixtures
-      const result = await sdk.decode({
+      const result = sdk.decode({
         chainId: "ethereum",
         format: "RLP",
-        encodedData: "0x02ee0107830b7980850109399877825208948bc6922eb94e4858efaf9f433c35bc241f69e8a68736261e3597046a80c0"
+        encodedData:
+          "0x02ee0107830b7980850109399877825208948bc6922eb94e4858efaf9f433c35bc241f69e8a68736261e3597046a80c0",
       });
 
       expect(result.decoded).toBeDefined();
@@ -195,48 +196,49 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.decoded?.mode).toBe("transfer");
     });
 
-    it("should handle missing decoder gracefully", async () => {
-      const result = await sdk.decode({
+    it("should handle missing decoder gracefully", () => {
+      const result = sdk.decode({
         chainId: "unknown-chain" as any,
         format: "UNKNOWN_FORMAT" as any,
-        encodedData: "0xdeadbeef"
+        encodedData: "0xdeadbeef",
       });
 
       expect(result.decoded).toBeNull();
       expect(result.error).toContain("No decoder available");
     });
 
-    it("should handle decoder errors gracefully", async () => {
-      const result = await sdk.decode({
+    it("should handle decoder errors gracefully", () => {
+      const result = sdk.decode({
         chainId: "ethereum",
         format: "RLP",
-        encodedData: "invalid-hex-data"
+        encodedData: "invalid-hex-data",
       });
 
       expect(result.decoded).toBeNull();
       expect(result.error).toContain("Failed to decode transaction");
     });
 
-    it("should warn when using placeholder decoder", async () => {
+    it("should warn when using placeholder decoder", () => {
       // Assuming Solana has a placeholder decoder
-      const result = await sdk.decode({
+      const result = sdk.decode({
         chainId: "solana" as any,
         format: "SOLANA_ENCODED" as any,
-        encodedData: "base64encodeddata"
+        encodedData: "base64encodeddata",
       });
 
       // Since solana decoder doesn't exist, it should fail with no decoder
       expect(result.error).toContain("No decoder available");
     });
 
-    it("should decode Bitcoin PSBT transaction", async () => {
+    it("should decode Bitcoin PSBT transaction", () => {
       // Real Bitcoin PSBT data from test fixtures (hex format)
-      const psbtData = "70736274ff01007102000000011b43b6166ed0207832f41f743b3ef1a1f1399a44f48ae760d82ed525426e252d0100000000fdffffff02e8030000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1a03f0000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000000001011f10470000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000";
-      
-      const result = await sdk.decode({
+      const psbtData =
+        "70736274ff01007102000000011b43b6166ed0207832f41f743b3ef1a1f1399a44f48ae760d82ed525426e252d0100000000fdffffff02e8030000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1a03f0000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000000001011f10470000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000";
+
+      const result = sdk.decode({
         chainId: "bitcoin",
         format: "PSBT",
-        encodedData: psbtData
+        encodedData: psbtData,
       });
 
       expect(result.decoded).toBeDefined();
@@ -246,24 +248,27 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.decoded?.amount).toBeTruthy();
     });
 
-    it("should decode from API response structure", async () => {
+    it("should decode from API response structure", () => {
       // Simulating decoding from an actual API response
       const apiResponse = {
         chainId: "ethereum" as const,
         transaction: {
-          encoded: [{
-            raw: {
-              format: "RLP" as const,
-              value: "0x02ee0107830b7980850109399877825208948bc6922eb94e4858efaf9f433c35bc241f69e8a68736261e3597046a80c0"
-            }
-          }]
-        }
+          encoded: [
+            {
+              raw: {
+                format: "RLP" as const,
+                value:
+                  "0x02ee0107830b7980850109399877825208948bc6922eb94e4858efaf9f433c35bc241f69e8a68736261e3597046a80c0",
+              },
+            },
+          ],
+        },
       };
 
-      const result = await sdk.decode({
+      const result = sdk.decode({
         chainId: apiResponse.chainId,
         format: apiResponse.transaction.encoded[0].raw.format,
-        encodedData: apiResponse.transaction.encoded[0].raw.value
+        encodedData: apiResponse.transaction.encoded[0].raw.value,
       });
 
       expect(result.decoded).toBeDefined();

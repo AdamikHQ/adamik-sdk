@@ -1,15 +1,15 @@
 import AdamikSDK from "../src";
-import ethereumFixtures from "./fixtures/api-responses/ethereum.json";
 import bitcoinFixtures from "./fixtures/api-responses/bitcoin.json";
-import cosmosFixtures from "./fixtures/api-responses/cosmos.json";
-import injectiveFixtures from "./fixtures/api-responses/injective.json";
-import tronFixtures from "./fixtures/api-responses/tron.json";
 import celestiaFixtures from "./fixtures/api-responses/celestia.json";
+import cosmosFixtures from "./fixtures/api-responses/cosmos.json";
+import ethereumFixtures from "./fixtures/api-responses/ethereum.json";
+import injectiveFixtures from "./fixtures/api-responses/injective.json";
 import solanaFixtures from "./fixtures/api-responses/solana.json";
+import tronFixtures from "./fixtures/api-responses/tron.json";
 
 /**
  * API Response Test Suite
- * 
+ *
  * This test suite contains real API responses manually collected from the Adamik API.
  * Each fixture includes the original intent sent to the API and the actual response received.
  * The SDK verifies these responses independently.
@@ -26,46 +26,46 @@ describe("API Response Validation", () => {
   ) => {
     describe(blockchainName, () => {
       Object.entries(fixtures).forEach(([name, data]) => {
-        it(`should validate ${name}`, async () => {
+        it(`should validate ${name}`, () => {
           const intent = data.intent.transaction.data;
           const response = data.response;
-          
-          const result = await sdk.verify(response, intent);
+
+          const result = sdk.verify(response, intent);
 
           if (!result.isValid) {
             // Validation failed
           }
           expect(result.isValid).toBe(true);
           expect(result.errors || []).toHaveLength(0);
-          
+
           // Verify decoded transaction matches intent
           expect(result.decodedData).toBeDefined();
           const txData = result.decodedData?.transaction as any;
-          
+
           // Common validations
-          if ('recipientAddress' in intent) {
+          if ("recipientAddress" in intent) {
             expect(txData.recipientAddress).toBe(intent.recipientAddress);
           }
-          if ('validatorAddress' in intent) {
+          if ("validatorAddress" in intent) {
             expect(txData.validatorAddress).toBe(intent.validatorAddress);
           }
-          if ('targetValidatorAddress' in intent) {
+          if ("targetValidatorAddress" in intent) {
             expect(txData.targetValidatorAddress).toBe(intent.targetValidatorAddress);
           }
-          if ('amount' in intent && !intent.useMaxAmount && intent.mode !== 'claimRewards') {
+          if ("amount" in intent && !intent.useMaxAmount && intent.mode !== "claimRewards") {
             expect(txData.amount).toBe(intent.amount);
           }
-          if ('tokenId' in intent) {
+          if ("tokenId" in intent) {
             expect(txData.tokenId).toBe(intent.tokenId);
           }
-          if ('senderAddress' in intent) {
+          if ("senderAddress" in intent) {
             expect(txData.senderAddress).toBe(intent.senderAddress);
           }
-          if ('useMaxAmount' in intent && intent.useMaxAmount) {
+          if ("useMaxAmount" in intent && intent.useMaxAmount) {
             expect(txData.amount).toBeDefined();
             expect(txData.amount).toBe(response.transaction.data.amount);
           }
-          
+
           // Run custom validations if provided
           if (customValidations) {
             customValidations(txData, intent);
@@ -78,10 +78,8 @@ describe("API Response Validation", () => {
   // Run tests for each blockchain
   runBlockchainTests("Ethereum", ethereumFixtures, (txData, intent) => {
     // EVM addresses are case-insensitive
-    if ('recipientAddress' in intent && intent.recipientAddress) {
-      expect(txData.recipientAddress?.toLowerCase()).toBe(
-        intent.recipientAddress.toLowerCase()
-      );
+    if ("recipientAddress" in intent && intent.recipientAddress) {
+      expect(txData.recipientAddress?.toLowerCase()).toBe(intent.recipientAddress.toLowerCase());
     }
   });
 
