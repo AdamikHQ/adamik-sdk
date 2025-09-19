@@ -125,7 +125,6 @@ describe("Decoders", () => {
         "0a02170b2208c6e099ee41aa8ac740a8ac84ed81335a66080112620a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412310a1541d43543fa38eabb1d10a302dd4c249662f0da3de91215411c506ba436e22d4892be0a949f3f065878a38d9718b96070e8dcdfec8133";
       const decoded = decoder.decode(rawTx);
 
-      // Since this is a placeholder decoder, it returns fixed values
       expect(decoded).toHaveProperty("chainId", "tron");
       expect(decoded).toHaveProperty("senderAddress");
       expect(decoded).toHaveProperty("recipientAddress");
@@ -143,17 +142,41 @@ describe("Decoders", () => {
       decoder = solanaDecoder;
     });
 
-    it("should decode Solana transaction (placeholder)", () => {
+    it("should decode Solana transfer transaction (placeholder)", () => {
       const rawTx =
         "010001020b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b8710000000000000000000000000000000000000000000000000000000000000000342616747323a13ba16a6747b2fe612e4edcd535363d9ff0545f20767951fa1001010200000c02000000193f210900000000";
       const decoded = decoder.decode(rawTx);
 
-      // Since this is a placeholder decoder, it returns fixed values
       expect(decoded).toHaveProperty("chainId", "solana");
+      expect(decoded).toHaveProperty("chainSpecificData");
       expect(decoded).toHaveProperty("senderAddress");
       expect(decoded).toHaveProperty("recipientAddress");
       expect(decoded).toHaveProperty("amount");
+    });
+
+    it("should decode Solana token transfer transaction", () => {
+      const rawTx =
+        "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a90ede3f1d58a3b06147fb3e55fd65f18841f32508e7fa838231fc4a7ea961a0710102030101000903f811ab0000000000";
+      const decoded = decoder.decode(rawTx);
+
+      expect(decoded).toHaveProperty("chainId", "solana");
       expect(decoded).toHaveProperty("chainSpecificData");
+      expect(decoded).toHaveProperty("senderAddress");
+      expect(decoded).toHaveProperty("recipientAddress");
+      expect(decoded).toHaveProperty("amount");
+      expect(decoded).toHaveProperty("tokenId");
+    });
+
+    it("should decode Solana staking transfer transaction", () => {
+      const rawTx =
+        "0200070993cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b2c8299ff49804dd402d8ccff945f080cba8da55768dfb19ccd1c788878808994d0000000000000000000000000000000000000000000000000000000000000000bb92012657eb9b0bbd98e0109c08a1a16514df3f22df949d5d1b9e2f04aaeb6e06a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d10000000006a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a0000000006a7d517193584d0feed9bb3431d13206be544281b57b8566cc5375ff400000043259204d9518da1535935baefcb3ec3d95638f06e17ef29c4f1fc81a1fbce6a030202000134000000008096980000000000c80000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000004020107740000000093cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b293cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004060103060805000402000000";
+      const decoded = decoder.decode(rawTx);
+
+      expect(decoded).toHaveProperty("chainId", "solana");
+      expect(decoded).toHaveProperty("chainSpecificData");
+      expect(decoded).toHaveProperty("senderAddress");
+      expect(decoded).toHaveProperty("targetValidatorAddress");
+      expect(decoded).toHaveProperty("amount");
     });
   });
 });
