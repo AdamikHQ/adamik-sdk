@@ -103,7 +103,7 @@ export class SolanaDecoder extends BaseDecoder {
                 decodedTx.amount = potentialAmount.toString();
                 break;
               }
-            } catch (e) {
+            } catch {
               // Continue searching
             }
           }
@@ -130,7 +130,7 @@ export class SolanaDecoder extends BaseDecoder {
             try {
               const amount = instructionData.readBigUInt64LE(instructionData.length - 8);
               decodedTx.amount = amount.toString();
-            } catch (e) {
+            } catch {
               // Try other positions if the last 8 bytes don't work
               for (let i = 0; i <= instructionData.length - 8; i += 4) {
                 try {
@@ -139,7 +139,7 @@ export class SolanaDecoder extends BaseDecoder {
                     decodedTx.amount = potentialAmount.toString();
                     break;
                   }
-                } catch (e) {
+                } catch {
                   // Continue searching
                 }
               }
