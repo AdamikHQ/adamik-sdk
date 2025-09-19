@@ -1,17 +1,20 @@
-import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, RawFormat, TransactionMode } from "../types";
-import { DecodedTxRaw, decodeTxRaw } from "@cosmjs/proto-signing";
 import { fromHex } from "@cosmjs/encoding";
+import { DecodedTxRaw, decodeTxRaw } from "@cosmjs/proto-signing";
 import { MsgSend } from "cosmjs-types/cosmos/bank/v1beta1/tx";
-import { MsgDelegate, MsgUndelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
 import { MsgWithdrawDelegatorReward } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
+import { MsgDelegate, MsgUndelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
 import { SignDoc, TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { ChainId, DecodedTransaction, RawFormat, TransactionMode } from "../types";
+import { BaseDecoder } from "./base";
 
-type CosmosFormat = Extract<RawFormat, "COSMOS_PROTOBUF" | "SIGNDOC_DIRECT" | "SIGNDOC_DIRECT_JSON" | "SIGNDOC_AMINO" | "SIGNDOC_AMINO_JSON">;
+type CosmosFormat = Extract<
+  RawFormat,
+  "COSMOS_PROTOBUF" | "SIGNDOC_DIRECT" | "SIGNDOC_DIRECT_JSON" | "SIGNDOC_AMINO" | "SIGNDOC_AMINO_JSON"
+>;
 
 /**
  * Cosmos SDK chain decoder
- * 
+ *
  * Handles transaction decoding for Cosmos SDK based chains including:
  * - Cosmos Hub
  * - Celestia
@@ -26,36 +29,36 @@ export class CosmosDecoder extends BaseDecoder {
 
   /**
    * Decode Cosmos protobuf transaction
-   * 
+   *
    * @param rawData - Hex-encoded protobuf transaction data or SignDoc
    * @returns Decoded transaction information
    */
-  decode(rawData: string): DecodedTransaction {
+  async decode(rawData: string): Promise<DecodedTransaction> {
     try {
       // Remove 0x prefix if present
       const cleanData = rawData.startsWith("0x") ? rawData.slice(2) : rawData;
-      
+
       let decodedTx: DecodedTxRaw;
-      
+
       // Try to parse as SignDoc first (SIGNDOC_DIRECT format)
       try {
         const signDocBytes = fromHex(cleanData);
         const signDoc = SignDoc.decode(signDocBytes);
-        
+
         // Parse the body bytes to get the messages
         const txRaw = TxRaw.encode({
           bodyBytes: signDoc.bodyBytes,
           authInfoBytes: signDoc.authInfoBytes,
-          signatures: [] // SignDoc doesn't contain signatures
+          signatures: [], // SignDoc doesn't contain signatures
         }).finish();
-        
+
         decodedTx = decodeTxRaw(txRaw);
       } catch {
         // If not a SignDoc, try as raw transaction
         const txBytes = fromHex(cleanData);
         decodedTx = decodeTxRaw(txBytes);
       }
-      
+
       // Extract fee information from authInfo
       let fee = "0";
       const authInfo = decodedTx.authInfo;
@@ -66,21 +69,21 @@ export class CosmosDecoder extends BaseDecoder {
           fee = feeAmount.amount;
         }
       }
-      
+
       // Extract memo from body
       const body = decodedTx.body;
       const memo = body.memo || undefined;
-      
+
       // Process the first message
       if (body.messages && body.messages.length > 0) {
         const firstMsg = body.messages[0];
         if (!firstMsg) {
           throw new Error("No messages found in transaction");
         }
-        
+
         if (firstMsg.typeUrl === "/cosmos.bank.v1beta1.MsgSend") {
           const msgSend = MsgSend.decode(firstMsg.value);
-          
+
           // Calculate total amount from all denominations
           let totalAmount = "0";
           if (msgSend.amount.length > 0) {
@@ -88,7 +91,7 @@ export class CosmosDecoder extends BaseDecoder {
             // In production, you might want to handle multiple denoms
             totalAmount = msgSend.amount[0].amount;
           }
-          
+
           return {
             chainId: this.chainId,
             mode: "transfer" as TransactionMode,
@@ -101,13 +104,13 @@ export class CosmosDecoder extends BaseDecoder {
           };
         } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgDelegate") {
           const msgDelegate = MsgDelegate.decode(firstMsg.value);
-          
+
           // For staking, amount is in the delegation
           let totalAmount = "0";
           if (msgDelegate.amount) {
             totalAmount = msgDelegate.amount.amount;
           }
-          
+
           return {
             chainId: this.chainId,
             mode: "stake" as TransactionMode,
@@ -120,13 +123,13 @@ export class CosmosDecoder extends BaseDecoder {
           };
         } else if (firstMsg.typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate") {
           const msgUndelegate = MsgUndelegate.decode(firstMsg.value);
-          
+
           // For unstaking, amount is in the undelegation
           let totalAmount = "0";
           if (msgUndelegate.amount) {
             totalAmount = msgUndelegate.amount.amount;
           }
-          
+
           return {
             chainId: this.chainId,
             mode: "unstake" as TransactionMode,
@@ -139,7 +142,7 @@ export class CosmosDecoder extends BaseDecoder {
           };
         } else if (firstMsg.typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
           const msgWithdrawReward = MsgWithdrawDelegatorReward.decode(firstMsg.value);
-          
+
           return {
             chainId: this.chainId,
             mode: "claimRewards" as TransactionMode,
@@ -152,7 +155,7 @@ export class CosmosDecoder extends BaseDecoder {
           };
         }
       }
-      
+
       // Fallback for non-transfer messages
       return {
         chainId: this.chainId,
@@ -163,9 +166,10 @@ export class CosmosDecoder extends BaseDecoder {
         memo,
         chainSpecificData: rawData,
       };
-      
     } catch (error) {
-      throw new Error(`Failed to decode Cosmos transaction: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to decode Cosmos transaction: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 }

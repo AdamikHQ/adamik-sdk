@@ -19,7 +19,7 @@ describe("Error Handling Paths", () => {
           super("ethereum" as ChainId, "RLP");
         }
 
-        decode(_rawData: string): DecodedTransaction {
+        async decode(_rawData: string): Promise<DecodedTransaction> {
           throw new Error("Decoder internal error");
         }
       }
@@ -263,7 +263,7 @@ describe("Error Handling Paths", () => {
           super("ethereum" as ChainId, "RLP");
         }
 
-        decode(_rawData: string): DecodedTransaction {
+        async decode(_rawData: string): Promise<DecodedTransaction> {
           return {
             mode: "transfer",
             recipientAddress: "0xDifferentAddress1234567890123456789012345",

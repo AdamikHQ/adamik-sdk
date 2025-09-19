@@ -11,7 +11,7 @@ export abstract class BaseDecoder {
    * @param rawData The encoded transaction data as a hex string
    * @returns The decoded transaction object
    */
-  abstract decode(rawData: string): DecodedTransaction;
+  abstract decode(rawData: string): Promise<DecodedTransaction>;
 
   /**
    * Helper method to convert hex string to buffer

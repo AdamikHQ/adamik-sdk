@@ -9,34 +9,34 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
   });
 
   describe("Real Transaction Validation", () => {
-    it("should successfully decode Optimism transaction with correct chain ID", () => {
+    it("should successfully decode Optimism transaction with correct chain ID", async () => {
       const decoder = new EVMDecoder("optimism");
 
       // Real Optimism transaction from provided data
       const optimismTx =
         "0x02ed0a818f830f4240830f5ac7825208948bc6922eb94e4858efaf9f433c35bc241f69e8a6870f781467ca0c4280c0";
 
-      const result = decoder.decode(optimismTx);
+      const result = await decoder.decode(optimismTx);
 
       expect(result).toBeDefined();
       expect(result.recipientAddress).toBe("0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6");
       expect(result.amount).toBe("4354153686633538");
     });
 
-    it("should successfully decode Base transaction with correct chain ID", () => {
+    it("should successfully decode Base transaction with correct chain ID", async () => {
       const decoder = new EVMDecoder("base");
 
       // Real Base transaction from provided data
       const baseTx = "0x02e782210509830f424083873643825208948bc6922eb94e4858efaf9f433c35bc241f69e8a67b80c0";
 
-      const result = decoder.decode(baseTx);
+      const result = await decoder.decode(baseTx);
 
       expect(result).toBeDefined();
       expect(result.recipientAddress).toBe("0x8bc6922Eb94e4858efaF9F433c35Bc241F69e8a6");
       expect(result.amount).toBe("123");
     });
 
-    it("should reject Optimism transaction when decoding as Ethereum", () => {
+    it("should reject Optimism transaction when decoding as Ethereum", async () => {
       const decoder = new EVMDecoder("ethereum");
 
       // Real Optimism transaction (chain ID 10 = 0xa)
@@ -48,7 +48,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       );
     });
 
-    it("should reject Base transaction when decoding as Polygon", () => {
+    it("should reject Base transaction when decoding as Polygon", async () => {
       const decoder = new EVMDecoder("polygon");
 
       // Real Base transaction (chain ID 8453 = 0x2105)
@@ -59,7 +59,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       );
     });
 
-    it("should detect cross-chain replay attack: Optimism -> Base", () => {
+    it("should detect cross-chain replay attack: Optimism -> Base", async () => {
       // User thinks they're signing for Base, but gets Optimism transaction
       const decoder = new EVMDecoder("base");
 
@@ -74,7 +74,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
   });
 
   describe("Full SDK Verification with Real Data", () => {
-    it("should successfully verify Optimism transaction", () => {
+    it("should successfully verify Optimism transaction", async () => {
       const optimismIntent = {
         mode: "transfer" as const,
         senderAddress: "0x6450685AE9C904b7D258A897adc1fa0736dBf5Ab",
@@ -121,7 +121,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       expect(result.criticalErrors).toHaveLength(0);
     });
 
-    it("should reject cross-chain replay attack with real data", () => {
+    it("should reject cross-chain replay attack with real data", async () => {
       // User wants to send on Base
       const baseIntent = {
         mode: "transfer" as const,
@@ -174,7 +174,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
   });
 
   describe("Wallet Connect Format Chain ID Verification", () => {
-    it("should extract chain ID from WALLET_CONNECT format", () => {
+    it("should extract chain ID from WALLET_CONNECT format", async () => {
       // The WALLET_CONNECT format contains chainId in JSON
       const walletConnectOptimism = {
         chainId: "0xa", // 10 in hex

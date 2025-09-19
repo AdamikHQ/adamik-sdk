@@ -22,7 +22,7 @@ import AdamikSDK from "@adamik/sdk";
 const sdk = new AdamikSDK();
 
 // Decode an Ethereum transaction
-const ethResult = sdk.decode({
+const ethResult = await sdk.decode({
   chainId: "ethereum",
   format: "RLP",
   encodedData: "0xf86c0a8502540be400...",
@@ -32,14 +32,14 @@ console.log(ethResult.decoded);
 // { recipientAddress: "0x...", amount: "1000000000000000000", ... }
 
 // Decode a Bitcoin PSBT
-const btcResult = sdk.decode({
+const btcResult = await sdk.decode({
   chainId: "bitcoin",
   format: "PSBT",
   encodedData: "cHNidP8BAH0CAAAAAf...",
 });
 
 // Decode a Cosmos transaction
-const cosmosResult = sdk.decode({
+const cosmosResult = await sdk.decode({
   chainId: "cosmoshub",
   format: "COSMOS_PROTOBUF",
   encodedData: "0a9f010a9c010a...",
@@ -114,7 +114,7 @@ import AdamikSDK from "@adamik/sdk";
 const sdk = new AdamikSDK();
 
 // Example: Decode an Ethereum transaction
-const result = sdk.decode({
+const result = await sdk.decode({
   chainId: "ethereum",
   format: "RLP",
   encodedData: "0xf86c0a8502540be400...",
@@ -237,7 +237,7 @@ const verification = sdk.verify(apiResponse, intent);
 
 if (verification.isValid) {
   // 4. Optionally decode to inspect
-  const decoded = sdk.decode({
+  const decoded = await sdk.decode({
     chainId: apiResponse.chainId,
     format: apiResponse.transaction.encoded[0].raw.format,
     encodedData: apiResponse.transaction.encoded[0].raw.value,
@@ -281,7 +281,7 @@ const examples = [
 ];
 
 for (const tx of examples) {
-  const result = sdk.decode(tx);
+  const result = await sdk.decode(tx);
   console.log(`${tx.name}:`, result.decoded);
 }
 ```
@@ -408,7 +408,7 @@ Decodes raw transaction data for a specific blockchain without running verificat
 **Example:**
 
 ```typescript
-const result = sdk.decode({
+const result = await sdk.decode({
   chainId: "ethereum",
   format: "RLP",
   encodedData: "0xf86c0a8502540be400...",

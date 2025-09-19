@@ -1,6 +1,6 @@
-import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction } from "../types";
 import * as bitcoin from "bitcoinjs-lib";
+import { ChainId, DecodedTransaction } from "../types";
+import { BaseDecoder } from "./base";
 
 // Bitcoin-specific decoded data interface - currently unused but may be needed for future enhancements
 
@@ -9,37 +9,37 @@ export class BitcoinDecoder extends BaseDecoder {
     super(chainId, "PSBT");
   }
 
-  decode(rawData: string): DecodedTransaction {
+  async decode(rawData: string): Promise<DecodedTransaction> {
     try {
       // Convert hex string to buffer
-      const buffer = Buffer.from(rawData, 'hex');
-      
+      const buffer = Buffer.from(rawData, "hex");
+
       // Parse PSBT using bitcoinjs-lib
       const psbt = bitcoin.Psbt.fromBuffer(buffer);
-      
+
       // Extract transaction outputs
       const txOutputs = psbt.txOutputs;
       if (!txOutputs || txOutputs.length === 0) {
         throw new Error("No outputs found in PSBT");
       }
-      
+
       // Get outputs and calculate total amount
       let recipientAddress = "";
       let totalAmount = BigInt(0);
       let totalOutputValue = BigInt(0);
-      
+
       // For each output, decode the address
-      txOutputs.forEach((output: {script: Buffer; value: number}, index: number) => {
+      txOutputs.forEach((output: { script: Buffer; value: number }, index: number) => {
         // Add to total output value for fee calculation
         totalOutputValue += BigInt(output.value);
-        
+
         try {
           // Try to decode the address from the script
           const address = bitcoin.address.fromOutputScript(
             output.script,
             this.chainId === "bitcoin" ? bitcoin.networks.bitcoin : bitcoin.networks.testnet
           );
-          
+
           // First output is typically the recipient (second might be change)
           if (index === 0) {
             recipientAddress = address;
@@ -50,11 +50,11 @@ export class BitcoinDecoder extends BaseDecoder {
           console.warn(`Could not decode address for output ${index}`);
         }
       });
-      
+
       // Get sender information from inputs and calculate total input value
       let senderAddress = "";
       let totalInputValue = BigInt(0);
-      
+
       psbt.data.inputs.forEach((input, index) => {
         // Calculate total input value for fee calculation
         if (input.witnessUtxo) {
@@ -67,7 +67,7 @@ export class BitcoinDecoder extends BaseDecoder {
             totalInputValue += BigInt(prevTx.outs[vout].value);
           }
         }
-        
+
         // Extract sender address from first input only
         if (index === 0 && input.witnessUtxo) {
           try {
@@ -80,10 +80,10 @@ export class BitcoinDecoder extends BaseDecoder {
           }
         }
       });
-      
+
       // Calculate fee (inputs - outputs)
       const fee = totalInputValue - totalOutputValue;
-      
+
       return {
         chainId: this.chainId,
         mode: "transfer",
@@ -100,8 +100,9 @@ export class BitcoinDecoder extends BaseDecoder {
         },
       };
     } catch (error) {
-      throw new Error(`Failed to decode Bitcoin PSBT: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to decode Bitcoin PSBT: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
-
 }

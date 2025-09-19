@@ -207,7 +207,7 @@ it("should decode transaction data", async () => {
   };
 
   // 2. Execute
-  const result = sdk.decode(params);
+  const result = await sdk.decode(params);
 
   // 3. Assert
   expect(result.decoded).toBeDefined();

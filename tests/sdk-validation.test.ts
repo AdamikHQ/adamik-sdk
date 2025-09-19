@@ -181,9 +181,9 @@ describe("AdamikSDK - Complete Validation Tests", () => {
   });
 
   describe("Decode Functionality", () => {
-    it("should decode EVM transaction successfully", () => {
+    it("should decode EVM transaction successfully", async () => {
       // Real RLP-encoded Ethereum transaction from test fixtures
-      const result = sdk.decode({
+      const result = await sdk.decode({
         chainId: "ethereum",
         format: "RLP",
         encodedData:
@@ -196,8 +196,8 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.decoded?.mode).toBe("transfer");
     });
 
-    it("should handle missing decoder gracefully", () => {
-      const result = sdk.decode({
+    it("should handle missing decoder gracefully", async () => {
+      const result = await sdk.decode({
         chainId: "unknown-chain" as any,
         format: "UNKNOWN_FORMAT" as any,
         encodedData: "0xdeadbeef",
@@ -207,8 +207,8 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.error).toContain("No decoder available");
     });
 
-    it("should handle decoder errors gracefully", () => {
-      const result = sdk.decode({
+    it("should handle decoder errors gracefully", async () => {
+      const result = await sdk.decode({
         chainId: "ethereum",
         format: "RLP",
         encodedData: "invalid-hex-data",
@@ -218,9 +218,9 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.error).toContain("Failed to decode transaction");
     });
 
-    it("should warn when using placeholder decoder", () => {
+    it("should warn when using placeholder decoder", async () => {
       // Assuming Solana has a placeholder decoder
-      const result = sdk.decode({
+      const result = await sdk.decode({
         chainId: "solana" as any,
         format: "SOLANA_ENCODED" as any,
         encodedData: "base64encodeddata",
@@ -230,12 +230,12 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.error).toContain("No decoder available");
     });
 
-    it("should decode Bitcoin PSBT transaction", () => {
+    it("should decode Bitcoin PSBT transaction", async () => {
       // Real Bitcoin PSBT data from test fixtures (hex format)
       const psbtData =
         "70736274ff01007102000000011b43b6166ed0207832f41f743b3ef1a1f1399a44f48ae760d82ed525426e252d0100000000fdffffff02e8030000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1a03f0000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000000001011f10470000000000001600143fac1a8303a3a9c25593f341d3b70cf0dfdd59c1000000";
 
-      const result = sdk.decode({
+      const result = await sdk.decode({
         chainId: "bitcoin",
         format: "PSBT",
         encodedData: psbtData,
@@ -248,7 +248,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
       expect(result.decoded?.amount).toBeTruthy();
     });
 
-    it("should decode from API response structure", () => {
+    it("should decode from API response structure", async () => {
       // Simulating decoding from an actual API response
       const apiResponse = {
         chainId: "ethereum" as const,
@@ -265,7 +265,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.decode({
+      const result = await sdk.decode({
         chainId: apiResponse.chainId,
         format: apiResponse.transaction.encoded[0].raw.format,
         encodedData: apiResponse.transaction.encoded[0].raw.value,

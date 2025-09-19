@@ -1,15 +1,15 @@
-import { BaseDecoder } from "./base";
-import { ChainId, DecodedTransaction, TransactionMode } from "../types";
-import { getAddress, isHex, parseTransaction } from "viem";
 import type { TransactionSerializable } from "viem";
+import { getAddress, isHex, parseTransaction } from "viem";
+import { ChainId, DecodedTransaction, TransactionMode } from "../types";
 import { getEvmNetworkId } from "../utils/chain-utils";
+import { BaseDecoder } from "./base";
 
 export class EVMDecoder extends BaseDecoder {
   constructor(chainId: ChainId) {
     super(chainId, "RLP");
   }
 
-  decode(rawData: string): DecodedTransaction {
+  async decode(rawData: string): Promise<DecodedTransaction> {
     try {
       // Ensure hex format
       const hexData = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
@@ -26,16 +26,18 @@ export class EVMDecoder extends BaseDecoder {
       if (!expectedNetworkId) {
         throw new Error(`${this.chainId} is not an EVM chain`);
       }
-      
+
       const expectedChainId = parseInt(expectedNetworkId, 10);
       const transactionChainId = parsed.chainId ? Number(parsed.chainId) : undefined;
-      
+
       if (transactionChainId === undefined) {
         throw new Error(`Transaction does not contain chain ID, vulnerable to replay attacks`);
       }
-      
+
       if (transactionChainId !== expectedChainId) {
-        throw new Error(`Chain ID mismatch: expected ${expectedChainId} for ${this.chainId}, but transaction has ${transactionChainId}. This could be a replay attack.`);
+        throw new Error(
+          `Chain ID mismatch: expected ${expectedChainId} for ${this.chainId}, but transaction has ${transactionChainId}. This could be a replay attack.`
+        );
       }
 
       // Determine transaction mode and extract relevant data
@@ -56,7 +58,9 @@ export class EVMDecoder extends BaseDecoder {
         },
       };
     } catch (error) {
-      throw new Error(`Failed to decode EVM transaction: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to decode EVM transaction: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
@@ -104,17 +108,16 @@ export class EVMDecoder extends BaseDecoder {
 
   private calculateFees(parsed: TransactionSerializable): bigint {
     // Calculate total fees based on transaction type
-    const gasLimit = 'gas' in parsed && parsed.gas ? parsed.gas : 0n;
+    const gasLimit = "gas" in parsed && parsed.gas ? parsed.gas : 0n;
 
-    if ('maxFeePerGas' in parsed && parsed.maxFeePerGas) {
+    if ("maxFeePerGas" in parsed && parsed.maxFeePerGas) {
       // EIP-1559 transaction
       return BigInt(gasLimit) * BigInt(parsed.maxFeePerGas);
-    } else if ('gasPrice' in parsed && parsed.gasPrice) {
+    } else if ("gasPrice" in parsed && parsed.gasPrice) {
       // Legacy transaction
       return BigInt(gasLimit) * BigInt(parsed.gasPrice);
     }
 
     return 0n;
   }
-
 }

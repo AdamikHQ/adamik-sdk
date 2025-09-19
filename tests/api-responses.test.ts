@@ -32,9 +32,6 @@ describe("API Response Validation", () => {
 
           const result = sdk.verify(response, intent);
 
-          if (!result.isValid) {
-            // Validation failed
-          }
           expect(result.isValid).toBe(true);
           expect(result.errors || []).toHaveLength(0);
 

@@ -73,15 +73,15 @@
       }
     }
   },
-  "solana_token_transfer": {
+  "solana_token_transfer_1": {
     "intent": {
       "transaction": {
         "data": {
           "mode": "transferToken",
+          "tokenId": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
           "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "amount": "11211"
+          "amount": "12345"
         }
       }
     },
@@ -90,11 +90,10 @@
       "transaction": {
         "data": {
           "mode": "transferToken",
-          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "tokenId": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
           "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "senderPubKey": "0b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871",
           "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "amount": "11211",
+          "amount": "12345",
           "useMaxAmount": false,
           "fees": "5000"
         },
@@ -102,7 +101,7 @@
           {
             "raw": {
               "format": "BORSH",
-              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a92877dad6a0f54e2b124a9c4a62833e2a5afbf2a1cbd53c0dd07caa977da9b2f90102030101000903cb2b000000000000"
+              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871a2b65010fa61912cb8d0f586108570c354512e94cee53150a6b4f5f07c87c39806ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a944da43613c1d84473dfe54b79d3ddb0cbee2c376d9542886df900101d4bacff101020301010009033930000000000000"
             }
           }
         ]
@@ -117,6 +116,94 @@
             "message": "Network fees are above 10% of the amount"
           }
         ]
+      }
+    }
+  },
+  "solana_token_transfer_2": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "transferToken",
+          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "amount": "12345"
+        }
+      }
+    },
+    "response": {
+      "chainId": "solana",
+      "transaction": {
+        "data": {
+          "mode": "transferToken",
+          "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "amount": "12345",
+          "useMaxAmount": false,
+          "fees": "5000"
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "BORSH",
+              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a9c5d18e321521572525b2979a91d201f3d1e1674e1383d20c247715d7a213907901020301010009033930000000000000"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": [
+          {
+            "message": "Same sender and recipient address"
+          },
+          {
+            "message": "Network fees are above 10% of the amount"
+          }
+        ]
+      }
+    }
+  },
+  "solana_stake": {
+    "intent": {
+      "transaction": {
+        "data": {
+          "mode": "stake",
+          "senderAddress": "AwyvcxZV5w7JG9o693Lc4hWKsvRTQLkjuT4TqBG1wG6d",
+          "targetValidatorAddress": "CcaHc2L43ZWjwCHART3oZoJvHLAe9hzT2DJNUpBzoTN1",
+          "amount": "12345678"
+        }
+      }
+    },
+    "response": {
+      "chainId": "solana",
+      "transaction": {
+        "data": {
+          "mode": "stake",
+          "senderAddress": "AwyvcxZV5w7JG9o693Lc4hWKsvRTQLkjuT4TqBG1wG6d",
+          "targetValidatorAddress": "CcaHc2L43ZWjwCHART3oZoJvHLAe9hzT2DJNUpBzoTN1",
+          "amount": "12345678",
+          "useMaxAmount": false,
+          "recipientAddress": "",
+          "fees": "10000",
+          "params": {
+            "signature": "55c5fc82b84a2f2cd97fd784672530cfa6391740ae77402e00f47e0c2b2a6d59ebd490a81fa6fe90f6855a7df375e1b89695c1b8fd9cd8f2ecdf9d8ba8825108",
+            "publicKey": "85nmePx5XHfrAFGWx6rVGZMaLiaNceUviQjK2JzqeFE8"
+          }
+        },
+        "encoded": [
+          {
+            "raw": {
+              "format": "BORSH",
+              "value": "0200070993cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b2693be23bf77e56d4c981e1db9cd18bd7396319e7518e883b42d93e063b6fe5190000000000000000000000000000000000000000000000000000000000000000ac8d857b8e1b3ce2fc58fd5b76529953ec3cddfa3b39ea764689497158bf56aa06a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d10000000006a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a0000000006a7d517193584d0feed9bb3431d13206be544281b57b8566cc5375ff40000008ffd867ab3f6e16fc1e718cfc09cdd9806ac7b20392f86f2bea85b0232243925030202000134000000004e61bc0000000000c80000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000004020107740000000093cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b293cee9268b371061d3e57cbc861b59db8194b7fead70ee5c45d7906a290075b200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004060103060805000402000000"
+            }
+          }
+        ]
+      },
+      "status": {
+        "errors": [],
+        "warnings": []
       }
     }
   }

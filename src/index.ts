@@ -115,7 +115,7 @@ export class AdamikSDK {
    *
    * @example
    * ```typescript
-   * const result = sdk.decode({
+   * const result = await sdk.decode({
    *   chainId: "ethereum",
    *   format: "RLP_HEX",
    *   encodedData: "0xf86c0a8502540be400..."
@@ -130,14 +130,14 @@ export class AdamikSDK {
    * @example
    * ```typescript
    * // Decode from API response
-   * const result = sdk.decode({
+   * const result = await sdk.decode({
    *   chainId: apiResponse.chainId,
    *   format: apiResponse.transaction.encoded[0].raw.format,
    *   encodedData: apiResponse.transaction.encoded[0].raw.value
    * });
    * ```
    */
-  decode(params: DecodeParams): DecodeResult {
+  async decode(params: DecodeParams): Promise<DecodeResult> {
     const warnings: Array<{ code: string; message: string }> = [];
 
     try {
@@ -152,7 +152,7 @@ export class AdamikSDK {
       }
 
       // Attempt to decode
-      const decoded = decoder.decode(params.encodedData);
+      const decoded = await decoder.decode(params.encodedData);
 
       return {
         decoded,
@@ -244,15 +244,15 @@ export class AdamikSDK {
    * @param errorCollector - Collector for errors and warnings
    * @returns The decoded transaction data if successful, undefined otherwise
    */
-  private processEncodedTransaction(
+  private async processEncodedTransaction(
     chainId: string,
     raw: { format: string; value: string },
     originalIntent: TransactionIntent,
     apiData: TransactionData,
     errorCollector: ErrorCollector
-  ): unknown {
+  ): Promise<unknown> {
     // Decode using the public method
-    const decodeResult = this.decode({
+    const decodeResult = await this.decode({
       chainId: chainId as ChainId,
       format: raw.format as RawFormat,
       encodedData: raw.value,
