@@ -26,14 +26,11 @@ describe("API Response Validation", () => {
   ) => {
     describe(blockchainName, () => {
       Object.entries(fixtures).forEach(([name, data]) => {
-        it(`should validate ${name}`, () => {
+        it(`should validate ${name}`, async () => {
           const intent = data.intent.transaction.data;
           const response = data.response;
 
-          const result = sdk.verify(response, intent);
-
-          expect(result.isValid).toBe(true);
-          expect(result.errors || []).toHaveLength(0);
+          const result = await sdk.verify(response, intent);
 
           // Verify decoded transaction matches intent
           expect(result.decodedData).toBeDefined();
@@ -62,6 +59,10 @@ describe("API Response Validation", () => {
             expect(txData.amount).toBeDefined();
             expect(txData.amount).toBe(response.transaction.data.amount);
           }
+
+          expect(result.isValid).toBe(true);
+          expect(result.errors || []).toHaveLength(0);
+          expect(result.criticalErrors || []).toHaveLength(0);
 
           // Run custom validations if provided
           if (customValidations) {

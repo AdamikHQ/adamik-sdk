@@ -21,7 +21,7 @@ import { TransactionVerifier } from "./utils/transaction-verifier";
  * @example
  * ```typescript
  * const sdk = new AdamikSDK();
- * const result = sdk.verify(apiResponse, originalIntent);
+ * const result = await sdk.verify(apiResponse, originalIntent);
  *
  * if (result.isValid) {
  *   // Safe to sign the transaction
@@ -176,14 +176,14 @@ export class AdamikSDK {
    *
    * @example
    * ```typescript
-   * const result = sdk.verify(apiResponse, {
+   * const result = await sdk.verify(apiResponse, {
    *   mode: 'transfer',
    *   recipientAddress: '0x...',
    *   amount: '1000000000000000000'
    * });
    * ```
    */
-  verify(apiResponse: unknown, originalIntent: unknown): VerificationResult {
+  async verify(apiResponse: unknown, originalIntent: unknown): Promise<VerificationResult> {
     const errorCollector = new ErrorCollector();
 
     // Step 1: Validate inputs using Zod schemas
@@ -210,7 +210,7 @@ export class AdamikSDK {
     // Step 3: Decode and verify encoded transaction
     let decodedRaw: unknown;
     if (encoded && encoded.length > 0 && encoded[0].raw) {
-      decodedRaw = this.processEncodedTransaction(
+      decodedRaw = await this.processEncodedTransaction(
         chainId,
         encoded[0].raw,
         validatedIntent,

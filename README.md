@@ -58,7 +58,7 @@ const intent = { recipientAddress: "0x123...", amount: "1000" };
 const apiResponse = await getTransactionFromAPI(intent);
 
 // Verify before signing!
-const result = sdk.verify(apiResponse, intent);
+const result = await sdk.verify(apiResponse, intent);
 if (!result.isValid) {
   throw new Error("Transaction doesn't match intent!");
 }
@@ -141,7 +141,7 @@ const intent = {
 const apiResponse = await fetch(...).then(r => r.json());
 
 // Verify before signing!
-const verification = sdk.verify(apiResponse, intent);
+const verification = await sdk.verify(apiResponse, intent);
 
 if (verification.isValid) {
   // Safe to sign
@@ -200,7 +200,7 @@ const maliciousResponse = {
 };
 
 // SDK catches the attack
-const result = sdk.verify(maliciousResponse, intent);
+const result = await sdk.verify(maliciousResponse, intent);
 console.log(result.isValid); // false
 console.log(result.errors); // ["Critical: Decoded recipient mismatch"]
 ```
@@ -233,7 +233,7 @@ const apiResponse = await fetch("https://api.adamik.io/v1/ethereum/transaction/e
 }).then((r) => r.json());
 
 // 3. Verify the response
-const verification = sdk.verify(apiResponse, intent);
+const verification = await sdk.verify(apiResponse, intent);
 
 if (verification.isValid) {
   // 4. Optionally decode to inspect

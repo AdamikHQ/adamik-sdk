@@ -9,7 +9,7 @@ describe("Edge Cases and Boundary Conditions", () => {
   });
 
   describe("Boundary Value Tests", () => {
-    it("should handle zero amount transfers", () => {
+    it("should handle zero amount transfers", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -45,7 +45,7 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       if (!result.isValid) {
         // Validation passed for zero values
       }
@@ -53,7 +53,7 @@ describe("Edge Cases and Boundary Conditions", () => {
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle very large amounts (uint256 max)", () => {
+    it("should handle very large amounts (uint256 max)", async () => {
       const maxUint256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
       const intent: TransactionIntent = {
         mode: "transfer",
@@ -90,12 +90,12 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle empty recipient address (contract creation)", () => {
+    it("should handle empty recipient address (contract creation)", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -130,14 +130,14 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
   });
 
   describe("Missing or Undefined Fields", () => {
-    it("should handle missing optional fields in API response", () => {
+    it("should handle missing optional fields in API response", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -172,12 +172,12 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should fail when required fields are missing", () => {
+    it("should fail when required fields are missing", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -198,14 +198,14 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
   });
 
   describe("Case Sensitivity and Format Variations", () => {
-    it("should handle mixed case Ethereum addresses", () => {
+    it("should handle mixed case Ethereum addresses", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x12f7464c9ff094098d3f1d987a7c0ce958e1cc17", // lowercase
@@ -241,7 +241,7 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       if (!result.isValid) {
         // Validation passed for mixed case addresses
       }
@@ -249,7 +249,7 @@ describe("Edge Cases and Boundary Conditions", () => {
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle hex values with and without 0x prefix", () => {
+    it("should handle hex values with and without 0x prefix", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -285,14 +285,14 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false); // Should fail because amounts don't match
       expect(result.errors.some((e) => e.code === ErrorCode.AMOUNT_MISMATCH)).toBe(true);
     });
   });
 
   describe("Special Transaction Types", () => {
-    it("should handle self-transfers (sender = recipient)", () => {
+    it("should handle self-transfers (sender = recipient)", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -328,12 +328,12 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle multiple encoded formats in response", () => {
+    it("should handle multiple encoded formats in response", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -379,7 +379,7 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       // Should use the first format (RLP) for validation
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -387,7 +387,7 @@ describe("Edge Cases and Boundary Conditions", () => {
   });
 
   describe("Error Recovery and Partial Validation", () => {
-    it("should provide recovery strategies in error messages", () => {
+    it("should provide recovery strategies in error messages", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -422,7 +422,7 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       // Should have warnings about missing decoder with recovery strategy
       expect(result.warnings.length).toBeGreaterThan(0);
       const decoderWarning = result.warnings.find((w) => w.code === ErrorCode.MISSING_DECODER);
@@ -431,7 +431,7 @@ describe("Edge Cases and Boundary Conditions", () => {
       expect(decoderWarning?.recoveryStrategy).toContain("blockchain may not be fully supported");
     });
 
-    it("should deduplicate repeated errors", () => {
+    it("should deduplicate repeated errors", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -452,7 +452,7 @@ describe("Edge Cases and Boundary Conditions", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
 
       // Check that errors are unique even if the same validation might trigger multiple times

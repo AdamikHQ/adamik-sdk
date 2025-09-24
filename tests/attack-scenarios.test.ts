@@ -9,7 +9,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   });
 
   describe("Malicious API - Ethereum/EVM Attacks", () => {
-    it("should detect when encoded RLP transaction sends to different recipient", () => {
+    it("should detect when encoded RLP transaction sends to different recipient", async () => {
       // User wants to send to address A
       const intent: TransactionIntent = {
         mode: "transfer",
@@ -48,7 +48,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
@@ -60,7 +60,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       expect(criticalError?.recoveryStrategy).toContain("SECURITY ALERT: Do not sign this transaction!");
     });
 
-    it("should detect when encoded amount differs from displayed amount", () => {
+    it("should detect when encoded amount differs from displayed amount", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
@@ -97,14 +97,14 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_AMOUNT_MISMATCH)).toBe(true);
     });
 
-    it("should detect subtle attacks with valid-looking but different addresses", () => {
+    it("should detect subtle attacks with valid-looking but different addresses", async () => {
       // Attack using similar looking address (only last few chars different)
       const intent: TransactionIntent = {
         mode: "transfer",
@@ -142,7 +142,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
@@ -150,7 +150,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   });
 
   describe("Malicious API - Bitcoin Attacks", () => {
-    it("should detect when Bitcoin PSBT sends to wrong address", () => {
+    it("should detect when Bitcoin PSBT sends to wrong address", async () => {
       // Note: The Bitcoin decoder can parse PSBT and detect mismatches
       const intent: TransactionIntent = {
         mode: "transfer",
@@ -186,7 +186,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
@@ -195,7 +195,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   });
 
   describe("Malicious API - Token Transfer Attacks", () => {
-    it("should detect when ERC20 token transfer encodes wrong recipient", () => {
+    it("should detect when ERC20 token transfer encodes wrong recipient", async () => {
       const intent: TransactionIntent = {
         mode: "transferToken",
         senderAddress: "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
@@ -234,13 +234,13 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
 
-    it("should detect when wrong token contract is used", () => {
+    it("should detect when wrong token contract is used", async () => {
       const intent: TransactionIntent = {
         mode: "transferToken",
         senderAddress: "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
@@ -279,7 +279,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_TOKEN_MISMATCH)).toBe(true);
@@ -287,7 +287,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   });
 
   describe("Complex Attack Scenarios", () => {
-    it("should detect attacks even with valid computed fields", () => {
+    it("should detect attacks even with valid computed fields", async () => {
       // API adds valid fees, gas, nonce but still has malicious encoded data
       const intent: TransactionIntent = {
         mode: "transfer",
@@ -330,7 +330,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
@@ -338,7 +338,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
     });
 
-    it("should handle attacks with multiple encoded formats where only one is malicious", () => {
+    it("should handle attacks with multiple encoded formats where only one is malicious", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x12f7464C9Ff094098d3F1d987a7C0Ce958E1cC17",
@@ -386,7 +386,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       // SDK validates the first format (RLP) and should detect the attack
       expect(result.isValid).toBe(false);
@@ -395,7 +395,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
   });
 
   describe("Cosmos/Staking Attack Scenarios", () => {
-    it("should detect when staking transaction delegates to wrong validator", () => {
+    it("should detect when staking transaction delegates to wrong validator", async () => {
       const intent: TransactionIntent = {
         mode: "stake",
         senderAddress: "cosmos1g84934jpu3v5de5yqukkkhxmcvsw3u2ajxvpdl",
@@ -431,7 +431,7 @@ describe("Attack Scenarios - Encoded Transaction Tampering", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, intent);
+      const result = await sdk.verify(maliciousResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_VALIDATOR_MISMATCH)).toBe(true);

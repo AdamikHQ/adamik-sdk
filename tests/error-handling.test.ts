@@ -12,7 +12,7 @@ describe("Error Handling Paths", () => {
   });
 
   describe("Decoder Errors", () => {
-    it("should handle decoder throwing exceptions", () => {
+    it("should handle decoder throwing exceptions", async () => {
       // Create a custom decoder that throws
       class ThrowingDecoder extends BaseDecoder {
         constructor() {
@@ -61,7 +61,7 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
       const decodeError = result.errors.find((e) => e.code === ErrorCode.DECODE_FAILED);
@@ -69,7 +69,7 @@ describe("Error Handling Paths", () => {
       expect(decodeError?.recoveryStrategy).toContain("encoded transaction data may be corrupted");
     });
 
-    it("should handle malformed encoded data", () => {
+    it("should handle malformed encoded data", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -102,14 +102,14 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.DECODE_FAILED)).toBe(true);
     });
   });
 
   describe("Schema Validation Errors", () => {
-    it("should handle completely invalid API response structure", () => {
+    it("should handle completely invalid API response structure", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -122,7 +122,7 @@ describe("Error Handling Paths", () => {
         foo: "bar",
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
       const validationError = result.errors.find((e) => e.code === ErrorCode.INVALID_API_RESPONSE);
@@ -130,7 +130,7 @@ describe("Error Handling Paths", () => {
       expect(validationError).toBeDefined();
     });
 
-    it("should handle invalid intent structure", () => {
+    it("should handle invalid intent structure", async () => {
       const intent = {
         // Missing required mode field
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -152,12 +152,12 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.INVALID_INTENT)).toBe(true);
     });
 
-    it("should handle API response with wrong types", () => {
+    it("should handle API response with wrong types", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -178,14 +178,14 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse as any, intent);
+      const result = await sdk.verify(apiResponse as any, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
   });
 
   describe("Field Validation Errors", () => {
-    it("should handle null values in required fields", () => {
+    it("should handle null values in required fields", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -207,12 +207,12 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse as any, intent);
+      const result = await sdk.verify(apiResponse as any, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
-    it("should handle undefined values vs missing fields differently", () => {
+    it("should handle undefined values vs missing fields differently", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -248,7 +248,7 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse as any, intent);
+      const result = await sdk.verify(apiResponse as any, intent);
       // Should still be valid since undefined fields are optional
       // The viem decoder will handle this gracefully
       expect(result.isValid).toBe(true);
@@ -256,7 +256,7 @@ describe("Error Handling Paths", () => {
   });
 
   describe("Cross-validation Errors", () => {
-    it("should catch mismatches between decoded data and API response", () => {
+    it("should catch mismatches between decoded data and API response", async () => {
       // Mock a decoder that returns different data than API response
       class MismatchedDecoder extends BaseDecoder {
         constructor() {
@@ -310,7 +310,7 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);
       expect(result.criticalErrors.some((e) => e.code === ErrorCode.CRITICAL_RECIPIENT_MISMATCH)).toBe(true);
@@ -319,7 +319,7 @@ describe("Error Handling Paths", () => {
   });
 
   describe("Exception Handling", () => {
-    it("should handle unexpected exceptions gracefully", () => {
+    it("should handle unexpected exceptions gracefully", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -328,12 +328,12 @@ describe("Error Handling Paths", () => {
       };
 
       // Force an internal error by passing non-object values
-      const result = sdk.verify("not an object" as any, intent);
+      const result = await sdk.verify("not an object" as any, intent);
       expect(result.isValid).toBe(false);
       expect(result.errors.some((e) => e.code === ErrorCode.INVALID_API_RESPONSE)).toBe(true);
     });
 
-    it("should handle BigInt conversion errors", () => {
+    it("should handle BigInt conversion errors", async () => {
       const intent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -366,7 +366,7 @@ describe("Error Handling Paths", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
       // Should handle the error gracefully
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);

@@ -115,7 +115,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
         },
       };
 
-      const result = sdk.verify(optimismResponse, optimismIntent);
+      const result = await sdk.verify(optimismResponse, optimismIntent);
 
       expect(result.isValid).toBe(true);
       expect(result.criticalErrors).toHaveLength(0);
@@ -165,7 +165,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
         },
       };
 
-      const result = sdk.verify(maliciousResponse, baseIntent);
+      const result = await sdk.verify(maliciousResponse, baseIntent);
 
       expect(result.isValid).toBe(false);
       expect(result.criticalErrors.length).toBeGreaterThan(0);

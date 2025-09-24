@@ -86,7 +86,7 @@ it("should detect malicious encoded transaction", async () => {
     encoded: [{ raw: { value: maliciousTransaction } }], // But sends elsewhere
   };
 
-  const result = sdk.verify(apiResponse, intent);
+  const result = await sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(false);
   expect(result.errors).toContain("Critical: Decoded transaction recipient mismatch");
 });
@@ -136,7 +136,7 @@ it("should handle new scenario", async () => {
   const apiResponse = {
     /* response */
   };
-  const result = sdk.verify(apiResponse, intent);
+  const result = await sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(expected);
 });
 ```
@@ -187,7 +187,7 @@ it("should describe what it tests", async () => {
   };
 
   // 2. Execute
-  const result = sdk.verify(apiResponse, intent);
+  const result = await sdk.verify(apiResponse, intent);
 
   // 3. Assert
   expect(result.isValid).toBe(expected);
@@ -230,7 +230,7 @@ it("should detect [specific attack]", async () => {
   };
 
   // Verify attack is detected
-  const result = sdk.verify(apiResponse, intent);
+  const result = await sdk.verify(apiResponse, intent);
   expect(result.isValid).toBe(false);
   expect(result.errors).toContain("Critical: [specific error]");
 });

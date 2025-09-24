@@ -9,7 +9,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
   });
 
   describe("Intent Validation", () => {
-    it("should validate matching transaction data", () => {
+    it("should validate matching transaction data", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -30,13 +30,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should detect transaction mode mismatch", () => {
+    it("should detect transaction mode mismatch", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -58,13 +58,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.errors?.some((err) => err.message.includes("mode mismatch"))).toBe(true);
     });
 
-    it("should detect recipient address mismatch", () => {
+    it("should detect recipient address mismatch", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -86,13 +86,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.errors?.some((err) => err.message.includes("recipientAddress mismatch"))).toBe(true);
     });
 
-    it("should detect amount mismatch", () => {
+    it("should detect amount mismatch", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -114,13 +114,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(false);
       expect(result.errors?.some((err) => err.message.includes("amount mismatch"))).toBe(true);
     });
 
-    it("should handle token transfers", () => {
+    it("should handle token transfers", async () => {
       const intent: TransactionIntent = {
         mode: "transferToken",
         tokenId: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -142,13 +142,13 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it("should handle useMaxAmount transfers", () => {
+    it("should handle useMaxAmount transfers", async () => {
       const intent: TransactionIntent = {
         mode: "transfer",
         senderAddress: "0x1234567890123456789012345678901234567890",
@@ -173,7 +173,7 @@ describe("AdamikSDK - Complete Validation Tests", () => {
         },
       };
 
-      const result = sdk.verify(apiResponse, intent);
+      const result = await sdk.verify(apiResponse, intent);
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);

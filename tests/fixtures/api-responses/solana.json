@@ -73,7 +73,7 @@
       }
     }
   },
-  "solana_token_transfer_1": {
+  "solana_token_transfer_self": {
     "intent": {
       "transaction": {
         "data": {
@@ -119,14 +119,14 @@
       }
     }
   },
-  "solana_token_transfer_2": {
+  "solana_token_transfer": {
     "intent": {
       "transaction": {
         "data": {
           "mode": "transferToken",
           "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
           "amount": "12345"
         }
       }
@@ -138,7 +138,7 @@
           "mode": "transferToken",
           "tokenId": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           "senderAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
-          "recipientAddress": "kU9cUgRW9BY8mk5pCMowmkYQuTkPm1GMr3yAcBm4NSU",
+          "recipientAddress": "DA9TotRZzVQaPE5f4h9to31B5zwL89YFt5KEdJDF1uFB",
           "amount": "12345",
           "useMaxAmount": false,
           "fees": "5000"
@@ -147,7 +147,7 @@
           {
             "raw": {
               "format": "BORSH",
-              "value": "010001030b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b871930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a9c5d18e321521572525b2979a91d201f3d1e1674e1383d20c247715d7a213907901020301010009033930000000000000"
+              "value": "010001040b22abf2a5724f66cf158a3af547f9bea1c838b16dd2acb7070cba512ea5b8711b320a135c1aee7e586beddaf9f75d64478ffb9e923808bd31b77e569873ad95930898241649b5b112a260e38cfab73773b0fb4962f0ba911a7d35933f857f0b06ddf6e1d765a193d9cbe146ceeb79ac1cb485ed5f5b37913a8cf5857eff00a968058f2e81bddc268a200349b18ad55b2d21c4d87304ebf512798023d9d2a12501030302010009033930000000000000"
             }
           }
         ]
@@ -155,9 +155,6 @@
       "status": {
         "errors": [],
         "warnings": [
-          {
-            "message": "Same sender and recipient address"
-          },
           {
             "message": "Network fees are above 10% of the amount"
           }
