@@ -43,7 +43,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       const optimismTx =
         "0x02ed0a818f830f4240830f5ac7825208948bc6922eb94e4858efaf9f433c35bc241f69e8a6870f781467ca0c4280c0";
 
-      expect(() => decoder.decode(optimismTx)).toThrow(
+      await expect(decoder.decode(optimismTx)).rejects.toThrow(
         "Chain ID mismatch: expected 1 for ethereum, but transaction has 10"
       );
     });
@@ -54,7 +54,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       // Real Base transaction (chain ID 8453 = 0x2105)
       const baseTx = "0x02e782210509830f424083873643825208948bc6922eb94e4858efaf9f433c35bc241f69e8a67b80c0";
 
-      expect(() => decoder.decode(baseTx)).toThrow(
+      await expect(decoder.decode(baseTx)).rejects.toThrow(
         "Chain ID mismatch: expected 137 for polygon, but transaction has 8453"
       );
     });
@@ -67,7 +67,7 @@ describe("EVM Chain ID Security - Real Transaction Data", () => {
       const optimismTx =
         "0x02ed0a818f830f4240830f5ac7825208948bc6922eb94e4858efaf9f433c35bc241f69e8a6870f781467ca0c4280c0";
 
-      expect(() => decoder.decode(optimismTx)).toThrow(
+      await expect(decoder.decode(optimismTx)).rejects.toThrow(
         "Chain ID mismatch: expected 8453 for base, but transaction has 10"
       );
     });

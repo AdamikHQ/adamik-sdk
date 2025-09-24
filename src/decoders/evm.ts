@@ -10,58 +10,52 @@ export class EVMDecoder extends BaseDecoder {
   }
 
   async decode(rawData: string): Promise<DecodedTransaction> {
-    try {
-      // Ensure hex format
-      const hexData = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
+    // Ensure hex format
+    const hexData = rawData.startsWith("0x") ? rawData : `0x${rawData}`;
 
-      if (!isHex(hexData)) {
-        throw new Error("Invalid hex format for RLP data");
-      }
+    if (!isHex(hexData)) {
+      throw new Error("Invalid hex format for RLP data");
+    }
 
-      // Parse RLP-encoded transaction using viem
-      const parsed = parseTransaction(hexData);
+    // Parse RLP-encoded transaction using viem
+    const parsed = parseTransaction(hexData);
 
-      // Validate chain ID to prevent replay attacks
-      const expectedNetworkId = getEvmNetworkId(this.chainId);
-      if (!expectedNetworkId) {
-        throw new Error(`${this.chainId} is not an EVM chain`);
-      }
+    // Validate chain ID to prevent replay attacks
+    const expectedNetworkId = getEvmNetworkId(this.chainId);
+    if (!expectedNetworkId) {
+      throw new Error(`${this.chainId} is not an EVM chain`);
+    }
 
-      const expectedChainId = parseInt(expectedNetworkId, 10);
-      const transactionChainId = parsed.chainId ? Number(parsed.chainId) : undefined;
+    const expectedChainId = parseInt(expectedNetworkId, 10);
+    const transactionChainId = parsed.chainId ? Number(parsed.chainId) : undefined;
 
-      if (transactionChainId === undefined) {
-        throw new Error(`Transaction does not contain chain ID, vulnerable to replay attacks`);
-      }
+    if (transactionChainId === undefined) {
+      throw new Error(`Transaction does not contain chain ID, vulnerable to replay attacks`);
+    }
 
-      if (transactionChainId !== expectedChainId) {
-        throw new Error(
-          `Chain ID mismatch: expected ${expectedChainId} for ${this.chainId}, but transaction has ${transactionChainId}. This could be a replay attack.`
-        );
-      }
-
-      // Determine transaction mode and extract relevant data
-      const { mode, tokenId, recipientAddress, amount } = this.analyzeTransaction(parsed);
-
-      return {
-        chainId: this.chainId,
-        mode,
-        senderAddress: "", // Will be filled by verification logic from API response
-        recipientAddress,
-        amount: amount.toString(), // Convert bigint to string
-        fee: this.calculateFees(parsed).toString(),
-        tokenId,
-        chainSpecificData: {
-          gas: parsed.gas?.toString(),
-          nonce: parsed.nonce ? BigInt(parsed.nonce).toString() : undefined,
-          data: parsed.data,
-        },
-      };
-    } catch (error) {
+    if (transactionChainId !== expectedChainId) {
       throw new Error(
-        `Failed to decode EVM transaction: ${error instanceof Error ? error.message : String(error)}`
+        `Chain ID mismatch: expected ${expectedChainId} for ${this.chainId}, but transaction has ${transactionChainId}. This could be a replay attack.`
       );
     }
+
+    // Determine transaction mode and extract relevant data
+    const { mode, tokenId, recipientAddress, amount } = this.analyzeTransaction(parsed);
+
+    return {
+      chainId: this.chainId,
+      mode,
+      senderAddress: "", // Will be filled by verification logic from API response
+      recipientAddress,
+      amount: amount.toString(), // Convert bigint to string
+      fee: this.calculateFees(parsed).toString(),
+      tokenId,
+      chainSpecificData: {
+        gas: parsed.gas?.toString(),
+        nonce: parsed.nonce ? BigInt(parsed.nonce).toString() : undefined,
+        data: parsed.data,
+      },
+    };
   }
 
   private analyzeTransaction(parsed: TransactionSerializable): {
